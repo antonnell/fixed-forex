@@ -1,0 +1,16 @@
+.container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  margin-bottom: 48px;
+}
+
+.title {
+  font-size: 20px !important;
+  margin-bottom: 24px !important;
+}
+
+.tableContainer {
+  border: 1px solid rgba(128, 128, 128, 0.8);
+  margin: 0 auto;
+}
