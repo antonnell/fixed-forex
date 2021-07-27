@@ -99,7 +99,7 @@ class Store {
               web3context: { library: { provider: a.provider } },
             });
             this.emitter.emit(ACCOUNT_CONFIGURED);
-
+            console.log('a')
             this.dispatcher.dispatch({
               type: CONFIGURE_FIXED_FOREX,
               content: { connected: true },

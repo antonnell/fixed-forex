@@ -31,3 +31,16 @@
   font-weight: bold !important;
   color: #fff !important;
 }
+
+.inline {
+  display: flex;
+  align-items: flex-end;
+}
+
+.valueSymbol {
+  font-size: 30px !important;
+  font-weight: bold !important;
+  color: #fff !important;
+  margin-bottom: 6px !important;
+  margin-left: 3px !important;
+}

@@ -1,6 +1,7 @@
 import async from 'async';
 import {
   MAX_UINT256,
+  IBKRW_ADDRESS,
   IBEUR_ADDRESS,
   IBEUR_ETH_ADDRESS,
   IBFF_ADDRESS,
@@ -15,25 +16,12 @@ import {
   FIXED_FOREX_CONFIGURED,
   GET_FIXED_FOREX_BALANCES,
   FIXED_FOREX_BALANCES_RETURNED,
-  APPROVE_FUSD,
-  FUSD_APPROVED,
-  MINT_FUSD,
-  FUSD_MINTED,
-  BURN_FUSD,
-  FUSD_BURNT,
 } from './constants';
 
 import * as moment from 'moment';
 
 import stores from './';
-import {
-  erc20ABI,
-  ibEURABI,
-  sushiLPABI,
-  veIBFFABI,
-  fauceABI,
-  distributionABI,
-} from './abis';
+import abis from './abis';
 import { bnDec } from '../utils';
 
 import BigNumber from 'bignumber.js';
@@ -45,9 +33,10 @@ class Store {
     this.emitter = emitter;
 
     this.store = {
-      collaterals: [],
-      debts: [],
-      assets: []
+      assets: [],
+      ibff: null,
+      veIBFF: null,
+      rewards: null
     };
 
     dispatcher.register(
@@ -57,16 +46,7 @@ class Store {
             this.configure(payload);
             break;
           case GET_FIXED_FOREX_BALANCES:
-            this.getFUSDBalances(payload);
-            break;
-          case APPROVE_FUSD:
-            this.approveFUSD(payload);
-            break;
-          case MINT_FUSD:
-            this.mintFUSD(payload);
-            break;
-          case BURN_FUSD:
-            this.burnFUSD(payload);
+            this.getFFBalances(payload);
             break;
           default: {
           }
@@ -81,7 +61,7 @@ class Store {
 
   setStore = (obj) => {
     this.store = { ...this.store, ...obj };
-    // console.log(this.store);
+    console.log(this.store);
     return this.emitter.emit(STORE_UPDATED);
   };
 
@@ -98,10 +78,24 @@ class Store {
 
     try {
 
+      const assets = this._getAssets(web3)
+      async.map(assets, async (asset, callback) => {
+        asset = await this._getAssetInfo(web3, asset)
+        callback(null, asset)
+      }, (err, data) => {
 
-      this.emitter.emit(FUSD_UPDATED);
-      this.emitter.emit(FUSD_CONFIGURED);
-      this.dispatcher.dispatch({ type: GET_FUSD_BALANCES });
+        if(err) {
+          this.emitter.emit(ERROR, err);
+          return
+        }
+
+        this.setStore({ assets: data })
+
+        this.emitter.emit(FIXED_FOREX_UPDATED);
+        this.emitter.emit(FIXED_FOREX_CONFIGURED);
+        this.dispatcher.dispatch({ type: GET_FIXED_FOREX_BALANCES });
+      })
+
 
     } catch(ex) {
       console.log(ex)
@@ -109,19 +103,122 @@ class Store {
     }
   };
 
-  getFUSDBalances = async (payload) => {
-    const assets = this.getStore('assets');
-    if (!assets) {
-      return null;
+  _getAssets = (web3) => {
+    const assets = [
+      {
+        address: IBEUR_ADDRESS
+      },
+      {
+        address: IBKRW_ADDRESS
+      }
+    ]
+
+    return assets
+  }
+
+  _getAssetInfo = async (web3, asset, account) => {
+    try {
+      const assetContract = new web3.eth.Contract(abis.ibEURABI, asset.address)
+
+      const symbol = await assetContract.methods.symbol().call()
+      const name = await assetContract.methods.name().call()
+      const decimals = parseInt(await assetContract.methods.decimals().call())
+
+      let balance = asset.balance ? asset.balance : 0
+
+      if(account) {
+        const balanceOf = await assetContract.methods.balanceOf(account.address).call()
+        balance = BigNumber(balanceOf).div(10**decimals).toFixed(decimals)
+      }
+
+      return {
+        address: web3.utils.toChecksumAddress(asset.address),
+        symbol,
+        name,
+        decimals,
+        balance
+      }
+    } catch(ex) {
+      console.log(ex)
+      return null
     }
+  }
 
-    const account = stores.accountStore.getStore('account');
+  getFFBalances = async (payload) => {
+    try {
 
-    const web3 = await stores.accountStore.getWeb3Provider();
-    if (!web3) {
-      return null;
+      const assets = this.getStore('assets');
+      if (!assets) {
+        return null;
+      }
+
+      const account = stores.accountStore.getStore('account');
+      if (!account) {
+        return null;
+      }
+
+      const web3 = await stores.accountStore.getWeb3Provider();
+      if (!web3) {
+        return null;
+      }
+
+      // get ibFF bal
+      const ibff = await this._getAssetInfo(web3, { address: IBFF_ADDRESS }, account)
+
+      // get veIBFF bal
+      const veIBFF = await this._getAssetInfo(web3, { address: VEIBFF_ADDRESS }, account)
+
+      // get rewards
+      const rewards = await this._getRewards(web3, account, ibff)
+
+      // get asset balances
+      // get asset approvals (swap/stake/vest)
+      const assetsBalancesPromise = assets.map(async (asset) => {
+        const assetContract = new web3.eth.Contract(abis.erc20ABI, asset.address)
+
+        const balanceOf = await assetContract.methods.balanceOf(account.address).call()
+
+        return {
+          balanceOf
+        }
+      })
+
+      const assetsBalances = await Promise.all(assetsBalancesPromise);
+      for(let i = 0; i < assets.length; i++) {
+        assets[i].balance = BigNumber(assetsBalances[i].balanceOf).div(10**assets[i].decimals).toFixed(assets[i].decimals)
+      }
+
+      this.setStore({
+        assets: assets,
+        ibff,
+        veIBFF,
+        rewards,
+      })
+
+      this.emitter.emit(FIXED_FOREX_UPDATED);
+    } catch(ex) {
+      console.log(ex)
+      this.emitter.emit(ERROR, ex)
     }
   };
+
+  _getRewards = async (web3, account, ibff) => {
+    try {
+      // const distributionContract = new web3.eth.Contract(abis.distributionABI, FF_DISTRIBUTION_ADDRESS)
+      // const claimable = await distributionContract.methods.claimable(account.address).call()
+
+      const faucetContract = new web3.eth.Contract(abis.faucetABI, FF_FAUCET_ADDRESS)
+      const earned = await faucetContract.methods.earned(account.address).call()
+
+      return {
+        // distribution: BigNumber(claimable).div(10**ibff.decimals).toFixed(ibff.decimals),
+        faucet: BigNumber(earned).div(10**ibff.decimals).toFixed(ibff.decimals)
+      }
+    } catch(ex) {
+      console.log(ex)
+      return null
+    }
+  }
 
   approveFUSD = async (payload) => {
     const account = stores.accountStore.getStore('account');

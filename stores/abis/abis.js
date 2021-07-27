@@ -2,7 +2,7 @@ import { erc20ABI } from './erc20ABI';
 import { ibEURABI } from './ibEURABI';
 import { sushiLPABI } from './sushiLPABI';
 import { veIBFFABI } from './veIBFFABI';
-import { fauceABI } from './fauceABI';
+import { faucetABI } from './faucetABI';
 import { distributionABI } from './distributionABI';
 
 export default {
@@ -10,6 +10,6 @@ export default {
   ibEURABI: ibEURABI,
   sushiLPABI: sushiLPABI,
   veIBFFABI: veIBFFABI,
-  fauceABI: fauceABI,
+  faucetABI: faucetABI,
   distributionABI: distributionABI
 };

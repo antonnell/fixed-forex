@@ -67,7 +67,7 @@ function EnhancedTableHead(props) {
     <TableHead>
       <TableRow>
         {headCells.map((headCell) => (
-          <TableCell key={headCell.id} align={headCell.numeric ? 'right' : 'left'} padding={'default'} sortDirection={orderBy === headCell.id ? order : false}>
+          <TableCell key={headCell.id} align={headCell.numeric ? 'right' : 'left'} padding={'normal'} sortDirection={orderBy === headCell.id ? order : false}>
             <TableSortLabel active={orderBy === headCell.id} direction={orderBy === headCell.id ? order : 'asc'} onClick={createSortHandler(headCell.id)}>
               <Typography variant="h5">{headCell.label}</Typography>
               {orderBy === headCell.id ? <span className={classes.visuallyHidden}>{order === 'desc' ? 'sorted descending' : 'sorted ascending'}</span> : null}
@@ -223,7 +223,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function EnhancedTable({ cdpAssets }) {
+export default function EnhancedTable({ assets }) {
   const classes = useStyles();
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('balance');
@@ -236,34 +236,7 @@ export default function EnhancedTable({ cdpAssets }) {
     setOrderBy(property);
   };
 
-  cdpAssets = [
-    {
-      address: '0x96E61422b6A9bA0e068B6c5ADd4fFaBC6a4aae27',
-      symbol: 'ibEUR',
-      name: 'Iron Bank EUR',
-      balance: 1230.12
-    },
-    {
-      address: '0x96E61422b6A9bA0e068B6c5ADd4fFaBC6a4aae27',
-      symbol: 'ibEUR',
-      name: 'Iron Bank EUR',
-      balance: 1230.12
-    },
-    {
-      address: '0x96E61422b6A9bA0e068B6c5ADd4fFaBC6a4aae27',
-      symbol: 'ibEUR',
-      name: 'Iron Bank EUR',
-      balance: 1230.12
-    },
-    {
-      address: '0x96E61422b6A9bA0e068B6c5ADd4fFaBC6a4aae27',
-      symbol: 'ibEUR',
-      name: 'Iron Bank EUR',
-      balance: 1230.12
-    },
-  ]
-
-  if (!cdpAssets) {
+  if (!assets) {
     return (
       <div className={classes.root}>
         <Skeleton variant="rect" width={'100%'} height={40} className={classes.skelly1} />
@@ -284,9 +257,9 @@ export default function EnhancedTable({ cdpAssets }) {
     <div className={classes.root}>
       <TableContainer>
         <Table className={classes.table} aria-labelledby="tableTitle" size={'medium'} aria-label="enhanced table">
-          <EnhancedTableHead classes={classes} order={order} orderBy={orderBy} onRequestSort={handleRequestSort} rowCount={cdpAssets.length} />
+          <EnhancedTableHead classes={classes} order={order} orderBy={orderBy} onRequestSort={handleRequestSort} rowCount={assets.length} />
           <TableBody>
-            {stableSort(cdpAssets, getComparator(order, orderBy)).map((row, index) => {
+            {stableSort(assets, getComparator(order, orderBy)).map((row, index) => {
               if (!row) {
                 return null;
               }
@@ -312,7 +285,7 @@ export default function EnhancedTable({ cdpAssets }) {
                       { formatCurrency(row.balance) } { row.symbol }
                     </Typography>
                     <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
-                      $ { formatCurrency(4567.89) }
+                      $ { formatCurrency(0.00) }
                     </Typography>
                   </TableCell>
                   <TableCell className={classes.cell} align="right">
