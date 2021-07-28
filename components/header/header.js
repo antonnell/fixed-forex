@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Typography, Switch, Button } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { withTheme } from '@material-ui/core/styles';
+import { useRouter } from "next/router";
 import Paper from '@material-ui/core/Paper';
 import InputBase from '@material-ui/core/InputBase';
 
@@ -76,6 +77,7 @@ const StyledSwitch = withStyles((theme) => ({
 function Header(props) {
 
   const accountStore = stores.accountStore.getStore('account');
+  const router = useRouter();
 
   const [account, setAccount] = useState(accountStore);
   const [toggleAboutModal, setToggleAboutModal] = useState(false);
@@ -136,19 +138,19 @@ function Header(props) {
     }
   }, []);
 
+  const goHome = () => {
+    router.push(`/`)
+  }
+
   return (
     <div>
     <Paper elevation={0} className={classes.headerContainer}>
-        <Typography className={ classes.ffTitle }>
+        <Typography className={ classes.ffTitle } onClick={ () => { goHome() }}>
           Fixed Forex
         </Typography>
-        {props.backClicked && (
-          <div className={classes.backButton}>
-            <Button color={props.theme.palette.type === 'light' ? 'primary' : 'secondary'} onClick={props.backClicked} disableElevation>
-              <ArrowBackIcon fontSize={'medium'} />
-            </Button>
-          </div>
-        )}{' '}
+        <div className={ classes.flex1 }>
+
+        </div>
         <div className={classes.themeSelectContainer}>
           <StyledSwitch
             icon={<Brightness2Icon className={classes.switchIcon} />}

@@ -65,6 +65,26 @@ class Store {
     return this.emitter.emit(STORE_UPDATED);
   };
 
+  getAsset = (address) => {
+    const assets = this.store.assets
+    if(!assets || assets.length === 0) {
+      return null
+    }
+
+    let theAsset = assets.filter((ass) => {
+      if(!ass) {
+        return false
+      }
+      return ass.address.toLowerCase() === address.toLowerCase()
+    })
+
+    if(!theAsset || theAsset.length === 0) {
+      return null
+    }
+
+    return theAsset[0]
+  }
+
   configure = async (payload) => {
     const web3 = await stores.accountStore.getWeb3Provider();
     if (!web3) {

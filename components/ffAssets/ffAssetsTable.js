@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { lighten, makeStyles } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography, Paper, IconButton } from '@material-ui/core';
+import { useRouter } from "next/router";
 
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
@@ -225,6 +226,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function EnhancedTable({ assets }) {
   const classes = useStyles();
+  const router = useRouter();
+
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('balance');
   const [page, setPage] = React.useState(0);
@@ -249,8 +252,8 @@ export default function EnhancedTable({ assets }) {
     );
   }
 
-  const onClose = () => {
-    //do something
+  const onView = (asset) => {
+    router.push(`/asset/${asset.address}`)
   }
 
   return (
@@ -289,7 +292,7 @@ export default function EnhancedTable({ assets }) {
                     </Typography>
                   </TableCell>
                   <TableCell className={classes.cell} align="right">
-                    <Button variant='outlined' color='primary'>View</Button>
+                    <Button variant='outlined' color='primary' onClick={ () => { onView(row) } }>View</Button>
                   </TableCell>
                 </TableRow>
               );

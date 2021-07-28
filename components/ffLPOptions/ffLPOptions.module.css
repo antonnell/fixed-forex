@@ -1,0 +1,75 @@
+.container {
+  width: calc(100% - 48px);
+  max-width: 1400px;
+  margin: 0 auto;
+  margin-bottom: 48px;
+}
+
+.title {
+  font-size: 20px !important;
+  margin-bottom: 24px !important;
+}
+
+.lpOptionsContainer {
+  border: 1px solid rgba(128, 128, 128, 0.8);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  cursor: pointer;
+}
+
+.lpOption:nth-child(1):hover {
+  background: #f8b701;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.lpOption:nth-child(2):hover {
+  background: #cd65ae;
+}
+
+.lpOption:nth-child(3):hover {
+  background: #1162df;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.lpOption {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 48px;
+  transition: background 0.5s ease;
+}
+
+.lpOptionTitle {
+  display: flex;
+  align-items: center;
+}
+
+.lpOptionName {
+  font-size: 30px !important;
+}
+
+.lpOptionDescription {
+  font-size: 20px !important;
+  opacity: 0.7;
+}
+
+.lpOptionIcon {
+  margin-right: 24px;
+}
+
+.activeIcon {
+  height: 10px;
+  width: 10px;
+  background-color: #0ba360;
+  border-radius: 50%;
+  display: inline-block;
+  position: absolute;
+  right: 12px;
+  top: 12px;
+}
