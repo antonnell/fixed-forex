@@ -9,13 +9,13 @@ import Swap from '../../components/ffSwaps';
 import Overview from '../../components/ffOverview';
 import Assets from '../../components/ffAssets';
 
-import classes from './home.module.css';
+import classes from './stake.module.css';
 
 import stores from '../../stores/index.js';
 import { FIXED_FOREX_UPDATED } from '../../stores/constants';
 import { formatCurrency } from '../../utils';
 
-function Home({ changeTheme }) {
+function Stake({ changeTheme }) {
 
   return (
     <Layout changeTheme={changeTheme}>

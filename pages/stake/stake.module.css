@@ -1,4 +1,4 @@
-.cdpContainer {
+.ffContainer {
   height: 100%;
   width: 100%;
   display: flex;
@@ -6,10 +6,7 @@
   margin-top: 0px;
   padding-top: 60px;
   position: relative;
-}
-
-.cdpTableContainer {
-  padding: 48px;
+  position: relative;
 }
 
 @media screen and (max-width: 1600px) {

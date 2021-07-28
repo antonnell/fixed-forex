@@ -164,14 +164,6 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     justifyContent: 'flex-end',
   },
-  cdpActions: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    borderBottom: '1px solid rgba(128, 128, 128, 0.32)',
-    borderTop: '1px solid rgba(128, 128, 128, 0.25)',
-    background: theme.palette.type === 'dark' ? '#22252E' : '#fff',
-  },
   assetInfo: {
     display: 'flex',
     alignItems: 'center',

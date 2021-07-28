@@ -16,7 +16,7 @@ import stores from '../../../stores/index.js';
 import { FIXED_FOREX_UPDATED } from '../../../stores/constants';
 import { formatCurrency } from '../../../utils';
 
-function YCDP({ changeTheme }) {
+function Asset({ changeTheme }) {
 
   const router = useRouter();
   const [asset, setAsset] = useState(null);
@@ -53,4 +53,4 @@ function YCDP({ changeTheme }) {
   );
 }
 
-export default YCDP;
+export default Asset;
