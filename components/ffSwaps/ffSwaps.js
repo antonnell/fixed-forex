@@ -83,7 +83,7 @@ export default function ffSwaps() {
             </Typography>
           </div>
         </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: '10px' }}>
+        <div className={ classes.autocompleteContainer }>
           <Autocomplete
             options={assets}
             value={assetValue}

@@ -2,7 +2,7 @@
   width: 100%;
   max-width: 1400px;
   display: flex;
-  padding: 48px 0px;
+  padding: 24px 0px;
   border: 1px solid rgba(128, 128, 128, 0.8);
   position: absolute;
   top: 240px;
@@ -14,8 +14,8 @@
 .inputsContainer {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-gap: 48px;
-  padding: 0px 48px;
+  grid-gap: 24px 48px;
+  padding: 0px 24px;
   flex: 1;
 }
 
@@ -83,13 +83,20 @@
 
 .actionsContainer {
   display: grid;
-  grid-gap: 24px;
+  grid-gap: 12px;
   grid-template-columns: 1fr;
   border-left: 1px solid rgba(128, 128, 128, 0.8);
-  padding: 0px 48px;
+  padding: 0px 24px;
 }
 
 .actionButtonText {
   font-size: 12px !important;
   text-transform: capitalize !important;
+}
+
+.autocompleteContainer {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  width: 100%;
 }

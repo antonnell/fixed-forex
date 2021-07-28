@@ -1,17 +1,17 @@
 .container {
   width: 100%;
   background-image: linear-gradient(0deg ,#1c46f5 0,#0005d3);
-  margin-bottom: 180px;
+  margin-bottom: 160px;
 }
 
 .fieldsContainer {
   max-width: 1400px;
   display: flex;
   margin: 0 auto;
-  padding: 48px 0px 180px 0px;
+  padding: 48px 0px 140px 0px;
   align-items: center;
   justify-content: space-between;
-  min-height: 324px;
+  min-height: 284px;
 }
 
 .field {
