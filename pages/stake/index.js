@@ -5,9 +5,9 @@ import SearchIcon from '@material-ui/icons/Search';
 
 import Head from 'next/head';
 import Layout from '../../components/layout/layout.js';
-import Swap from '../../components/ffSwaps';
+import StakeSLP from '../../components/ffStake';
+import StakeDistribution from '../../components/ffStakeDistribution';
 import Overview from '../../components/ffOverview';
-import Assets from '../../components/ffAssets';
 
 import classes from './stake.module.css';
 
@@ -24,8 +24,8 @@ function Stake({ changeTheme }) {
       </Head>
       <div className={classes.ffContainer}>
         <Overview />
-        <Swap />
-        <Assets />
+        <StakeSLP />
+        <StakeDistribution />
       </div>
     </Layout>
   );

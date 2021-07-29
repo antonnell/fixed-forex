@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Typography, Button, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
+import { Paper, Typography, Button, TextField, InputAdornment, CircularProgress, RadioGroup, Radio, FormControlLabel } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import BigNumber from 'bignumber.js';
 import Skeleton from '@material-ui/lab/Skeleton';
-
+import moment from 'moment';
 import { formatCurrency } from '../../utils';
-import classes from './ffClaim.module.css';
-
+import classes from './ffStakeDistribution.module.css';
 import stores from '../../stores'
-import { FIXED_FOREX_UPDATED } from '../../stores/constants';
+import { FIXED_FOREX_UPDATED, IBEUR_ADDRESS } from '../../stores/constants';
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 
-export default function ffClaim({ asset }) {
+export default function ffStakeDistribution() {
 
   const [ rewards, setRewards] = useState(null)
 
@@ -36,10 +37,10 @@ export default function ffClaim({ asset }) {
       <Paper elevation={0} className={ classes.lpOptionsContainer }>
         <div className={ classes.lpOption } onClick={ () => { claim() } }>
           <div className={ classes.lpOptionTitle }>
-            <img className={ classes.lpOptionIcon } src='/images/Curve.png' alt='Curve Logo' width={ 60 } height={ 60 } />
+            <img className={ classes.lpOptionIcon } src='/images/Sushi.png' alt='Curve Logo' width={ 60 } height={ 60 } />
             <div>
-              <Typography className={ classes.lpOptionName }>Fixed Forex</Typography>
-              <Typography className={ classes.lpOptionDescription }>Vesting Rewards</Typography>
+              <Typography className={ classes.lpOptionName }>Sushiswap LP</Typography>
+              <Typography className={ classes.lpOptionDescription }>Staking Rewards</Typography>
             </div>
           </div>
           <div>
