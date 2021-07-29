@@ -5,17 +5,17 @@ import SearchIcon from '@material-ui/icons/Search';
 
 import Head from 'next/head';
 import Layout from '../../components/layout/layout.js';
-import Swap from '../../components/ffSwaps';
+import Vesting from '../../components/ffVest';
 import Overview from '../../components/ffOverview';
-import Assets from '../../components/ffAssets';
+import Claim from '../../components/ffClaim';
 
-import classes from './stake.module.css';
+import classes from './vest.module.css';
 
 import stores from '../../stores/index.js';
 import { FIXED_FOREX_UPDATED } from '../../stores/constants';
 import { formatCurrency } from '../../utils';
 
-function Stake({ changeTheme }) {
+function Vest({ changeTheme }) {
 
   return (
     <Layout changeTheme={changeTheme}>
@@ -24,11 +24,11 @@ function Stake({ changeTheme }) {
       </Head>
       <div className={classes.ffContainer}>
         <Overview />
-        <Swap />
-        <Assets />
+        <Vesting />
+        <Claim />
       </div>
     </Layout>
   );
 }
 
-export default Stake;
+export default Vest;

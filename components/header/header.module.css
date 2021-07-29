@@ -195,16 +195,34 @@
 
 .ffTitle {
   cursor: pointer;
-
+  min-width: 150px;
+  width: calc(50% - 678px);
+  font-size: 24px !important;
+  color: #1c46f5 ;
 }
 
 .flex1 {
   flex: 1;
 }
 
+.linksBar {
+  flex: 1;
+  display: flex;
+}
+
+.link {
+  margin: 2px 0px !important;
+  margin-right: 24px !important;
+  cursor: pointer;
+}
+
+.link:hover {
+  border-bottom: 2px solid #1c46f5 ;
+  margin-bottom: 0px !important;
+}
+
 @media screen and (max-width: 1200px) {
   .headerContainer {
-    display: none;
   }
 }
 

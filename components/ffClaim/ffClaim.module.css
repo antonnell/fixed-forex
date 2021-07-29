@@ -20,19 +20,8 @@
 }
 
 .lpOption:nth-child(1):hover {
-  background: #f8b701;
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
-}
-
-.lpOption:nth-child(2):hover {
-  background: #cd65ae;
-}
-
-.lpOption:nth-child(3):hover {
-  background: #1162df;
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
+  background-image: linear-gradient(0deg ,#1c46f5 0,#0005d3);
+  border-radius: 10px;
 }
 
 .lpOption {
@@ -40,7 +29,7 @@
   flex: 1;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   padding: 48px;
   transition: background 0.5s ease;
 }
@@ -72,4 +61,15 @@
   position: absolute;
   right: 12px;
   top: 12px;
+}
+
+
+
+.lpOption:nth-child(1):hover > div {
+  color: #fff !important;
+}
+
+.amountText {
+  font-size: 60px !important;
+  font-weight: bold !important;
 }

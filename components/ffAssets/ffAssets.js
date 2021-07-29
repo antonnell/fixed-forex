@@ -32,7 +32,7 @@ export default function ffAssets() {
 
   return (
     <div className={ classes.container}>
-      <Typography variant="h5" className={ classes.title}>Forex Assets</Typography>
+      <Typography variant="h5" className={ classes.title}>Available Assets</Typography>
       <Paper elevation={0} className={ classes.tableContainer }>
         <AssetsTable assets={assets} />
       </Paper>

@@ -2,13 +2,13 @@
   width: calc(100% - 48px);
   max-width: 1356px;
   display: flex;
+  padding: 24px 0px;
   border: 1px solid rgba(128, 128, 128, 0.8);
   position: absolute;
   top: 240px;
-  left: 24px;
-  right: 24px;
-  margin: auto;
-  padding: 24px 0px;
+  left: 0;
+  right: 0;
+  margin: auto
 }
 
 .inputsContainer {
@@ -57,8 +57,6 @@
 
 .infoContainer {
   display: flex;
-  min-width: 100%;
-  grid-area: 2 / 1 / 2 / 3;
 }
 
 .infoIcon {

@@ -83,7 +83,6 @@ function Header(props) {
   const [toggleAboutModal, setToggleAboutModal] = useState(false);
   const [darkMode, setDarkMode] = useState(props.theme.palette.type === 'dark' ? true : false);
   const [unlockOpen, setUnlockOpen] = useState(false);
-  const [isMac, setIsMac] = useState(false);
   const [chainInvalid, setChainInvalid] = useState(false)
 
   useEffect(() => {
@@ -130,26 +129,21 @@ function Header(props) {
     const localStorageDarkMode = window.localStorage.getItem('yearn.finance-dark-mode');
     setDarkMode(localStorageDarkMode ? localStorageDarkMode === 'dark' : false);
   }, []);
-  useEffect(function () {
-    var mac = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform);
 
-    if (mac) {
-      setIsMac(true);
-    }
-  }, []);
-
-  const goHome = () => {
-    router.push(`/`)
+  const navigate = (url) => {
+    router.push(url)
   }
 
   return (
     <div>
     <Paper elevation={0} className={classes.headerContainer}>
-        <Typography className={ classes.ffTitle } onClick={ () => { goHome() }}>
+        <Typography className={ classes.ffTitle } onClick={ () => { navigate('/') }}>
           Fixed Forex
         </Typography>
-        <div className={ classes.flex1 }>
-
+        <div className={ classes.linksBar }>
+          <Typography className={ classes.link } onClick={ () => { navigate('/') } }>Home</Typography>
+          <Typography className={ classes.link } onClick={ () => { navigate('/vest') } }>Vesting</Typography>
+          <Typography className={ classes.link } onClick={ () => { navigate('/stake') } }>Staking</Typography>
         </div>
         <div className={classes.themeSelectContainer}>
           <StyledSwitch

@@ -1,7 +1,6 @@
 import Head from "next/head";
 import classes from "./layout.module.css";
 import Header from "../header";
-import Navigation from "../navigation";
 import SnackbarController from "../snackbar";
 
 export default function Layout({

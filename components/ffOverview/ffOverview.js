@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Paper, Typography, Button, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Skeleton from '@material-ui/lab/Skeleton';
+import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
+import TimerIcon from '@material-ui/icons/Timer';
 
 import { formatCurrency } from '../../utils';
 import classes from './ffOverview.module.css';
@@ -36,24 +39,33 @@ export default function ffOverview() {
     <div className={ classes.container }>
       <div className={ classes.fieldsContainer }>
         <div className={ classes.field }>
-          <Typography className={ classes.title }>IBFF Balance:</Typography>
-          <div className={ classes.inline }>
-            <Typography className={ classes.value }>{ formatCurrency(ibff ? ibff.balance : 0) }</Typography>
-            <Typography className={ classes.valueSymbol }>{ ibff ? ibff.symbol : '' }</Typography>
+          <AccountBalanceWalletIcon className={ classes.balanceIcon } />
+          <div>
+            <Typography className={ classes.title }>IBFF Balance:</Typography>
+            <div className={ classes.inline }>
+              <Typography className={ classes.value }>{ formatCurrency(ibff ? ibff.balance : 0) }</Typography>
+              <Typography className={ classes.valueSymbol }>{ ibff ? ibff.symbol : '' }</Typography>
+            </div>
           </div>
         </div>
-        <div>
-          <Typography className={ classes.title }>Locked Balance:</Typography>
-          <div className={ classes.inline }>
-            <Typography className={ classes.value }>{ formatCurrency(veIBFF ? veIBFF.balance : 0) }</Typography>
-            <Typography className={ classes.valueSymbol }>{ veIBFF ? veIBFF.symbol : '' }</Typography>
+        <div className={ classes.field }>
+          <TimerIcon className={ classes.balanceIcon } />
+          <div>
+            <Typography className={ classes.title }>Locked Balance:</Typography>
+            <div className={ classes.inline }>
+              <Typography className={ classes.value }>{ formatCurrency(veIBFF ? veIBFF.balance : 0) }</Typography>
+              <Typography className={ classes.valueSymbol }>{ veIBFF ? veIBFF.symbol : '' }</Typography>
+            </div>
           </div>
         </div>
-        <div>
-          <Typography className={ classes.title }>Rewards Available:</Typography>
-          <div className={ classes.inline }>
-            <Typography className={ classes.value }>{ formatCurrency(rewards ? rewards.faucet : 0) }</Typography>
-            <Typography className={ classes.valueSymbol }>{ ibff ? ibff.symbol : '' }</Typography>
+        <div className={ classes.field }>
+          <AttachMoneyIcon className={ classes.balanceIcon } />
+          <div>
+            <Typography className={ classes.title }>Rewards Available:</Typography>
+            <div className={ classes.inline }>
+              <Typography className={ classes.value }>{ formatCurrency(rewards ? rewards.faucet : 0) }</Typography>
+              <Typography className={ classes.valueSymbol }>{ ibff ? ibff.symbol : '' }</Typography>
+            </div>
           </div>
         </div>
       </div>
