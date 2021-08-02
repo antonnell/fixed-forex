@@ -7,7 +7,7 @@ import Head from 'next/head';
 import Layout from '../../components/layout/layout.js';
 import StakeSLP from '../../components/ffStake';
 import StakeDistribution from '../../components/ffStakeDistribution';
-import Overview from '../../components/ffOverview';
+import StakeOverview from '../../components/ffStakeOverview';
 
 import classes from './stake.module.css';
 
@@ -23,7 +23,7 @@ function Stake({ changeTheme }) {
         <title>Fixed Forex</title>
       </Head>
       <div className={classes.ffContainer}>
-        <Overview />
+        <StakeOverview />
         <StakeSLP />
         <StakeDistribution />
       </div>

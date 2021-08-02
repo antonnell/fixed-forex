@@ -16,6 +16,16 @@ import {
   FIXED_FOREX_CONFIGURED,
   GET_FIXED_FOREX_BALANCES,
   FIXED_FOREX_BALANCES_RETURNED,
+  FIXED_FOREX_CLAIM_VESTING_REWARD,
+  FIXED_FOREX_VESTING_REWARD_CLAIMED,
+  FIXED_FOREX_CLAIM_STAKING_REWARD,
+  FIXED_FOREX_STAKING_REWARD_CLAIMED,
+  FIXED_FOREX_STAKE_SLP,
+  FIXED_FOREX_SLP_STAKED,
+  FIXED_FOREX_APPROVE_STAKE_SLP,
+  FIXED_FOREX_STAKE_SLP_APPROVED,
+  FIXED_FOREX_UNSTAKE_SLP,
+  FIXED_FOREX_SLP_UNSTAKED,
 } from './constants';
 
 import * as moment from 'moment';
@@ -36,17 +46,34 @@ class Store {
       assets: [],
       ibff: null,
       veIBFF: null,
+      veEURETHSLP: null,
       rewards: null
     };
 
     dispatcher.register(
       function (payload) {
+        console.log(payload)
         switch (payload.type) {
           case CONFIGURE_FIXED_FOREX:
             this.configure(payload);
             break;
           case GET_FIXED_FOREX_BALANCES:
             this.getFFBalances(payload);
+            break;
+          case FIXED_FOREX_CLAIM_VESTING_REWARD:
+            this.claimVestingReward(payload);
+            break;
+          case FIXED_FOREX_CLAIM_STAKING_REWARD:
+            this.claimStakingReward(payload);
+            break;
+          case FIXED_FOREX_STAKE_SLP:
+            this.stakeSLP(payload);
+            break;
+          case FIXED_FOREX_APPROVE_STAKE_SLP:
+            this.approveStakeSLP(payload);
+            break;
+          case FIXED_FOREX_UNSTAKE_SLP:
+            this.unstakeSLP(payload);
             break;
           default: {
           }
@@ -188,8 +215,14 @@ class Store {
       // get veIBFF bal
       const veIBFF = await this._getAssetInfo(web3, { address: VEIBFF_ADDRESS }, account)
 
+      // get veIBFF bal
+      const veEURETHSLP = await this._getAssetInfo(web3, { address: IBEUR_ETH_ADDRESS }, account)
+      const faucetContractApprovalAmount = await this._getApprovalAmount(web3, veEURETHSLP, account.address, FF_FAUCET_ADDRESS)
+
       // get rewards
-      const rewards = await this._getRewards(web3, account, ibff)
+      const rewards = await this._getFaucetRewards(web3, account, ibff)
+      veEURETHSLP.faucetAllowance = faucetContractApprovalAmount
+      veEURETHSLP.faucetBalance = rewards.balance
 
       // get asset balances
       // get asset approvals (swap/stake/vest)
@@ -212,6 +245,7 @@ class Store {
         assets: assets,
         ibff,
         veIBFF,
+        veEURETHSLP,
         rewards,
       })
 
@@ -222,17 +256,20 @@ class Store {
     }
   };
 
-  _getRewards = async (web3, account, ibff) => {
+  _getFaucetRewards = async (web3, account, ibff) => {
     try {
-      // const distributionContract = new web3.eth.Contract(abis.distributionABI, FF_DISTRIBUTION_ADDRESS)
-      // const claimable = await distributionContract.methods.claimable(account.address).call()
-
       const faucetContract = new web3.eth.Contract(abis.faucetABI, FF_FAUCET_ADDRESS)
+
       const earned = await faucetContract.methods.earned(account.address).call()
+      const totalRewards = await faucetContract.methods.getRewardForDuration().call()
+      const totalSupply = await faucetContract.methods.totalSupply().call()
+      const balanceOf = await faucetContract.methods.balanceOf(account.address).call()
 
       return {
-        // distribution: BigNumber(claimable).div(10**ibff.decimals).toFixed(ibff.decimals),
-        faucet: BigNumber(earned).div(10**ibff.decimals).toFixed(ibff.decimals)
+        earned: BigNumber(earned).div(10**ibff.decimals).toFixed(ibff.decimals),
+        faucetSupply: BigNumber(totalSupply).div(10**ibff.decimals).toFixed(ibff.decimals),
+        totalRewards: BigNumber(totalRewards).div(10**ibff.decimals).toFixed(ibff.decimals),
+        balance: BigNumber(balanceOf).div(10**ibff.decimals).toFixed(ibff.decimals)
       }
     } catch(ex) {
       console.log(ex)
@@ -240,7 +277,21 @@ class Store {
     }
   }
 
-  approveFUSD = async (payload) => {
+  _getApprovalAmount = async (web3, asset, owner, spender) => {
+    const erc20Contract = new web3.eth.Contract(abis.erc20ABI, asset.address)
+    const allowance = await erc20Contract.methods.allowance(owner, spender).call()
+
+    return BigNumber(allowance).div(10**asset.decimals).toFixed(asset.decimals)
+  }
+
+  _getFaucetStakedAmount = async (web3, asset, owner) => {
+    const faucetContract = new web3.eth.Contract(abis.faucetABI, FF_FAUCET_ADDRESS)
+    const balanceOf = await faucetContract.methods.balanceOf(owner).call()
+
+    return BigNumber(balanceOf).div(10**asset.decimals).toFixed(asset.decimals)
+  }
+
+  claimVestingReward = async (payload) => {
     const account = stores.accountStore.getStore('account');
     if (!account) {
       return false;
@@ -253,32 +304,178 @@ class Store {
       //maybe throw an error
     }
 
-    const { asset, amount, gasSpeed } = payload.content;
+    const { gasSpeed } = payload.content;
 
-    this._callApproveFUSD(web3, asset, account, amount, gasSpeed, (err, approveResult) => {
+    this._callClaimVestingReward(web3, account, gasSpeed, (err, res) => {
       if (err) {
         return this.emitter.emit(ERROR, err);
       }
 
-      return this.emitter.emit(FUSD_APPROVED, approveResult);
+      return this.emitter.emit(FIXED_FOREX_VESTING_REWARD_CLAIMED, res);
     });
-  };
+  }
 
-  _callApproveFUSD = async (web3, asset, account, amount, gasSpeed, callback) => {
-    const tokenContract = new web3.eth.Contract(ERC20ABI, asset.tokenMetadata.address);
+  _callClaimVestingReward = async (web3, account, gasSpeed, callback) => {
+    try {
+      const faucetContract = new web3.eth.Contract(abis.faucetABI, FF_FAUCET_ADDRESS)
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
 
-    let amountToSend = '0';
-    if (amount === 'max') {
-      amountToSend = MAX_UINT256;
-    } else {
-      amountToSend = BigNumber(amount)
-        .times(10 ** asset.tokenMetadata.decimals)
-        .toFixed(0);
+      this._callContractWait(web3, faucetContract, 'getReward', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  }
+
+  claimStakingReward = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
     }
 
-    const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
 
-    this._callContractWait(web3, tokenContract, 'approve', ['CDP_VAULT_ADDRESS', amountToSend], account, gasPrice, GET_FUSD_BALANCES, callback);
+    const { gasSpeed } = payload.content;
+
+    this._callClaimStakingReward(web3, account, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_STAKING_REWARD_CLAIMED, res);
+    });
+  }
+
+  _callClaimStakingReward = async (web3, account, gasSpeed, callback) => {
+    try {
+      const faucetContract = new web3.eth.Contract(abis.faucetABI, FF_FAUCET_ADDRESS)
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, faucetContract, 'getReward', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  }
+
+  stakeSLP = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { amount, gasSpeed } = payload.content;
+
+    this._callDepositFaucet(web3, account, amount, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_SLP_STAKED, res);
+    });
+
+  }
+
+  _callDepositFaucet = async (web3, account, amount, gasSpeed, callback) => {
+    try {
+      let faucetContract = new web3.eth.Contract(abis.faucetABI, FF_FAUCET_ADDRESS);
+
+      const sendAmount = BigNumber(amount === '' ? 0 : amount)
+        .times(10 ** 18)
+        .toFixed(0);
+
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, faucetContract, 'deposit', [sendAmount], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  };
+
+
+  approveStakeSLP = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { gasSpeed } = payload.content;
+
+    this._callApproveStakeSLP(web3, account, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_STAKE_SLP_APPROVED, res);
+    });
+  }
+
+  _callApproveStakeSLP = async (web3, account, gasSpeed, callback) => {
+    const slpContract = new web3.eth.Contract(abis.sushiLPABI, IBEUR_ETH_ADDRESS);
+    const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+    this._callContractWait(web3, slpContract, 'approve', [FF_FAUCET_ADDRESS, MAX_UINT256], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+  };
+
+  unstakeSLP = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { amount, gasSpeed } = payload.content;
+
+    this._callWithdrawFaucet(web3, account, amount, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_SLP_UNSTAKED, res);
+    });
+
+  }
+
+  _callWithdrawFaucet = async (web3, account, amount, gasSpeed, callback) => {
+    try {
+      let faucetContract = new web3.eth.Contract(abis.faucetABI, FF_FAUCET_ADDRESS);
+
+      const sendAmount = BigNumber(amount === '' ? 0 : amount)
+        .times(10 ** 18)
+        .toFixed(0);
+
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, faucetContract, 'withdraw', [sendAmount], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
   };
 
   mintFUSD = async (payload) => {
