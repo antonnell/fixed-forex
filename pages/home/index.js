@@ -24,11 +24,12 @@ function Home({ changeTheme }) {
       </Head>
       <div className={classes.ffContainer}>
         <Overview />
-        <Swap />
         <Assets />
       </div>
     </Layout>
   );
 }
+
+// <Swap />
 
 export default Home;

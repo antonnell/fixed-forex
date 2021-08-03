@@ -1,9 +1,22 @@
-.container {
+/* .container {
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
   margin-bottom: 48px;
   padding: 0px 24px;
+} */
+
+.container {
+  width: calc(100% - 48px);
+  max-width: 1356px;
+  display: flex;
+  border: 1px solid rgba(128, 128, 128, 0.8);
+  position: absolute;
+  top: 240px;
+  left: 24px;
+  right: 24px;
+  margin: auto;
+  padding: 24px 0px;
 }
 
 .title {

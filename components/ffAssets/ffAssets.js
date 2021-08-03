@@ -31,11 +31,18 @@ export default function ffAssets() {
   }, []);
 
   return (
-    <div className={ classes.container}>
-      <Typography variant="h5" className={ classes.title}>Available Assets</Typography>
-      <Paper elevation={0} className={ classes.tableContainer }>
-        <AssetsTable assets={assets} />
-      </Paper>
-    </div>
+    <Paper elevation={0}  className={ classes.container}>
+      <AssetsTable assets={assets} />
+    </Paper>
   );
 }
+
+/*
+
+  <div className={ classes.container}>
+    <Typography variant="h5" className={ classes.title}>Available Assets</Typography>
+    <Paper elevation={0} className={ classes.tableContainer }>
+      <AssetsTable assets={assets} />
+    </Paper>
+  </div>
+  */
