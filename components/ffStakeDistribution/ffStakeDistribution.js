@@ -60,7 +60,7 @@ export default function ffStakeDistribution() {
             </div>
           </div>
           <div>
-            <Typography className={ classes.amountText }>{ formatCurrency(rewards ? rewards.faucet : 0) } ibff</Typography>
+            <Typography className={ classes.amountText }>{ formatCurrency(rewards ? rewards.earned : 0) } ibff</Typography>
           </div>
           <div>
             <Typography>Claim Now</Typography>

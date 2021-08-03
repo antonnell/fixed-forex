@@ -51,9 +51,9 @@ export default function ffOverview() {
         <div className={ classes.field }>
           <TimerIcon className={ classes.balanceIcon } />
           <div>
-            <Typography className={ classes.title }>Locked Balance:</Typography>
+            <Typography className={ classes.title }>Vested Balance:</Typography>
             <div className={ classes.inline }>
-              <Typography className={ classes.value }>{ formatCurrency(veIBFF ? veIBFF.balance : 0) }</Typography>
+              <Typography className={ classes.value }>{ formatCurrency((veIBFF && veIBFF.vestingInfo) ? veIBFF.vestingInfo.lockValue : 0) }</Typography>
               <Typography className={ classes.valueSymbol }>{ veIBFF ? veIBFF.symbol : '' }</Typography>
             </div>
           </div>

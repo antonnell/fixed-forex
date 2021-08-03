@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
-import { Typography, Paper, TextField, InputAdornment, Tooltip } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
+import BigNumber from 'bignumber.js';
 
 import Head from 'next/head';
 import Layout from '../../components/layout/layout.js';
@@ -17,6 +15,24 @@ import { formatCurrency } from '../../utils';
 
 function Vest({ changeTheme }) {
 
+  const [ ibff, setIBFF] = useState(null)
+  const [ veIBFF, setVeIBFF] = useState(null)
+
+  useEffect(() => {
+    const forexUpdated = () => {
+      setIBFF(stores.fixedForexStore.getStore('ibff'))
+      setVeIBFF(stores.fixedForexStore.getStore('veIBFF'))
+    }
+
+    setIBFF(stores.fixedForexStore.getStore('ibff'))
+    setVeIBFF(stores.fixedForexStore.getStore('veIBFF'))
+
+    stores.emitter.on(FIXED_FOREX_UPDATED, forexUpdated);
+    return () => {
+      stores.emitter.removeListener(FIXED_FOREX_UPDATED, forexUpdated);
+    };
+  }, []);
+
   return (
     <Layout changeTheme={changeTheme}>
       <Head>
@@ -25,7 +41,9 @@ function Vest({ changeTheme }) {
       <div className={classes.ffContainer}>
         <Overview />
         <Vesting />
-        <Claim />
+        { !(ibff && veIBFF && BigNumber(ibff.balance).eq(0) && BigNumber(veIBFF.balance).eq(0)) &&
+          <Claim />
+        }
       </div>
     </Layout>
   );

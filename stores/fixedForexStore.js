@@ -26,6 +26,14 @@ import {
   FIXED_FOREX_STAKE_SLP_APPROVED,
   FIXED_FOREX_UNSTAKE_SLP,
   FIXED_FOREX_SLP_UNSTAKED,
+  FIXED_FOREX_APPROVE_VEST,
+  FIXED_FOREX_VEST_APPROVED,
+  FIXED_FOREX_VEST,
+  FIXED_FOREX_VESTED,
+  FIXED_FOREX_VEST_AMOUNT,
+  FIXED_FOREX_AMOUNT_VESTED,
+  FIXED_FOREX_VEST_DURATION,
+  FIXED_FOREX_DURATION_VESTED
 } from './constants';
 
 import * as moment from 'moment';
@@ -74,6 +82,18 @@ class Store {
             break;
           case FIXED_FOREX_UNSTAKE_SLP:
             this.unstakeSLP(payload);
+            break;
+          case FIXED_FOREX_APPROVE_VEST:
+            this.approveVest(payload);
+            break;
+          case FIXED_FOREX_VEST:
+            this.vest(payload);
+            break;
+          case FIXED_FOREX_VEST_AMOUNT:
+            this.vestAmount(payload);
+            break;
+          case FIXED_FOREX_VEST_DURATION:
+            this.vestDuration(payload);
             break;
           default: {
           }
@@ -211,11 +231,15 @@ class Store {
 
       // get ibFF bal
       const ibff = await this._getAssetInfo(web3, { address: IBFF_ADDRESS }, account)
+      const vestingContractApprovalAmount = await this._getApprovalAmount(web3, ibff, account.address, VEIBFF_ADDRESS)
+      ibff.vestAllowance = vestingContractApprovalAmount
 
       // get veIBFF bal
       const veIBFF = await this._getAssetInfo(web3, { address: VEIBFF_ADDRESS }, account)
+      const vestingInfo = await this._getVestingInfo(web3, account.address, veIBFF)
+      veIBFF.vestingInfo = vestingInfo
 
-      // get veIBFF bal
+      // get IBEUR ETH bal
       const veEURETHSLP = await this._getAssetInfo(web3, { address: IBEUR_ETH_ADDRESS }, account)
       const faucetContractApprovalAmount = await this._getApprovalAmount(web3, veEURETHSLP, account.address, FF_FAUCET_ADDRESS)
 
@@ -270,6 +294,26 @@ class Store {
         faucetSupply: BigNumber(totalSupply).div(10**ibff.decimals).toFixed(ibff.decimals),
         totalRewards: BigNumber(totalRewards).div(10**ibff.decimals).toFixed(ibff.decimals),
         balance: BigNumber(balanceOf).div(10**ibff.decimals).toFixed(ibff.decimals)
+      }
+    } catch(ex) {
+      console.log(ex)
+      return null
+    }
+  }
+
+  _getVestingInfo = async (web3, account, veIBFF) => {
+    try {
+      const veIBFFContract = new web3.eth.Contract(abis.veIBFFABI, VEIBFF_ADDRESS)
+
+      const locked = await veIBFFContract.methods.locked(account).call()
+      const lastUserSlope = await veIBFFContract.methods.get_last_user_slope(account).call()
+      const totalSupply = await veIBFFContract.methods.totalSupply().call()
+
+      return {
+        locked: BigNumber(locked.amount).div(10**veIBFF.decimals).toFixed(veIBFF.decimals),
+        lockEnds: locked.end,
+        lockValue: BigNumber(lastUserSlope).div(10**veIBFF.decimals).toFixed(veIBFF.decimals),
+        totalSupply: BigNumber(totalSupply).div(10**veIBFF.decimals).toFixed(veIBFF.decimals)
       }
     } catch(ex) {
       console.log(ex)
@@ -477,6 +521,162 @@ class Store {
       return this.emitter.emit(ERROR, ex);
     }
   };
+
+  vest = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { amount, unlockTime, gasSpeed } = payload.content;
+
+    this._callCreateLock(web3, account, amount, unlockTime, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_VESTED, res);
+    });
+
+  }
+
+  _callCreateLock = async (web3, account, amount, unlockTime, gasSpeed, callback) => {
+    try {
+      let veBIFFContract = new web3.eth.Contract(abis.veIBFFABI, VEIBFF_ADDRESS);
+
+      const sendAmount = BigNumber(amount === '' ? 0 : amount)
+        .times(10 ** 18)
+        .toFixed(0);
+
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, veBIFFContract, 'create_lock', [sendAmount, unlockTime], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  };
+
+
+  approveVest = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { gasSpeed } = payload.content;
+
+    this._callApproveVest(web3, account, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_VEST_APPROVED, res);
+    });
+  }
+
+  _callApproveVest = async (web3, account, gasSpeed, callback) => {
+    const ibffContract = new web3.eth.Contract(abis.erc20ABI, IBFF_ADDRESS);
+    const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+    this._callContractWait(web3, ibffContract, 'approve', [VEIBFF_ADDRESS, MAX_UINT256], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+  };
+
+  vestAmount = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { amount, gasSpeed } = payload.content;
+
+    this._callIncreaseAmount(web3, account, amount, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_AMOUNT_VESTED, res);
+    });
+
+  }
+
+  _callIncreaseAmount = async (web3, account, amount, gasSpeed, callback) => {
+    try {
+      let veBIFFContract = new web3.eth.Contract(abis.veIBFFABI, VEIBFF_ADDRESS);
+
+      const sendAmount = BigNumber(amount === '' ? 0 : amount)
+        .times(10 ** 18)
+        .toFixed(0);
+
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, veBIFFContract, 'increase_amount', [sendAmount], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  };
+
+  vestDuration = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { unlockTime, gasSpeed } = payload.content;
+
+    this._callIncreaseUnlockTime(web3, account, unlockTime, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_DURATION_VESTED, res);
+    });
+
+  }
+
+  _callIncreaseUnlockTime = async (web3, account, unlockTime, gasSpeed, callback) => {
+    try {
+      let veBIFFContract = new web3.eth.Contract(abis.veIBFFABI, VEIBFF_ADDRESS);
+
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, veBIFFContract, 'increase_unlock_time', [unlockTime], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  };
+
+
+
 
   mintFUSD = async (payload) => {
     const account = stores.accountStore.getStore('account');

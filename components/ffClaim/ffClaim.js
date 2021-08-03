@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Typography, Button, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import Skeleton from '@material-ui/lab/Skeleton';
+import { Paper, Typography, CircularProgress } from '@material-ui/core';
+import BigNumber from 'bignumber.js';
 
 import { formatCurrency } from '../../utils';
 import classes from './ffClaim.module.css';
@@ -9,7 +8,7 @@ import classes from './ffClaim.module.css';
 import stores from '../../stores'
 import { FIXED_FOREX_UPDATED } from '../../stores/constants';
 
-export default function ffClaim({ asset }) {
+export default function ffClaim() {
 
   const [ rewards, setRewards] = useState(null)
 
@@ -27,7 +26,10 @@ export default function ffClaim({ asset }) {
   }, []);
 
   const claim = () => {
-    //do something
+    if(BigNumber(rewards ? rewards.faucet : 0).gt(0)) {
+      //do something
+    }
+
   }
 
   return (
@@ -46,9 +48,14 @@ export default function ffClaim({ asset }) {
             <Typography className={ classes.amountText }>{ formatCurrency(rewards ? rewards.faucet : 0) } ibff</Typography>
           </div>
           <div>
-            <Typography>Claim Now</Typography>
+            { BigNumber(rewards ? rewards.faucet : 0).gt(0) &&
+              <Typography>Claim Now</Typography>
+            }
+            { !BigNumber(rewards ? rewards.faucet : 0).gt(0) &&
+              <Typography>Vest ibff to earn rewards</Typography>
+            }
           </div>
-          {
+          { BigNumber(rewards ? rewards.faucet : 0).gt(0) &&
             <div className={ classes.activeIcon }></div>
           }
         </div>
