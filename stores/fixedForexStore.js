@@ -269,6 +269,7 @@ class Store {
 
       const gaugeProxyContract = new web3.eth.Contract(abis.gaugeProxyABI, GAUGE_PROXY_ADDRESS)
       const totalGaugeVotes = await gaugeProxyContract.methods.totalWeight().call()
+      const totalUserVotes = await gaugeProxyContract.methods.usedWeights(account.address).call()
 
       // get asset balances
       // get asset approvals (swap/stake/vest)
@@ -324,7 +325,7 @@ class Store {
         assets[i].gauge.balance = BigNumber(assetsBalances[i].gaugeBalanceOf).div(10**assets[i].decimals).toFixed(assets[i].decimals)
         assets[i].gauge.rewards = BigNumber(assetsBalances[i].userRewards).div(10**assets[i].decimals).toFixed(assets[i].decimals)
         assets[i].gauge.userVotes = BigNumber(assetsBalances[i].userGaugeVotes).div(10**assets[i].decimals).toFixed(assets[i].decimals)
-        assets[i].gauge.userVotePercent = BigNumber(assetsBalances[i].userGaugeVotes).div(10**assets[i].decimals).times(100).div(vestingInfo.lockValue).toFixed(assets[i].decimals)
+        assets[i].gauge.userVotePercent = BigNumber(assetsBalances[i].userGaugeVotes).times(100).div(totalUserVotes).toFixed(assets[i].decimals)
         assets[i].gauge.votes = BigNumber(assetsBalances[i].gaugeVotes).div(10**assets[i].decimals).toFixed(assets[i].decimals)
         assets[i].gauge.votePercent = BigNumber(assetsBalances[i].gaugeVotes).times(100).div(totalGaugeVotes).toFixed(assets[i].decimals)
         assets[i].gauge.coin0 = assetsBalances[i].coin0
@@ -761,7 +762,7 @@ class Store {
         return this.emitter.emit(ERROR, err);
       }
 
-      return this.emitter.emit(FIXED_FOREX_DURATION_VESTED, res);
+      return this.emitter.emit(FIXED_FOREX_VOTE_RETURNED, res);
     });
 
   }

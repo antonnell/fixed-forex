@@ -24,7 +24,7 @@ export default function ffGauges() {
       setVotes(as.map((asset) => {
         return {
           address: asset.gauge.poolAddress,
-          value: (asset && asset.gauge && asset.gauge.userVotePercent) ? asset.gauge.userVotePercent : 0
+          value: parseInt((asset && asset.gauge && asset.gauge.userVotePercent) ? asset.gauge.userVotePercent : 0)
         }
       }))
 
@@ -35,7 +35,7 @@ export default function ffGauges() {
     setVotes(as.map((asset) => {
       return {
         address: asset.gauge.poolAddress,
-        value: (asset && asset.gauge && asset.gauge.userVotePercent) ? asset.gauge.userVotePercent : 0
+        value: parseInt((asset && asset.gauge && asset.gauge.userVotePercent) ? asset.gauge.userVotePercent : 0)
       }
     }))
 

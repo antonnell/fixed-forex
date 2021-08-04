@@ -353,7 +353,7 @@ export default function EnhancedTable({ gauges, setParentSliderValues, defaultVo
                     </Typography>
                   </TableCell>
                   <TableCell className={classes.cell} align="right">
-                    <PrettoSlider valueLabelDisplay="auto" aria-label="Vote Precednt" defaultValue={0} value={ sliderValues.find((el) => el?.gauge?.address === row.address)?.value } onChange={ (event, value) => { onSliderChange(event, value, row) } } />
+                    <PrettoSlider valueLabelDisplay="auto" aria-label="Vote Precednt" value={ sliderValues.find((el) => el?.gauge?.address === row.address)?.value } onChange={ (event, value) => { onSliderChange(event, value, row) } } />
                   </TableCell>
                 </TableRow>
               );
