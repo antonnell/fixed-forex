@@ -32,7 +32,7 @@ export default function ffVest() {
 
   return (
     <>
-      { ibff && veIBFF && BigNumber(ibff.balance).eq(0) && BigNumber(veIBFF.balance).eq(0) &&  // no ibff or veibff
+      { ibff && veIBFF && BigNumber(ibff.balance).eq(0) && BigNumber(veIBFF.balance).eq(0) && BigNumber(veIBFF.vestingInfo.lockEnds).eq(0) &&  // no ibff or veibff
         <NoBalances ibff={ibff} veIBFF={veIBFF} />
       }
       { ibff && veIBFF && BigNumber(ibff.balance).gt(0) && BigNumber(veIBFF.balance).eq(0) &&   // has ibff, nothing locked
@@ -41,7 +41,7 @@ export default function ffVest() {
       { veIBFF && BigNumber(veIBFF.balance).gt(0) &&   // lock still valid
         <ExistingLock ibff={ibff} veIBFF={veIBFF} />
       }
-      { veIBFF && veIBFF.vestingInfo && BigNumber(veIBFF.vestingInfo.lockEnds).lte(moment().unix()) && // Lock expired
+      { veIBFF && veIBFF.vestingInfo && BigNumber(veIBFF.vestingInfo.lockEnds).lte(moment().unix()) && BigNumber(veIBFF.vestingInfo.lockEnds).gt(0) && // Lock expired
         <Unlock ibff={ibff} veIBFF={veIBFF} />
       }
     </>

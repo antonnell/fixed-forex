@@ -134,16 +134,18 @@ function Header(props) {
     router.push(url)
   }
 
+  console.log(router)
   return (
     <div>
-    <Paper elevation={0} className={classes.headerContainer}>
+      <Paper elevation={0} className={classes.headerContainer}>
         <Typography className={ classes.ffTitle } onClick={ () => { navigate('/') }}>
           Fixed Forex
         </Typography>
         <div className={ classes.linksBar }>
-          <Typography className={ classes.link } onClick={ () => { navigate('/') } }>Home</Typography>
-          <Typography className={ classes.link } onClick={ () => { navigate('/vest') } }>Vesting</Typography>
-          <Typography className={ classes.link } onClick={ () => { navigate('/stake') } }>Staking</Typography>
+          <Typography className={ ` ${router.pathname === '/' ? classes.linkActive : classes.link} ` } onClick={ () => { navigate('/') } }>Home</Typography>
+          <Typography className={ ` ${router.pathname === '/vest' ? classes.linkActive : classes.link} ` } onClick={ () => { navigate('/vest') } }>Vest</Typography>
+          <Typography className={ ` ${router.pathname === '/vote' ? classes.linkActive : classes.link} ` } onClick={ () => { navigate('/vote') } }>Vote</Typography>
+          <Typography className={ ` ${router.pathname === '/stake' ? classes.linkActive : classes.link} ` } onClick={ () => { navigate('/stake') } }>Stake</Typography>
         </div>
         <div className={classes.themeSelectContainer}>
           <StyledSwitch

@@ -1,4 +1,4 @@
-import { Typography } from '@material-ui/core';
+import { Paper, Typography } from '@material-ui/core';
 import classes from './ffVest.module.css';
 
 export default function Unlock({ ibff, veIBFF }) {

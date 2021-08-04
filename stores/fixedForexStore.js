@@ -2,7 +2,11 @@ import async from 'async';
 import {
   MAX_UINT256,
   IBKRW_ADDRESS,
+  IBKRW_GAUGE_ADDRESS,
+  IBKRW_POOL_ADDRESS,
   IBEUR_ADDRESS,
+  IBEUR_GAUGE_ADDRESS,
+  IBEUR_POOL_ADDRESS,
   IBEUR_ETH_ADDRESS,
   IBFF_ADDRESS,
   VEIBFF_ADDRESS,
@@ -173,10 +177,18 @@ class Store {
   _getAssets = (web3) => {
     const assets = [
       {
-        address: IBEUR_ADDRESS
+        address: IBEUR_ADDRESS,
+        gauge: {
+          address: IBEUR_GAUGE_ADDRESS,
+          poolAddress: IBEUR_POOL_ADDRESS
+        }
       },
       {
-        address: IBKRW_ADDRESS
+        address: IBKRW_ADDRESS,
+        gauge: {
+          address: IBKRW_GAUGE_ADDRESS,
+          poolAddress: IBKRW_POOL_ADDRESS
+        }
       }
     ]
 
@@ -203,7 +215,8 @@ class Store {
         symbol,
         name,
         decimals,
-        balance
+        balance,
+        gauge: asset.gauge
       }
     } catch(ex) {
       console.log(ex)
@@ -252,17 +265,55 @@ class Store {
       // get asset approvals (swap/stake/vest)
       const assetsBalancesPromise = assets.map(async (asset) => {
         const assetContract = new web3.eth.Contract(abis.erc20ABI, asset.address)
-
         const balanceOf = await assetContract.methods.balanceOf(account.address).call()
 
+        const gaugeContract = new web3.eth.Contract(abis.gaugeABI, asset.gauge.address)
+        const userRewards = await gaugeContract.methods.earned(account.address).call()
+        const gaugeBalanceOf = await gaugeContract.methods.balanceOf(account.address).call()
+        const gaugeTotalSupply = await gaugeContract.methods.totalSupply().call()
+
+        const poolContract = new web3.eth.Contract(abis.poolABI, asset.gauge.poolAddress)
+        const poolBalances = await poolContract.methods.get_balances().call()
+
+        const coins0 = await poolContract.methods.coins(0).call()
+        const coin0Contract = new web3.eth.Contract(abis.erc20ABI, coins0)
+        const coin0Symbol = await coin0Contract.methods.symbol().call()
+
+        const coins1 = await poolContract.methods.coins(1).call()
+        const coin1Contract = new web3.eth.Contract(abis.erc20ABI, coins1)
+        const coin1Symbol = await coin1Contract.methods.symbol().call()
+
+        const coin0 = {
+          address: coins0,
+          symbol: coin0Symbol,
+          poolBalance: BigNumber(poolBalances[0]).div(10**asset.decimals).toFixed(asset.decimals)
+        }
+
+        const coin1 = {
+          address: coins1,
+          symbol: coin1Symbol,
+          poolBalance: BigNumber(poolBalances[1]).div(10**asset.decimals).toFixed(asset.decimals)
+        }
+
         return {
-          balanceOf
+          balanceOf,
+          userRewards,
+          gaugeBalanceOf,
+          poolBalances,
+          coin0,
+          coin1,
+          gaugeTotalSupply
         }
       })
 
       const assetsBalances = await Promise.all(assetsBalancesPromise);
       for(let i = 0; i < assets.length; i++) {
         assets[i].balance = BigNumber(assetsBalances[i].balanceOf).div(10**assets[i].decimals).toFixed(assets[i].decimals)
+        assets[i].gauge.balance = BigNumber(assetsBalances[i].gaugeBalanceOf).div(10**assets[i].decimals).toFixed(assets[i].decimals)
+        assets[i].gauge.rewards = BigNumber(assetsBalances[i].userRewards).div(10**assets[i].decimals).toFixed(assets[i].decimals)
+        assets[i].gauge.totalSupply = BigNumber(assetsBalances[i].gaugeTotalSupply).div(10**assets[i].decimals).toFixed(assets[i].decimals)
+        assets[i].gauge.coin0 = assetsBalances[i].coin0
+        assets[i].gauge.coin1 = assetsBalances[i].coin1
       }
 
       this.setStore({

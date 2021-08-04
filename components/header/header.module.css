@@ -221,6 +221,14 @@
   margin-bottom: 0px !important;
 }
 
+.linkActive {
+  margin: 2px 0px !important;
+  margin-bottom: 0px !important;
+  border-bottom: 2px solid #1c46f5 ;
+  margin-right: 24px !important;
+  cursor: pointer;
+}
+
 @media screen and (max-width: 1200px) {
   .headerContainer {
   }
