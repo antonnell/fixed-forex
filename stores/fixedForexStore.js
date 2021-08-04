@@ -41,6 +41,14 @@ import {
   FIXED_FOREX_DURATION_VESTED,
   FIXED_FOREX_VOTE,
   FIXED_FOREX_VOTE_RETURNED,
+  FIXED_FOREX_APPROVE_DEPOSIT_CURVE,
+  FIXED_FOREX_DEPOSIT_CURVE_APPROVED,
+  FIXED_FOREX_DEPOSIT_CURVE,
+  FIXED_FOREX_CURVE_DEPOSITED,
+  FIXED_FOREX_APPROVE_WITHDRAW_CURVE,
+  FIXED_FOREX_WITHDRAW_CURVE_APPROVED,
+  FIXED_FOREX_WITHDRAW_CURVE,
+  FIXED_FOREX_CURVE_WITHDRAWN
 } from './constants';
 
 import * as moment from 'moment';
@@ -104,6 +112,18 @@ class Store {
             break;
           case FIXED_FOREX_VOTE:
             this.vote(payload);
+            break;
+          case FIXED_FOREX_APPROVE_DEPOSIT_CURVE:
+            this.approveDepositCurve(payload);
+            break;
+          case FIXED_FOREX_DEPOSIT_CURVE:
+            this.depositCurve(payload);
+            break;
+          case FIXED_FOREX_APPROVE_WITHDRAW_CURVE:
+            this.approveWithdrawCurve(payload);
+            break;
+          case FIXED_FOREX_WITHDRAW_CURVE:
+            this.withdrawCurve(payload);
             break;
           default: {
           }
@@ -286,25 +306,40 @@ class Store {
 
         const poolContract = new web3.eth.Contract(abis.poolABI, asset.gauge.poolAddress)
         const poolBalances = await poolContract.methods.get_balances().call()
+        const userPoolBalance = await poolContract.methods.balanceOf(account.address).call()
+        const poolSymbol = await poolContract.methods.symbol().call()
+        const virtualPrice = await poolContract.methods.get_virtual_price().call()
 
         const coins0 = await poolContract.methods.coins(0).call()
         const coin0Contract = new web3.eth.Contract(abis.erc20ABI, coins0)
         const coin0Symbol = await coin0Contract.methods.symbol().call()
+        const coin0Decimals = parseInt(await coin0Contract.methods.decimals().call())
+        const coin0Balance = await coin0Contract.methods.balanceOf(account.address).call()
+        const coin0GaugeAllowance = await coin0Contract.methods.allowance(account.address, asset.gauge.poolAddress).call()
 
         const coins1 = await poolContract.methods.coins(1).call()
         const coin1Contract = new web3.eth.Contract(abis.erc20ABI, coins1)
         const coin1Symbol = await coin1Contract.methods.symbol().call()
+        const coin1Decimals = parseInt(await coin1Contract.methods.decimals().call())
+        const coin1Balance = await coin1Contract.methods.balanceOf(account.address).call()
+        const coin1GaugeAllowance = await coin1Contract.methods.allowance(account.address, asset.gauge.poolAddress).call()
 
         const coin0 = {
           address: coins0,
           symbol: coin0Symbol,
-          poolBalance: BigNumber(poolBalances[0]).div(10**asset.decimals).toFixed(asset.decimals)
+          decimals: coin0Decimals,
+          balance: BigNumber(coin0Balance).div(10**coin0Decimals).toFixed(coin0Decimals),
+          poolBalance: BigNumber(poolBalances[0]).div(10**coin0Decimals).toFixed(coin0Decimals),
+          gaugeAllowance: BigNumber(coin0GaugeAllowance).div(10**coin0Decimals).toFixed(coin0Decimals),
         }
 
         const coin1 = {
           address: coins1,
           symbol: coin1Symbol,
-          poolBalance: BigNumber(poolBalances[1]).div(10**asset.decimals).toFixed(asset.decimals)
+          decimals: coin1Decimals,
+          balance: BigNumber(coin1Balance).div(10**coin1Decimals).toFixed(coin1Decimals),
+          poolBalance: BigNumber(poolBalances[1]).div(10**coin1Decimals).toFixed(coin1Decimals),
+          gaugeAllowance: BigNumber(coin1GaugeAllowance).div(10**coin1Decimals).toFixed(coin1Decimals),
         }
 
         return {
@@ -316,6 +351,9 @@ class Store {
           coin1,
           gaugeVotes,
           userGaugeVotes,
+          poolSymbol,
+          virtualPrice: BigNumber(virtualPrice).div(10**18).toFixed(18),
+          userPoolBalance: BigNumber(userPoolBalance).div(10**18).toFixed(18),
         }
       })
 
@@ -330,6 +368,9 @@ class Store {
         assets[i].gauge.votePercent = BigNumber(assetsBalances[i].gaugeVotes).times(100).div(totalGaugeVotes).toFixed(assets[i].decimals)
         assets[i].gauge.coin0 = assetsBalances[i].coin0
         assets[i].gauge.coin1 = assetsBalances[i].coin1
+        assets[i].gauge.poolSymbol = assetsBalances[i].poolSymbol
+        assets[i].gauge.userPoolBalance = assetsBalances[i].userPoolBalance
+        assets[i].gauge.virtualPrice = assetsBalances[i].virtualPrice
       }
 
       this.setStore({
@@ -790,6 +831,166 @@ class Store {
       return this.emitter.emit(ERROR, ex);
     }
   };
+
+  approveDepositCurve = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { asset, coin, gasSpeed } = payload.content;
+
+    this._callApproveDepositCurve(web3, account, asset, coin, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_DEPOSIT_CURVE_APPROVED, res);
+    });
+  }
+
+  _callApproveDepositCurve = async (web3, account, asset, coin, gasSpeed, callback) => {
+    const erc20Contract = new web3.eth.Contract(abis.erc20ABI, coin.address);
+    const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+    this._callContractWait(web3, erc20Contract, 'approve', [asset.gauge.poolAddress, MAX_UINT256], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+  };
+
+  depositCurve = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { asset, amount0, amount1, gasSpeed } = payload.content;
+
+    this._callAddLiquidity(web3, account, asset, amount0, amount1, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_CURVE_DEPOSITED, res);
+    });
+
+  }
+
+  _callAddLiquidity = async (web3, account, asset, amount0, amount1, gasSpeed, callback) => {
+    try {
+      let poolContract = new web3.eth.Contract(abis.poolABI, asset.gauge.poolAddress);
+
+      const sendAmount0 = BigNumber(amount0 === '' ? 0 : amount0)
+        .times(10 ** asset.gauge.coin0.decimals)
+        .toFixed(0);
+
+      const sendAmount1 = BigNumber(amount1 === '' ? 0 : amount1)
+        .times(10 ** asset.gauge.coin1.decimals)
+        .toFixed(0);
+
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+      const tokenAmount = await poolContract.methods.calc_token_amount([sendAmount0, sendAmount1], true).call()
+
+      this._callContractWait(web3, poolContract, 'add_liquidity', [[sendAmount0, sendAmount1], BigNumber(tokenAmount).times(0.95).toFixed(0)], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  };
+
+  approveWithdrawCurve = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { asset, coin, gasSpeed } = payload.content;
+
+    this._callApproveWithdrawCurve(web3, account, asset, coin, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_WITHDRAW_CURVE_APPROVED, res);
+    });
+  }
+
+  _callApproveWithdrawCurve = async (web3, account, asset, coin, gasSpeed, callback) => {
+    const erc20Contract = new web3.eth.Contract(abis.erc20ABI, coin.address);
+    const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+    this._callContractWait(web3, erc20Contract, 'approve', [asset.gauge.poolAddress, MAX_UINT256], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+  };
+
+  withdrawCurve = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { asset, withdrawAmount, withdrawAmount0, withdrawAmount1, gasSpeed } = payload.content;
+
+    this._callRemoveLiquidity(web3, account, asset, withdrawAmount, withdrawAmount0, withdrawAmount1, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_CURVE_DEPOSITED, res);
+    });
+
+  }
+
+  _callRemoveLiquidity = async (web3, account, asset, withdrawAmount, amount0, amount1, gasSpeed, callback) => {
+    try {
+      let poolContract = new web3.eth.Contract(abis.poolABI, asset.gauge.poolAddress);
+
+      const sendWithdrawAmount = BigNumber(withdrawAmount === '' ? 0 : withdrawAmount)
+        .times(10 ** 18) // TODO get decimals from coins
+        .toFixed(0);
+
+      const sendAmount0 = BigNumber(amount0 === '' ? 0 : amount0)
+        .times(0.95)
+        .times(10 ** 18) // TODO get decimals from coins
+        .toFixed(0);
+
+      const sendAmount1 = BigNumber(amount1 === '' ? 0 : amount1)
+        .times(0.95)
+        .times(10 ** 18) // TODO get decimals from coins
+        .toFixed(0);
+
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, poolContract, 'remove_liquidity', [sendWithdrawAmount, [sendAmount0, sendAmount1]], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  };
+
 
 
   mintFUSD = async (payload) => {

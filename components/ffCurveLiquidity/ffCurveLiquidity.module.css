@@ -1,0 +1,184 @@
+.container {
+  width: calc(100% - 48px);
+  max-width: 1356px;
+  display: flex;
+  border: 1px solid rgba(128, 128, 128, 0.8);
+  position: absolute;
+  top: 240px;
+  left: 0;
+  right: 0;
+  margin: auto;
+  min-height: 180px;
+}
+
+.topLeftButton {
+  border-top-left-radius: 10px !important;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.25) !important;
+}
+
+.bottomLeftButton {
+  border-bottom-left-radius: 10px !important;
+}
+
+.inputsContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 24px 48px;
+  padding: 0px 24px;
+  flex: 1;
+}
+
+.multiApproval {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.multiApprovalButton {
+  min-width: auto;
+}
+
+.inputContainer {
+  position: relative;
+}
+
+.textField {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.activeIcon {
+  height: 10px;
+  width: 10px;
+  background-color: #0ba360;
+  border-radius: 50%;
+  display: inline-block;
+  position: absolute;
+  right: 12px;
+  top: 12px;
+}
+
+.inputTitleContainer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.inputTitle {
+  padding-bottom: 6px;
+  margin-left: 12px;
+}
+
+.balances {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 12px;
+  padding-bottom: 6px;
+}
+
+.value {
+  cursor: pointer;
+  font-size: 12px !important;
+}
+
+.inputTitleText {
+  font-size: 20px !important;
+}
+
+.infoContainer {
+  display: flex;
+}
+
+.infoIcon {
+  border: 1px solid rgba(128, 128, 128, 0.8);
+  color: rgba(128, 128, 128, 0.8);
+  border-radius: 30px;
+  font-size: 40px !important;
+  padding: 6px;
+  margin-right: 12px !important;
+}
+
+.infoField {
+  display: flex;
+  align-items: center;
+  min-width: 300px;
+  margin-top: 32px;
+}
+
+.infoText {
+  color: rgba(128, 128, 128, 0.8);
+  font-size: 14px !important;
+}
+
+.actionsContainer {
+  display: grid;
+  grid-gap: 12px;
+  grid-template-columns: 1fr;
+  border-left: 1px solid rgba(128, 128, 128, 0.8);
+  padding: 0px 24px;
+  width: 360px;
+}
+
+.actionButtonText {
+  font-size: 12px !important;
+  text-transform: capitalize !important;
+}
+
+.autocompleteContainer {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.reAddPadding {
+  padding: 24px 0px;
+  display: flex;
+  flex: 1;
+}
+
+.loadingCircle {
+  margin-left: 6px !important;
+}
+
+.toggleButtons {
+  display: flex;
+  flex-direction: column;
+  min-height: 140px;
+  width: 200px;
+}
+
+.button {
+  border-radius: 0px !important;
+  flex: 1;
+  border-right: 1px solid rgba(128, 128, 128, 0.25) !important;
+  transition: none !important;
+  opacity: 0.5;
+}
+
+.buttonActive {
+  border-radius: 0px !important;
+  flex: 1;
+}
+
+.amountAndPercent {
+  display: grid;
+  grid-template-columns: 1fr ;
+  grid-column-gap: 12px;
+  padding-bottom: 12px;
+}
+
+.actionsContainerWithdraw {
+  display: grid;
+  grid-gap: 12px;
+  grid-template-columns: 1fr;
+  border-left: 1px solid rgba(128, 128, 128, 0.8);
+  padding: 0px 24px;
+  width: 200px;
+}
+
+.extraTF {
+  padding-bottom: 12px;
+}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Paper, Typography, Button, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Skeleton from '@material-ui/lab/Skeleton';
+import { useRouter } from "next/router";
 
 import { formatCurrency } from '../../utils';
 import classes from './ffLPOptions.module.css';
@@ -11,6 +12,13 @@ import { FIXED_FOREX_UPDATED } from '../../stores/constants';
 
 export default function ffLPOptions({ asset }) {
 
+  const router = useRouter();
+
+  const localNav = (screen) => {
+    console.log(router)
+    router.push(`${router.asPath}/${screen}`)
+  }
+
   const navigate = (url) => {
     window.open(url, '_blank')
   }
@@ -19,7 +27,7 @@ export default function ffLPOptions({ asset }) {
     <div className={ classes.container}>
       <Typography variant="h5" className={ classes.title}>LP Opportunities</Typography>
       <Paper elevation={0} className={ classes.lpOptionsContainer }>
-        <div className={ classes.lpOption } onClick={ () => { navigate('https://curve.fi') } }>
+        <div className={ classes.lpOption } onClick={ () => { localNav('curve') } }>
           <div className={ classes.lpOptionTitle }>
             <img className={ classes.lpOptionIcon } src='/images/Curve.png' alt='Curve Logo' width={ 60 } height={ 60 } />
             <div>
