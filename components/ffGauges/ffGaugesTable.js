@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { lighten, makeStyles } from '@material-ui/core/styles';
+import { lighten, makeStyles, withStyles } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography, Paper, IconButton } from '@material-ui/core';
+import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography, Paper, IconButton, Slider } from '@material-ui/core';
 import { useRouter } from "next/router";
 
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
@@ -13,6 +13,34 @@ import BigNumber from 'bignumber.js';
 import { formatCurrency, formatAddress } from '../../utils';
 
 import * as moment from 'moment';
+
+const PrettoSlider = withStyles({
+  root: {
+    color: '#52af77',
+    height: 8,
+  },
+  thumb: {
+    height: 24,
+    width: 24,
+    backgroundColor: '#fff',
+    border: '2px solid currentColor',
+    marginTop: -8,
+    marginLeft: -12,
+    '&:focus, &:hover, &$active': {
+      boxShadow: 'inherit',
+    },
+  },
+  active: {},
+  valueLabel: {
+    left: 'calc(-50% + 4px)',
+  },
+  track: {
+    height: 8,
+  },
+  rail: {
+    height: 8,
+  }
+})(Slider);
 
 function descendingComparator(a, b, orderBy) {
   if (!a || !b) {
@@ -51,22 +79,22 @@ const headCells = [
     label: 'Staked',
   },
   {
-    id: 'votes',
-    numeric: true,
-    disablePadding: false,
-    label: 'My Votes',
-  },
-  {
-    id: 'votes',
+    id: 'totalVotes',
     numeric: true,
     disablePadding: false,
     label: 'Total Votes',
   },
   {
-    id: '',
+    id: 'myVotes',
     numeric: true,
     disablePadding: false,
-    label: 'Actions',
+    label: 'My Votes',
+  },
+  {
+    id: 'mvp',
+    numeric: true,
+    disablePadding: false,
+    label: 'My Vote %',
   }
 ];
 
@@ -228,14 +256,32 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function EnhancedTable({ gauges }) {
+export default function EnhancedTable({ gauges, setParentSliderValues, defaultVotes }) {
   const classes = useStyles();
   const router = useRouter();
 
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('balance');
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(20);
+  const [sliderValues, setSliderValues] = React.useState(defaultVotes)
+
+  React.useEffect(() => {
+    setSliderValues(defaultVotes)
+  }, [defaultVotes]);
+
+  const onSliderChange = (event, value, asset) => {
+    let newSliderValues = [...sliderValues]
+
+    newSliderValues = newSliderValues.map((val) => {
+      if(asset.gauge.poolAddress === val.address) {
+        val.value = value
+      }
+      return val
+    })
+
+    setParentSliderValues(newSliderValues)
+  }
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -256,11 +302,6 @@ export default function EnhancedTable({ gauges }) {
     );
   }
 
-  const onVote = (asset) => {
-    // some callback to voting?
-    // probably a emitter
-  }
-
   return (
     <div className={classes.root}>
       <TableContainer>
@@ -271,10 +312,9 @@ export default function EnhancedTable({ gauges }) {
               if (!row) {
                 return null;
               }
-              const labelId = `enhanced-table-checkbox-${index}`;
 
               return (
-                <TableRow key={labelId}>
+                <TableRow key={row.gauge.address}>
                   <TableCell className={classes.cell}>
                     <div className={ classes.inline }>
                       <img className={ classes.imgLogo } src={`https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/${row.address}/logo-128.png`} width='35' height='35' alt='' />
@@ -298,22 +338,22 @@ export default function EnhancedTable({ gauges }) {
                   </TableCell>
                   <TableCell className={classes.cell} align="right">
                     <Typography variant="h2" className={classes.textSpaced}>
-                      { formatCurrency(row?.gauge?.balance) } veIBFF
+                      { formatCurrency(row?.gauge?.votes) } veIBFF
                     </Typography>
                     <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
-                      $ { formatCurrency(0.00) }
+                      { formatCurrency(row?.gauge?.votePercent) } %
                     </Typography>
                   </TableCell>
                   <TableCell className={classes.cell} align="right">
                     <Typography variant="h2" className={classes.textSpaced}>
-                      { formatCurrency(row?.gauge?.totalSupply) } veIBFF
+                      { formatCurrency(row?.gauge?.userVotes) } veIBFF
                     </Typography>
                     <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
-                      $ { formatCurrency(0.00) }
+                      { formatCurrency(row?.gauge?.userVotePercent) } %
                     </Typography>
                   </TableCell>
                   <TableCell className={classes.cell} align="right">
-                    <Button variant='outlined' color='primary' onClick={ () => { onVote(row) } }>Vote</Button>
+                    <PrettoSlider valueLabelDisplay="auto" aria-label="Vote Precednt" defaultValue={0} value={ sliderValues.find((el) => el?.gauge?.address === row.address)?.value } onChange={ (event, value) => { onSliderChange(event, value, row) } } />
                   </TableCell>
                 </TableRow>
               );

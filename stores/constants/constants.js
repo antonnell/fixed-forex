@@ -10,6 +10,7 @@ export const IBFF_ADDRESS = '0xb347132eFf18a3f63426f4988ef626d2CbE274F5'        
 export const VEIBFF_ADDRESS = '0x4d0518c9136025903751209ddddf6c67067357b1'            // -> vested reward asset  (think veCRV)
 export const FF_FAUCET_ADDRESS = '0x7d254d9adc588126edaee52a1029278180a802e8'         // -> stake sushi lp pair, get reward asset
 export const FF_DISTRIBUTION_ADDRESS = '0x27761efeb0c7b411e71d0fd0aee5dde35c810cc2'   // -> after locking, get protocol fees
+export const GAUGE_PROXY_ADDRESS = '0xd9c8620c0c0b866b7b5180d2d70093165340326d'       // -> gauge proxy for voting etc.
 
 export const IBKRW_ADDRESS = '0x95dFDC8161832e4fF7816aC4B6367CE201538253'             // -> KRW
 export const IBKRW_GAUGE_ADDRESS = '0x8992FD229B574b8083de1249BC6Fd3711fDA45dD'       // -> KRW Gauge

@@ -12,6 +12,7 @@ import {
   VEIBFF_ADDRESS,
   FF_FAUCET_ADDRESS,
   FF_DISTRIBUTION_ADDRESS,
+  GAUGE_PROXY_ADDRESS,
   ERROR,
   TX_SUBMITTED,
   STORE_UPDATED,
@@ -37,7 +38,9 @@ import {
   FIXED_FOREX_VEST_AMOUNT,
   FIXED_FOREX_AMOUNT_VESTED,
   FIXED_FOREX_VEST_DURATION,
-  FIXED_FOREX_DURATION_VESTED
+  FIXED_FOREX_DURATION_VESTED,
+  FIXED_FOREX_VOTE,
+  FIXED_FOREX_VOTE_RETURNED,
 } from './constants';
 
 import * as moment from 'moment';
@@ -98,6 +101,9 @@ class Store {
             break;
           case FIXED_FOREX_VEST_DURATION:
             this.vestDuration(payload);
+            break;
+          case FIXED_FOREX_VOTE:
+            this.vote(payload);
             break;
           default: {
           }
@@ -261,6 +267,9 @@ class Store {
       veEURETHSLP.faucetAllowance = faucetContractApprovalAmount
       veEURETHSLP.faucetBalance = rewards.balance
 
+      const gaugeProxyContract = new web3.eth.Contract(abis.gaugeProxyABI, GAUGE_PROXY_ADDRESS)
+      const totalGaugeVotes = await gaugeProxyContract.methods.totalWeight().call()
+
       // get asset balances
       // get asset approvals (swap/stake/vest)
       const assetsBalancesPromise = assets.map(async (asset) => {
@@ -270,7 +279,9 @@ class Store {
         const gaugeContract = new web3.eth.Contract(abis.gaugeABI, asset.gauge.address)
         const userRewards = await gaugeContract.methods.earned(account.address).call()
         const gaugeBalanceOf = await gaugeContract.methods.balanceOf(account.address).call()
-        const gaugeTotalSupply = await gaugeContract.methods.totalSupply().call()
+
+        const gaugeVotes = await gaugeProxyContract.methods.weights(asset.gauge.poolAddress).call()
+        const userGaugeVotes = await gaugeProxyContract.methods.votes(account.address, asset.gauge.poolAddress).call()
 
         const poolContract = new web3.eth.Contract(abis.poolABI, asset.gauge.poolAddress)
         const poolBalances = await poolContract.methods.get_balances().call()
@@ -302,7 +313,8 @@ class Store {
           poolBalances,
           coin0,
           coin1,
-          gaugeTotalSupply
+          gaugeVotes,
+          userGaugeVotes,
         }
       })
 
@@ -311,7 +323,10 @@ class Store {
         assets[i].balance = BigNumber(assetsBalances[i].balanceOf).div(10**assets[i].decimals).toFixed(assets[i].decimals)
         assets[i].gauge.balance = BigNumber(assetsBalances[i].gaugeBalanceOf).div(10**assets[i].decimals).toFixed(assets[i].decimals)
         assets[i].gauge.rewards = BigNumber(assetsBalances[i].userRewards).div(10**assets[i].decimals).toFixed(assets[i].decimals)
-        assets[i].gauge.totalSupply = BigNumber(assetsBalances[i].gaugeTotalSupply).div(10**assets[i].decimals).toFixed(assets[i].decimals)
+        assets[i].gauge.userVotes = BigNumber(assetsBalances[i].userGaugeVotes).div(10**assets[i].decimals).toFixed(assets[i].decimals)
+        assets[i].gauge.userVotePercent = BigNumber(assetsBalances[i].userGaugeVotes).div(10**assets[i].decimals).times(100).div(vestingInfo.lockValue).toFixed(assets[i].decimals)
+        assets[i].gauge.votes = BigNumber(assetsBalances[i].gaugeVotes).div(10**assets[i].decimals).toFixed(assets[i].decimals)
+        assets[i].gauge.votePercent = BigNumber(assetsBalances[i].gaugeVotes).times(100).div(totalGaugeVotes).toFixed(assets[i].decimals)
         assets[i].gauge.coin0 = assetsBalances[i].coin0
         assets[i].gauge.coin1 = assetsBalances[i].coin1
       }
@@ -726,7 +741,54 @@ class Store {
     }
   };
 
+  vote = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
 
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { votes, gasSpeed } = payload.content;
+
+    this._callVote(web3, account, votes, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_DURATION_VESTED, res);
+    });
+
+  }
+
+  _callVote = async (web3, account, votes, gasSpeed, callback) => {
+    try {
+      let gaugeProxyContract = new web3.eth.Contract(abis.gaugeProxyABI, GAUGE_PROXY_ADDRESS);
+
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      let tokens = votes.map((v) => {
+        return v.address
+      })
+
+      let voteCounts = votes.map((v) => {
+        return BigNumber(v.value).times(100).toFixed(0)
+      })
+
+      console.log(tokens)
+      console.log(voteCounts)
+
+      this._callContractWait(web3, gaugeProxyContract, 'vote', [tokens, voteCounts], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  };
 
 
   mintFUSD = async (payload) => {

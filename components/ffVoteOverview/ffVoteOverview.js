@@ -5,6 +5,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import TimerIcon from '@material-ui/icons/Timer';
+import BigNumber from 'bignumber.js';
 
 import { formatCurrency } from '../../utils';
 import classes from './ffVoteOverview.module.css';
@@ -16,6 +17,7 @@ import GaugeVotesPie from './gaugeVotePie'
 
 export default function ffVoteOverview() {
 
+  const [ gauges, setGauges ] = useState([])
   const [ ibff, setIBFF] = useState(null)
   const [ veIBFF, setVeIBFF] = useState(null)
 
@@ -23,10 +25,12 @@ export default function ffVoteOverview() {
     const forexUpdated = () => {
       setIBFF(stores.fixedForexStore.getStore('ibff'))
       setVeIBFF(stores.fixedForexStore.getStore('veIBFF'))
+      setGauges(stores.fixedForexStore.getStore('assets'))
     }
 
     setIBFF(stores.fixedForexStore.getStore('ibff'))
     setVeIBFF(stores.fixedForexStore.getStore('veIBFF'))
+    setGauges(stores.fixedForexStore.getStore('assets'))
 
     stores.emitter.on(FIXED_FOREX_UPDATED, forexUpdated);
     return () => {
@@ -59,7 +63,12 @@ export default function ffVoteOverview() {
         </div>
         <div className={ classes.field }>
           <div className={ classes.pieField }>
-            <GaugeVotesPie data={[ { relativeWeight: 40 }, { relativeWeight: 60 } ]} />
+            <GaugeVotesPie data={gauges.map((gauge) => {
+              return {
+                description: `${gauge?.gauge?.coin0?.symbol} - ${gauge?.gauge?.coin1?.symbol}`,
+                value: BigNumber(gauge?.gauge?.votePercent).toNumber()
+              }
+            })} />
           </div>
         </div>
       </div>

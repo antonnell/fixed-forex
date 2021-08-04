@@ -54,9 +54,9 @@ const renderActiveShape = (props) => {
       />
       <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
       <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
-      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="#999">{`${payload?.lpToken?.symbol}`}</text>
+      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="#999">{`${payload?.description}`}</text>
       <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={18} textAnchor={textAnchor} fill="#999">
-        {`(Rate ${(percent * 100).toFixed(2)}%)`}
+        {`${(percent * 100).toFixed(2)} %`}
       </text>
     </g>
   );
@@ -74,7 +74,9 @@ export default class GaugeVotePie extends PureComponent {
     });
   };
 
+
   render() {
+    console.log(this.props.data)
     return (
       <ResponsiveContainer width={400} height={400}>
         <PieChart width={400} height={400}>
@@ -86,7 +88,7 @@ export default class GaugeVotePie extends PureComponent {
             cy="50%"
             outerRadius={80}
             fill="#8884d8"
-            dataKey="relativeWeight"
+            dataKey="value"
             onMouseEnter={this.onPieEnter}
             startAngle={0}
             endAngle={180}

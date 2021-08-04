@@ -20,8 +20,6 @@ export default function ffStakeOverview() {
   useEffect(() => {
     const forexUpdated = () => {
 
-      console.log(stores.fixedForexStore.getStore('veEURETHSLP'))
-
       setIBEURSLP(stores.fixedForexStore.getStore('veEURETHSLP'))
       setRewards(stores.fixedForexStore.getStore('rewards'))
     }

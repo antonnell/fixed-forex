@@ -40,7 +40,6 @@ function Vote({ changeTheme }) {
       </Head>
       <div className={classes.ffContainer}>
         <VoteOverview />
-        <CastVote />
         <Gauges />
       </div>
     </Layout>
