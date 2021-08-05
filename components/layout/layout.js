@@ -1,13 +1,15 @@
 import Head from "next/head";
 import classes from "./layout.module.css";
 import Header from "../header";
+import Navigation from "../navigation";
 import SnackbarController from "../snackbar";
 
 export default function Layout({
   children,
   configure,
   backClicked,
-  changeTheme
+  changeTheme,
+  title
 }) {
   return (
     <div className={classes.container}>
@@ -29,9 +31,12 @@ export default function Layout({
         <meta name="og:title" content="Fixed Forex" />
         <meta name="twitter:card" content="summary_large_image" />
       </Head>
+      {!configure && (
+        <Navigation backClicked={backClicked} changeTheme={changeTheme} />
+      )}
       <div className={classes.content}>
         {!configure && (
-          <Header backClicked={backClicked} changeTheme={changeTheme} />
+          <Header backClicked={backClicked} changeTheme={changeTheme} title={ title } />
         )}
         <SnackbarController />
         <main>{children}</main>

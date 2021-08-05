@@ -134,19 +134,14 @@ function Header(props) {
     router.push(url)
   }
 
-  console.log(router)
   return (
     <div>
       <Paper elevation={0} className={classes.headerContainer}>
-        <Typography className={ classes.ffTitle } onClick={ () => { navigate('/') }}>
-          Fixed Forex
-        </Typography>
-        <div className={ classes.linksBar }>
-          <Typography className={ ` ${router.pathname === '/' ? classes.linkActive : classes.link} ` } onClick={ () => { navigate('/') } }>Home</Typography>
-          <Typography className={ ` ${router.pathname === '/vest' ? classes.linkActive : classes.link} ` } onClick={ () => { navigate('/vest') } }>Vest</Typography>
-          <Typography className={ ` ${router.pathname === '/vote' ? classes.linkActive : classes.link} ` } onClick={ () => { navigate('/vote') } }>Vote</Typography>
-          <Typography className={ ` ${router.pathname === '/stake' ? classes.linkActive : classes.link} ` } onClick={ () => { navigate('/stake') } }>Stake</Typography>
-        </div>
+        {
+          props.title && <Typography className={ classes.pageTitle }>
+            { props.title }
+          </Typography>
+        }
         <div className={classes.themeSelectContainer}>
           <StyledSwitch
             icon={<Brightness2Icon className={classes.switchIcon} />}

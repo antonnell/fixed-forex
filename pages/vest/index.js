@@ -37,7 +37,7 @@ function Vest({ changeTheme }) {
   }, []);
 
   return (
-    <Layout changeTheme={changeTheme}>
+    <Layout changeTheme={changeTheme} title={ '' }>
       <Head>
         <title>Fixed Forex</title>
       </Head>
