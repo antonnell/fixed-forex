@@ -258,7 +258,9 @@ a.linkz { cursor: pointer !important; }
 }
 
 .warningIcon {
-  font-size: 50px !important;
+  width: 50px;
+  height: 43px;
+  cursor: pointer;
 }
 
 @media screen and (max-width: 1200px) {
@@ -286,7 +288,7 @@ a.linkz { cursor: pointer !important; }
     width: 100%;
     padding: 40px;
     height: 100vh;
-    z-index: 999;
+    z-index: 9;
     align-items: center;
     border-radius: 0 !important;
   }

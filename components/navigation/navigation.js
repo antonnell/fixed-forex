@@ -4,6 +4,7 @@ import { withTheme } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core/styles';
 
 import { useRouter } from 'next/router';
+import FFWarning  from '../ffWarning';
 import MenuIcon from '@material-ui/icons/Menu';
 import CloseIcon from '@material-ui/icons/Close';
 import WbSunnyOutlinedIcon from '@material-ui/icons/WbSunnyOutlined';
@@ -83,6 +84,7 @@ function Navigation(props) {
   const [darkMode, setDarkMode] = useState(false);
   const [unlockOpen, setUnlockOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [warningOpen, setWarningOpen] = useState(false);
 
   function handleNavigate(route) {
     console.log(route)
@@ -109,6 +111,9 @@ function Navigation(props) {
   useEffect(function () {
     const localStorageDarkMode = window.localStorage.getItem('yearn.finance-dark-mode');
     setDarkMode(localStorageDarkMode ? localStorageDarkMode === 'dark' : false);
+
+    const localStorageWarningAccepted = window.localStorage.getItem('fixed.forex-warning-accepted');
+    setWarningOpen(localStorageWarningAccepted ? localStorageWarningAccepted !== 'accepted' : true);
   }, []);
 
   useEffect(
@@ -163,6 +168,15 @@ function Navigation(props) {
       </React.Fragment>
     );
   };
+
+  const openWarning = () => {
+    setWarningOpen(true)
+  }
+
+  const closeWarning = () => {
+    window.localStorage.setItem('fixed.forex-warning-accepted', 'accepted');
+    setWarningOpen(false)
+  }
 
   const renderNav = (title, link, icon, iconSelected) => {
     return (
@@ -264,10 +278,13 @@ function Navigation(props) {
 
       <div className={classes.socials}>
         <Tooltip title={ 'This project is in early beta. Please be cautious when using this UI and all smart contracts this UI interfaces with. You should only use this interface if you understand and accept the risks involved.' }>
-          <WarningIcon className={ classes.warningIcon }/>
+          <img src='/images/icon-warning.svg' className={ classes.warningIcon } onClick={ openWarning }/>
         </Tooltip>
       </div>
-      <Typography className={classes.smallVersion}>Version 0.1.0</Typography>
+      <Typography className={classes.smallVersion}>Version 0.1.0-beta</Typography>
+      { warningOpen &&
+        <FFWarning close={ closeWarning } />
+      }
     </Paper>
   );
 }
