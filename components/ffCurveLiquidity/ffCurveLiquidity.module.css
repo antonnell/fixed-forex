@@ -30,7 +30,8 @@
 
 .multiApproval {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(1, 1fr);
+  grid-row-gap: 12px;
 }
 
 .multiApprovalButton {
@@ -118,7 +119,7 @@
   grid-template-columns: 1fr;
   border-left: 1px solid rgba(128, 128, 128, 0.8);
   padding: 0px 24px;
-  width: 360px;
+  width: 240px;
 }
 
 .actionButtonText {
@@ -176,7 +177,7 @@
   grid-template-columns: 1fr;
   border-left: 1px solid rgba(128, 128, 128, 0.8);
   padding: 0px 24px;
-  width: 200px;
+  width: 240px;
 }
 
 .extraTF {

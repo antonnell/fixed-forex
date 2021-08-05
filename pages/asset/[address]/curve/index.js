@@ -47,6 +47,7 @@ function Asset({ changeTheme }) {
       <div className={classes.container}>
         <FfAssetOverview asset={ asset } />
         <FFCurveLiquidity asset={ asset } />
+        <FFCurveGauge asset={ asset } />
       </div>
     </Layout>
   );

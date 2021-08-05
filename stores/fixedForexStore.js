@@ -45,10 +45,15 @@ import {
   FIXED_FOREX_DEPOSIT_CURVE_APPROVED,
   FIXED_FOREX_DEPOSIT_CURVE,
   FIXED_FOREX_CURVE_DEPOSITED,
-  FIXED_FOREX_APPROVE_WITHDRAW_CURVE,
-  FIXED_FOREX_WITHDRAW_CURVE_APPROVED,
   FIXED_FOREX_WITHDRAW_CURVE,
-  FIXED_FOREX_CURVE_WITHDRAWN
+  FIXED_FOREX_CURVE_WITHDRAWN,
+  FIXED_FOREX_APPROVE_STAKE_CURVE,
+  FIXED_FOREX_STAKE_CURVE_APPROVED,
+  FIXED_FOREX_STAKE_CURVE,
+  FIXED_FOREX_CURVE_STAKED,
+  FIXED_FOREX_UNSTAKE_CURVE,
+  FIXED_FOREX_CURVE_UNSTAKED,
+
 } from './constants';
 
 import * as moment from 'moment';
@@ -89,6 +94,7 @@ class Store {
           case FIXED_FOREX_CLAIM_STAKING_REWARD:
             this.claimStakingReward(payload);
             break;
+            // SUSHISWAP LP
           case FIXED_FOREX_STAKE_SLP:
             this.stakeSLP(payload);
             break;
@@ -98,6 +104,7 @@ class Store {
           case FIXED_FOREX_UNSTAKE_SLP:
             this.unstakeSLP(payload);
             break;
+            // VESTING IBFF
           case FIXED_FOREX_APPROVE_VEST:
             this.approveVest(payload);
             break;
@@ -110,21 +117,31 @@ class Store {
           case FIXED_FOREX_VEST_DURATION:
             this.vestDuration(payload);
             break;
+            // VOTING
           case FIXED_FOREX_VOTE:
             this.vote(payload);
             break;
+            // DEPOSIT LIQUIDITY CURVE LP
           case FIXED_FOREX_APPROVE_DEPOSIT_CURVE:
             this.approveDepositCurve(payload);
             break;
           case FIXED_FOREX_DEPOSIT_CURVE:
             this.depositCurve(payload);
             break;
-          case FIXED_FOREX_APPROVE_WITHDRAW_CURVE:
-            this.approveWithdrawCurve(payload);
-            break;
           case FIXED_FOREX_WITHDRAW_CURVE:
             this.withdrawCurve(payload);
             break;
+            // STAKING CURVE LP
+          case FIXED_FOREX_APPROVE_STAKE_CURVE:
+            this.approveStakeCurve(payload);
+            break;
+          case FIXED_FOREX_STAKE_CURVE:
+            this.stakeCurve(payload);
+            break;
+          case FIXED_FOREX_UNSTAKE_CURVE:
+            this.unstakeCurve(payload);
+            break;
+
           default: {
           }
         }
@@ -299,7 +316,7 @@ class Store {
 
         const gaugeContract = new web3.eth.Contract(abis.gaugeABI, asset.gauge.address)
         const userRewards = await gaugeContract.methods.earned(account.address).call()
-        const gaugeBalanceOf = await gaugeContract.methods.balanceOf(account.address).call()
+        const userGaugeBalance = await gaugeContract.methods.balanceOf(account.address).call()
 
         const gaugeVotes = await gaugeProxyContract.methods.weights(asset.gauge.poolAddress).call()
         const userGaugeVotes = await gaugeProxyContract.methods.votes(account.address, asset.gauge.poolAddress).call()
@@ -309,6 +326,7 @@ class Store {
         const userPoolBalance = await poolContract.methods.balanceOf(account.address).call()
         const poolSymbol = await poolContract.methods.symbol().call()
         const virtualPrice = await poolContract.methods.get_virtual_price().call()
+        const poolGaugeAllowance = await poolContract.methods.allowance(account.address, asset.gauge.address).call()
 
         const coins0 = await poolContract.methods.coins(0).call()
         const coin0Contract = new web3.eth.Contract(abis.erc20ABI, coins0)
@@ -345,7 +363,6 @@ class Store {
         return {
           balanceOf,
           userRewards,
-          gaugeBalanceOf,
           poolBalances,
           coin0,
           coin1,
@@ -354,13 +371,14 @@ class Store {
           poolSymbol,
           virtualPrice: BigNumber(virtualPrice).div(10**18).toFixed(18),
           userPoolBalance: BigNumber(userPoolBalance).div(10**18).toFixed(18),
+          userGaugeBalance: BigNumber(userGaugeBalance).div(10**18).toFixed(18),
+          poolGaugeAllowance: BigNumber(poolGaugeAllowance).div(10**18).toFixed(18),
         }
       })
 
       const assetsBalances = await Promise.all(assetsBalancesPromise);
       for(let i = 0; i < assets.length; i++) {
         assets[i].balance = BigNumber(assetsBalances[i].balanceOf).div(10**assets[i].decimals).toFixed(assets[i].decimals)
-        assets[i].gauge.balance = BigNumber(assetsBalances[i].gaugeBalanceOf).div(10**assets[i].decimals).toFixed(assets[i].decimals)
         assets[i].gauge.rewards = BigNumber(assetsBalances[i].userRewards).div(10**assets[i].decimals).toFixed(assets[i].decimals)
         assets[i].gauge.userVotes = BigNumber(assetsBalances[i].userGaugeVotes).div(10**assets[i].decimals).toFixed(assets[i].decimals)
         assets[i].gauge.userVotePercent = BigNumber(assetsBalances[i].userGaugeVotes).times(100).div(totalUserVotes).toFixed(assets[i].decimals)
@@ -370,7 +388,9 @@ class Store {
         assets[i].gauge.coin1 = assetsBalances[i].coin1
         assets[i].gauge.poolSymbol = assetsBalances[i].poolSymbol
         assets[i].gauge.userPoolBalance = assetsBalances[i].userPoolBalance
+        assets[i].gauge.userGaugeBalance = assetsBalances[i].userGaugeBalance
         assets[i].gauge.virtualPrice = assetsBalances[i].virtualPrice
+        assets[i].gauge.poolGaugeAllowance = assetsBalances[i].poolGaugeAllowance
       }
 
       this.setStore({
@@ -909,36 +929,6 @@ class Store {
     }
   };
 
-  approveWithdrawCurve = async (payload) => {
-    const account = stores.accountStore.getStore('account');
-    if (!account) {
-      return false;
-      //maybe throw an error
-    }
-
-    const web3 = await stores.accountStore.getWeb3Provider();
-    if (!web3) {
-      return false;
-      //maybe throw an error
-    }
-
-    const { asset, coin, gasSpeed } = payload.content;
-
-    this._callApproveWithdrawCurve(web3, account, asset, coin, gasSpeed, (err, res) => {
-      if (err) {
-        return this.emitter.emit(ERROR, err);
-      }
-
-      return this.emitter.emit(FIXED_FOREX_WITHDRAW_CURVE_APPROVED, res);
-    });
-  }
-
-  _callApproveWithdrawCurve = async (web3, account, asset, coin, gasSpeed, callback) => {
-    const erc20Contract = new web3.eth.Contract(abis.erc20ABI, coin.address);
-    const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
-    this._callContractWait(web3, erc20Contract, 'approve', [asset.gauge.poolAddress, MAX_UINT256], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
-  };
-
   withdrawCurve = async (payload) => {
     const account = stores.accountStore.getStore('account');
     if (!account) {
@@ -985,6 +975,126 @@ class Store {
       const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
 
       this._callContractWait(web3, poolContract, 'remove_liquidity', [sendWithdrawAmount, [sendAmount0, sendAmount1]], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  };
+
+
+
+
+
+
+
+  approveStakeCurve = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { asset, gasSpeed } = payload.content;
+
+    this._callApproveStakeCurve(web3, account, asset, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_STAKE_CURVE_APPROVED, res);
+    });
+  }
+
+  _callApproveStakeCurve = async (web3, account, asset, gasSpeed, callback) => {
+    const erc20Contract = new web3.eth.Contract(abis.erc20ABI, asset.gauge.poolAddress);
+    const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+    this._callContractWait(web3, erc20Contract, 'approve', [asset.gauge.address, MAX_UINT256], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+  };
+
+  stakeCurve = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { asset, amount, gasSpeed } = payload.content;
+
+    this._callDepositGauge(web3, account, asset, amount, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_CURVE_STAKED, res);
+    });
+
+  }
+
+  _callDepositGauge = async (web3, account, asset, amount, gasSpeed, callback) => {
+    try {
+      let gaugeContract = new web3.eth.Contract(abis.gaugeABI, asset.gauge.address);
+
+      const sendAmount = BigNumber(amount === '' ? 0 : amount)
+        .times(10 ** 18)
+        .toFixed(0);
+
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, gaugeContract, 'deposit', [sendAmount], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  };
+
+  unstakeCurve = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { asset, withdrawAmount, gasSpeed } = payload.content;
+
+    this._callWithdrawGauge(web3, account, asset, withdrawAmount, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_CURVE_UNSTAKED, res);
+    });
+
+  }
+
+  _callWithdrawGauge = async (web3, account, asset, withdrawAmount, gasSpeed, callback) => {
+    try {
+      let gaugeContract = new web3.eth.Contract(abis.gaugeABI, asset.gauge.address);
+
+      const sendWithdrawAmount = BigNumber(withdrawAmount === '' ? 0 : withdrawAmount)
+        .times(10 ** 18)
+        .toFixed(0);
+
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, gaugeContract, 'withdraw', [sendWithdrawAmount], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
     } catch (ex) {
       console.log(ex);
       return this.emitter.emit(ERROR, ex);

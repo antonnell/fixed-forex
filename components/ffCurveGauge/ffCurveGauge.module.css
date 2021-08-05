@@ -3,11 +3,8 @@
   max-width: 1356px;
   display: flex;
   border: 1px solid rgba(128, 128, 128, 0.8);
-  position: absolute;
-  top: 240px;
-  left: 0;
-  right: 0;
   margin: auto;
+  margin-top: 60px;
   min-height: 180px;
 }
 
@@ -26,6 +23,15 @@
   grid-gap: 24px 48px;
   padding: 0px 24px;
   flex: 1;
+}
+
+.multiApproval {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.multiApprovalButton {
+  min-width: auto;
 }
 
 .inputContainer {
@@ -152,4 +158,24 @@
 .buttonActive {
   border-radius: 0px !important;
   flex: 1;
+}
+
+.amountAndPercent {
+  display: grid;
+  grid-template-columns: 1fr ;
+  grid-column-gap: 12px;
+  padding-bottom: 12px;
+}
+
+.actionsContainerWithdraw {
+  display: grid;
+  grid-gap: 12px;
+  grid-template-columns: 1fr;
+  border-left: 1px solid rgba(128, 128, 128, 0.8);
+  padding: 0px 24px;
+  width: 240px;
+}
+
+.extraTF {
+  padding-bottom: 12px;
 }
