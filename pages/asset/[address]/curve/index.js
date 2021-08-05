@@ -1,8 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
-
-import { Typography, Paper, TextField, InputAdornment, Tooltip } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
 
 import Head from 'next/head';
 import Layout from '../../../../components/layout/layout.js';
@@ -18,6 +15,9 @@ import { formatCurrency } from '../../../../utils';
 
 function Asset({ changeTheme }) {
 
+  const [, updateState] = React.useState();
+  const forceUpdate = React.useCallback(() => updateState({}), []);
+
   const router = useRouter();
   const [asset, setAsset] = useState(null);
 
@@ -25,6 +25,7 @@ function Asset({ changeTheme }) {
     const fixedForexUpdated = () => {
       const ass = stores.fixedForexStore.getAsset(router.query.address)
       setAsset(ass)
+      forceUpdate()
     };
 
     //set asset

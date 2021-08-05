@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import BigNumber from 'bignumber.js';
 
 import Head from 'next/head';
@@ -15,6 +15,9 @@ import { formatCurrency } from '../../utils';
 
 function Vote({ changeTheme }) {
 
+  const [, updateState] = React.useState();
+  const forceUpdate = React.useCallback(() => updateState({}), []);
+
   const [ ibff, setIBFF] = useState(null)
   const [ veIBFF, setVeIBFF] = useState(null)
 
@@ -22,6 +25,7 @@ function Vote({ changeTheme }) {
     const forexUpdated = () => {
       setIBFF(stores.fixedForexStore.getStore('ibff'))
       setVeIBFF(stores.fixedForexStore.getStore('veIBFF'))
+      forceUpdate()
     }
 
     setIBFF(stores.fixedForexStore.getStore('ibff'))
