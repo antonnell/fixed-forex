@@ -12,7 +12,7 @@
 }
 
 .lpOptionsContainer {
-  border: 1px solid rgba(128, 128, 128, 0.8);
+  border: 1px solid rgba(104, 108, 122, 0.25);
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -22,7 +22,7 @@
 
 .topLeftButton {
   border-top-left-radius: 10px !important;
-  border-bottom: 1px solid rgba(128, 128, 128, 0.25) !important;
+  border-bottom: 1px solid rgba(104, 108, 122, 0.25) !important;
 }
 
 .bottomLeftButton {
@@ -125,7 +125,7 @@
   display: grid;
   grid-gap: 12px;
   grid-template-columns: 1fr;
-  border-left: 1px solid rgba(128, 128, 128, 0.8);
+  border-left: 1px solid rgba(104, 108, 122, 0.25);
   padding: 0px 24px;
   width: 240px;
 }
