@@ -1,0 +1,75 @@
+.container {
+  width: calc(100% - 48px);
+  max-width: 1356px;
+  margin: 0 auto;
+  margin-bottom: 48px;
+}
+
+.title {
+  font-size: 20px !important;
+  margin-bottom: 24px !important;
+}
+
+.lpOptionsContainer {
+  border: 1px solid rgba(128, 128, 128, 0.8);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  cursor: pointer;
+}
+
+.lpOption:nth-child(1):hover {
+  background-image: linear-gradient(0deg ,#1c46f5 0,#0005d3);
+  border-radius: 10px;
+}
+
+.lpOption {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 48px;
+  transition: background 0.5s ease;
+}
+
+.lpOptionTitle {
+  display: flex;
+  align-items: center;
+}
+
+.lpOptionName {
+  font-size: 30px !important;
+}
+
+.lpOptionDescription {
+  font-size: 20px !important;
+  opacity: 0.7;
+}
+
+.lpOptionIcon {
+  margin-right: 24px;
+}
+
+.activeIcon {
+  height: 10px;
+  width: 10px;
+  background-color: #0ba360;
+  border-radius: 50%;
+  display: inline-block;
+  position: absolute;
+  right: 12px;
+  top: 12px;
+}
+
+
+
+.lpOption:nth-child(1):hover > div {
+  color: #fff !important;
+}
+
+.amountText {
+  font-size: 60px !important;
+  font-weight: bold !important;
+}

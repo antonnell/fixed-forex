@@ -6,6 +6,7 @@ import Layout from '../../../../components/layout/layout.js';
 import FfAssetOverview from '../../../../components/ffAssetOverview'
 import FFCurveLiquidity from '../../../../components/ffCurveLiquidity'
 import FFCurveGauge from '../../../../components/ffCurveGauge'
+import FFClaimCurveGauge from '../../../../components/ffClaimCurveGauge'
 
 import classes from './curve.module.css';
 
@@ -49,6 +50,7 @@ function Asset({ changeTheme }) {
         <FfAssetOverview asset={ asset } />
         <FFCurveLiquidity asset={ asset } />
         <FFCurveGauge asset={ asset } />
+        <FFClaimCurveGauge asset={ asset } />
       </div>
     </Layout>
   );

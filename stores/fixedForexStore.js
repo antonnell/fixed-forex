@@ -56,7 +56,9 @@ import {
   FIXED_FOREX_UNSTAKE_CURVE,
   FIXED_FOREX_CURVE_UNSTAKED,
   FIXED_FOREX_CLAIM_DISTRIBUTION_REWARD,
-  FIXED_FOREX_DISTRIBUTION_REWARD_CLAIMED
+  FIXED_FOREX_DISTRIBUTION_REWARD_CLAIMED,
+  FIXED_FOREX_CLAIM_CURVE_REWARDS,
+  FIXED_FOREX_CURVE_REWARD_CLAIMED
 } from './constants';
 
 import * as moment from 'moment';
@@ -99,6 +101,9 @@ class Store {
             break;
           case FIXED_FOREX_CLAIM_DISTRIBUTION_REWARD:
             this.claimDistributionReward(payload);
+            break;
+          case FIXED_FOREX_CLAIM_CURVE_REWARDS:
+            this.claimCurveReward(payload);
             break;
             // SUSHISWAP LP
           case FIXED_FOREX_STAKE_SLP:
@@ -392,7 +397,7 @@ class Store {
       const assetsBalances = await Promise.all(assetsBalancesPromise);
       for(let i = 0; i < assets.length; i++) {
         assets[i].balance = BigNumber(assetsBalances[i].balanceOf).div(10**assets[i].decimals).toFixed(assets[i].decimals)
-        assets[i].gauge.rewards = BigNumber(assetsBalances[i].userRewards).div(10**assets[i].decimals).toFixed(assets[i].decimals)
+        assets[i].gauge.earned = BigNumber(assetsBalances[i].userRewards).div(10**assets[i].decimals).toFixed(assets[i].decimals)
         assets[i].gauge.userVotes = BigNumber(assetsBalances[i].userGaugeVotes).div(10**assets[i].decimals).toFixed(assets[i].decimals)
         assets[i].gauge.userVotePercent = BigNumber(assetsBalances[i].userGaugeVotes).times(100).div(totalUserVotes).toFixed(assets[i].decimals)
         assets[i].gauge.votes = BigNumber(assetsBalances[i].gaugeVotes).div(10**assets[i].decimals).toFixed(assets[i].decimals)
@@ -617,6 +622,42 @@ class Store {
       const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
 
       this._callContractWait(web3, claimContract, 'claim', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  }
+
+  claimCurveReward = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { gasSpeed, asset } = payload.content;
+
+    this._callClaimCurveReward(web3, account, asset, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_STAKING_REWARD_CLAIMED, res);
+    });
+  }
+ 
+  _callClaimCurveReward = async (web3, account, asset, gasSpeed, callback) => {
+    try {
+      const gaugeContract = new web3.eth.Contract(abis.gaugeABI, asset.gauge.address)
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, gaugeContract, 'getReward', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
     } catch (ex) {
       console.log(ex);
       return this.emitter.emit(ERROR, ex);

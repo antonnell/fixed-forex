@@ -25,7 +25,7 @@ export default function ffClaim() {
     setRewards(stores.fixedForexStore.getStore('rewards'))
 
     stores.emitter.on(FIXED_FOREX_UPDATED, forexUpdated);
-    stores.emitter.on(FIXED_FOREX_CLAIM_VESTING_REWARD, rewardClaimed);
+    stores.emitter.on(FIXED_FOREX_VESTING_REWARD_CLAIMED, rewardClaimed);
     return () => {
       stores.emitter.removeListener(FIXED_FOREX_UPDATED, forexUpdated);
       stores.emitter.removeListener(FIXED_FOREX_VESTING_REWARD_CLAIMED, rewardClaimed);

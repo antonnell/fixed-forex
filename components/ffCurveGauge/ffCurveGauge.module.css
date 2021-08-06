@@ -1,11 +1,23 @@
 .container {
   width: calc(100% - 48px);
   max-width: 1356px;
-  display: flex;
-  border: 1px solid rgba(128, 128, 128, 0.8);
-  margin: auto;
+  margin: 0 auto;
+  margin-bottom: 48px;
   margin-top: 60px;
-  min-height: 180px;
+}
+
+.title {
+  font-size: 20px !important;
+  margin-bottom: 24px !important;
+}
+
+.lpOptionsContainer {
+  border: 1px solid rgba(128, 128, 128, 0.8);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  cursor: pointer;
 }
 
 .topLeftButton {
