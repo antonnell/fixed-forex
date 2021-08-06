@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Typography, Button, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import Skeleton from '@material-ui/lab/Skeleton';
+import { Paper } from '@material-ui/core';
 
-import { formatCurrency } from '../../utils';
 import classes from './ffAssets.module.css';
 
 import AssetsTable from './ffAssetsTable.js'

@@ -1,15 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Paper, Typography, Button, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import Skeleton from '@material-ui/lab/Skeleton';
+import { Typography } from '@material-ui/core';
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 import { formatCurrency } from '../../utils';
 import classes from './ffAssetOverview.module.css';
-
-import stores from '../../stores'
-import { FIXED_FOREX_UPDATED } from '../../stores/constants';
 
 export default function ffAssetOverview({ asset }) {
 

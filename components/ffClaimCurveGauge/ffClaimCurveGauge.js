@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Typography, CircularProgress } from '@material-ui/core';
+import { Paper, Typography } from '@material-ui/core';
 import BigNumber from 'bignumber.js';
 
 import { formatCurrency } from '../../utils';
@@ -21,7 +21,7 @@ export default function ffClaimCurveGauge({ asset }) {
     return () => {
       stores.emitter.removeListener(FIXED_FOREX_CURVE_REWARD_CLAIMED, rewardClaimed);
     };
-  }, []); 
+  }, []);
 
   const claim = () => {
     if(BigNumber(asset && asset.gauge ? asset.gauge.earned : 0).gt(0)) {
