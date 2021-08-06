@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import BigNumber from 'bignumber.js';
 
 import Head from 'next/head';
 import Layout from '../../components/layout/layout.js';
 import VoteOverview from '../../components/ffVoteOverview';
-import CastVote from '../../components/ffVoteCast';
 import Gauges from '../../components/ffGauges';
 
 import classes from './vote.module.css';
