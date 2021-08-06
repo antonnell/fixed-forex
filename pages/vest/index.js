@@ -6,6 +6,7 @@ import Layout from '../../components/layout/layout.js';
 import Vesting from '../../components/ffVest';
 import Overview from '../../components/ffOverview';
 import Claim from '../../components/ffClaim';
+import ClaimDistribution from '../../components/ffClaimDistirbution'; 
 
 import classes from './vest.module.css';
 
@@ -46,6 +47,9 @@ function Vest({ changeTheme }) {
         <Vesting />
         { !(ibff && veIBFF && BigNumber(ibff.balance).eq(0) && BigNumber(veIBFF.balance).eq(0)) &&
           <Claim />
+        }
+        { !(ibff && veIBFF && BigNumber(ibff.balance).eq(0) && BigNumber(veIBFF.balance).eq(0)) &&
+          <ClaimDistribution />
         }
       </div>
     </Layout>

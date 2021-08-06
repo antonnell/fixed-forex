@@ -61,7 +61,7 @@ export default function ffStakeOverview() {
           <div>
             <Typography className={ classes.title }>Rewards Available:</Typography>
             <div className={ classes.inline }>
-              <Typography className={ classes.value }>{ formatCurrency(rewards ? rewards.earned : 0) }</Typography>
+              <Typography className={ classes.value }>{ formatCurrency(rewards ? rewards.faucet.earned : 0) }</Typography>
               <Typography className={ classes.valueSymbol }>ibff</Typography>
             </div>
           </div>
