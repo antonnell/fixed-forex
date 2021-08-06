@@ -9,6 +9,7 @@ import Lock from './lock'
 import ExistingLock from './existingLock'
 import NoBalances from './noBalances'
 import Unlock from './unlock'
+import Loading from './loading'
 
 export default function ffVest() {
 
@@ -32,6 +33,10 @@ export default function ffVest() {
 
   return (
     <>
+      {
+        !ibff && !veIBFF &&
+        <Loading />
+      }
       { ibff && veIBFF && BigNumber(ibff.balance).eq(0) && BigNumber(veIBFF.balance).eq(0) && BigNumber(veIBFF.vestingInfo.lockEnds).eq(0) &&  // no ibff or veibff
         <NoBalances ibff={ibff} veIBFF={veIBFF} />
       }

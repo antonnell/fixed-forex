@@ -13,6 +13,8 @@ import {
   FF_FAUCET_ADDRESS,
   FF_DISTRIBUTION_ADDRESS,
   GAUGE_PROXY_ADDRESS,
+  FF_VEIBFF_DISTRIBUTION_ADDRESS,
+  FF_FEE_CLAIM_DISTRIBUTION_ADDRESS,
   ERROR,
   TX_SUBMITTED,
   STORE_UPDATED,
@@ -53,7 +55,10 @@ import {
   FIXED_FOREX_CURVE_STAKED,
   FIXED_FOREX_UNSTAKE_CURVE,
   FIXED_FOREX_CURVE_UNSTAKED,
-
+  FIXED_FOREX_CLAIM_DISTRIBUTION_REWARD,
+  FIXED_FOREX_DISTRIBUTION_REWARD_CLAIMED,
+  FIXED_FOREX_CLAIM_CURVE_REWARDS,
+  FIXED_FOREX_CURVE_REWARD_CLAIMED
 } from './constants';
 
 import * as moment from 'moment';
@@ -93,6 +98,12 @@ class Store {
             break;
           case FIXED_FOREX_CLAIM_STAKING_REWARD:
             this.claimStakingReward(payload);
+            break;
+          case FIXED_FOREX_CLAIM_DISTRIBUTION_REWARD:
+            this.claimDistributionReward(payload);
+            break;
+          case FIXED_FOREX_CLAIM_CURVE_REWARDS:
+            this.claimCurveReward(payload);
             break;
             // SUSHISWAP LP
           case FIXED_FOREX_STAKE_SLP:
@@ -299,10 +310,17 @@ class Store {
       const veEURETHSLP = await this._getAssetInfo(web3, { address: IBEUR_ETH_ADDRESS }, account)
       const faucetContractApprovalAmount = await this._getApprovalAmount(web3, veEURETHSLP, account.address, FF_FAUCET_ADDRESS)
 
-      // get rewards
-      const rewards = await this._getFaucetRewards(web3, account, ibff)
+      let rewards = {}
+      const faucetRewards = await this._getFaucetRewards(web3, account, ibff)
+      const feeDistributionRewards = await this._getFeeDistributionRewards(web3, account, ibff)
+      const veIBFFDistributionRewards = await this._getVEIBFFDistributionRewards(web3, account, ibff)
+
+      rewards.faucet = faucetRewards
+      rewards.feeDistribution = feeDistributionRewards
+      rewards.veIBFFDistribution = veIBFFDistributionRewards
+
       veEURETHSLP.faucetAllowance = faucetContractApprovalAmount
-      veEURETHSLP.faucetBalance = rewards.balance
+      veEURETHSLP.faucetBalance = faucetRewards.balance
 
       const gaugeProxyContract = new web3.eth.Contract(abis.gaugeProxyABI, GAUGE_PROXY_ADDRESS)
       const totalGaugeVotes = await gaugeProxyContract.methods.totalWeight().call()
@@ -379,7 +397,7 @@ class Store {
       const assetsBalances = await Promise.all(assetsBalancesPromise);
       for(let i = 0; i < assets.length; i++) {
         assets[i].balance = BigNumber(assetsBalances[i].balanceOf).div(10**assets[i].decimals).toFixed(assets[i].decimals)
-        assets[i].gauge.rewards = BigNumber(assetsBalances[i].userRewards).div(10**assets[i].decimals).toFixed(assets[i].decimals)
+        assets[i].gauge.earned = BigNumber(assetsBalances[i].userRewards).div(10**assets[i].decimals).toFixed(assets[i].decimals)
         assets[i].gauge.userVotes = BigNumber(assetsBalances[i].userGaugeVotes).div(10**assets[i].decimals).toFixed(assets[i].decimals)
         assets[i].gauge.userVotePercent = BigNumber(assetsBalances[i].userGaugeVotes).times(100).div(totalUserVotes).toFixed(assets[i].decimals)
         assets[i].gauge.votes = BigNumber(assetsBalances[i].gaugeVotes).div(10**assets[i].decimals).toFixed(assets[i].decimals)
@@ -417,11 +435,50 @@ class Store {
       const totalSupply = await faucetContract.methods.totalSupply().call()
       const balanceOf = await faucetContract.methods.balanceOf(account.address).call()
 
+
       return {
         earned: BigNumber(earned).div(10**ibff.decimals).toFixed(ibff.decimals),
         faucetSupply: BigNumber(totalSupply).div(10**ibff.decimals).toFixed(ibff.decimals),
         totalRewards: BigNumber(totalRewards).div(10**ibff.decimals).toFixed(ibff.decimals),
         balance: BigNumber(balanceOf).div(10**ibff.decimals).toFixed(ibff.decimals)
+      }
+    } catch(ex) {
+      console.log(ex)
+      return null
+    }
+  }
+
+  _getFeeDistributionRewards = async (web3, account, ibff) => {
+    try {
+      const distributionContract = new web3.eth.Contract(abi.feeClaimDistributionABI, FF_FEE_CLAIM_DISTRIBUTION_ADDRESS)
+
+      const timeCursor = await distributionContract.methods.time_cursor().call()
+      const veAtSnapshot = await distributionContract.methods.ve_for_at(account.address, timeCursor).call()  // user's veIBFF at snapshot point
+      const tokenLastBalance = await distributionContract.methods.token_last_balance().call()                // total rewards for the snapshot week?
+      const veTotalSupply = await distributionContract.methods.ve_supply(timeCursor).call()                  // supposed to be total veIBFF at snapshot point I think?
+
+      let earned = '0'
+
+      if(BigNumber(veTotalSupply).gt(0)) {
+        rewards = BigNumber(tokenLastBalance).div(1e18).times(veAtSnapshot).div(veTotalSupply).toFixed(18)
+      }
+
+      return {
+        earned: earned,
+      }
+    } catch(ex) {
+      console.log(ex)
+      return null
+    }
+  }
+
+  _getVEIBFFDistributionRewards = async (web3, account, ibff) => {
+    try {
+      const distributionContract = new web3.eth.Contract(abi.distributionABI, FF_VEIBFF_DISTRIBUTION_ADDRESS)
+      const claimable = await distributionContract.methods.claimable(account.address).call()
+
+      return {
+        earned: BigNumber(claimable).div(1e18).toFixed(18),
       }
     } catch(ex) {
       console.log(ex)
@@ -490,10 +547,10 @@ class Store {
 
   _callClaimVestingReward = async (web3, account, gasSpeed, callback) => {
     try {
-      const faucetContract = new web3.eth.Contract(abis.faucetABI, FF_FAUCET_ADDRESS)
+      const faucetContract = new web3.eth.Contract(abis.distributionABI, FF_VEIBFF_DISTRIBUTION_ADDRESS)
       const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
 
-      this._callContractWait(web3, faucetContract, 'getReward', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+      this._callContractWait(web3, faucetContract, 'claim', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
     } catch (ex) {
       console.log(ex);
       return this.emitter.emit(ERROR, ex);
@@ -530,6 +587,78 @@ class Store {
       const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
 
       this._callContractWait(web3, faucetContract, 'getReward', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  }
+
+  claimDistributionReward = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { gasSpeed } = payload.content;
+
+    this._callClaimDistributionReward(web3, account, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_STAKING_REWARD_CLAIMED, res);
+    });
+  }
+
+  _callClaimDistributionReward = async (web3, account, gasSpeed, callback) => {
+    try {
+      const claimContract = new web3.eth.Contract(abis.feeClaimDistributionABI, FF_FEE_CLAIM_DISTRIBUTION_ADDRESS)
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, claimContract, 'claim', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  }
+
+  claimCurveReward = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { gasSpeed, asset } = payload.content;
+
+    this._callClaimCurveReward(web3, account, asset, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_STAKING_REWARD_CLAIMED, res);
+    });
+  }
+ 
+  _callClaimCurveReward = async (web3, account, asset, gasSpeed, callback) => {
+    try {
+      const gaugeContract = new web3.eth.Contract(abis.gaugeABI, asset.gauge.address)
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, gaugeContract, 'getReward', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
     } catch (ex) {
       console.log(ex);
       return this.emitter.emit(ERROR, ex);

@@ -84,7 +84,7 @@ export default function ffStake() {
     if(activeTab === 'deposit') {
       setAmount(BigNumber(ibEURSLP.balance).times(percent).div(100).toFixed(ibEURSLP.decimals));
     } else {
-      setWithdrawAmount(BigNumber(rewards.balance).times(percent).div(100).toFixed(ibEURSLP.decimals));
+      setWithdrawAmount(BigNumber(rewards.faucet.balance).times(percent).div(100).toFixed(ibEURSLP.decimals));
     }
   }
 
@@ -128,14 +128,14 @@ export default function ffStake() {
     let am = 0
     let rew = 0
     if(activeTab === 'deposit') {
-      am = BigNumber(rewards.balance).plus(amount ? amount : 0)
-      rew = BigNumber(rewards.faucetSupply).plus(amount ? amount : 0)
+      am = BigNumber(rewards.faucet.balance).plus(amount ? amount : 0)
+      rew = BigNumber(rewards.faucet.faucetSupply).plus(amount ? amount : 0)
     } else {
-      am = BigNumber(rewards.balance).minus(withdrawAmount ? withdrawAmount : 0)
-      rew = BigNumber(rewards.faucetSupply).minus(withdrawAmount ? withdrawAmount : 0)
+      am = BigNumber(rewards.faucet.balance).minus(withdrawAmount ? withdrawAmount : 0)
+      rew = BigNumber(rewards.faucet.faucetSupply).minus(withdrawAmount ? withdrawAmount : 0)
     }
 
-    let estimatedReward = BigNumber(am).times(rewards.totalRewards).div(rew)
+    let estimatedReward = BigNumber(am).times(rewards.faucet.totalRewards).div(rew)
 
     if(BigNumber(estimatedReward).lte(0)) {
       return '0.00'
@@ -218,7 +218,7 @@ export default function ffStake() {
                     className={classes.value}
                     noWrap
                   >
-                    Balance: {formatCurrency(rewards ? rewards.balance : 0)}
+                    Balance: {formatCurrency(rewards ? rewards.faucet.balance : 0)}
                   </Typography>
                 </div>
               </div>
@@ -247,7 +247,7 @@ export default function ffStake() {
               <div className={ classes.infoTexts }>
                 <Typography className={ classes.infoText }>Estimated Weekly Rewards:</Typography>
                 <Typography >{
-                  rewards && rewards.faucetSupply && rewards.totalRewards &&
+                  rewards && rewards.faucet.faucetSupply && rewards.faucet.totalRewards &&
                   calcEstimatedRewards()
                 } ibff</Typography>
               </div>
