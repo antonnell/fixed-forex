@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Typography, Button, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
+import { Paper, Grid, Typography, Button, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Skeleton from '@material-ui/lab/Skeleton';
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
@@ -38,36 +38,44 @@ export default function ffOverview() {
   return (
     <div className={ classes.container }>
       <div className={ classes.fieldsContainer }>
-        <div className={ classes.field }>
-          <AccountBalanceWalletIcon className={ classes.balanceIcon } />
-          <div>
-            <Typography className={ classes.title }>IBFF Balance:</Typography>
-            <div className={ classes.inline }>
-              <Typography className={ classes.value }>{ formatCurrency(ibff ? ibff.balance : 0) }</Typography>
-              <Typography className={ classes.valueSymbol }>{ ibff ? ibff.symbol : '' }</Typography>
+        <Grid container spacing={3}>
+          <Grid item lg={4} md={4} sm={12} xs={12}>
+            <div className={ classes.field }>
+              <AccountBalanceWalletIcon className={ classes.balanceIcon } />
+              <div>
+                <Typography className={ classes.title }>IBFF Balance:</Typography>
+                <div className={ classes.inline }>
+                  <Typography className={ classes.value }>{ formatCurrency(ibff ? ibff.balance : 0) }</Typography>
+                  <Typography className={ classes.valueSymbol }>{ ibff ? ibff.symbol : '' }</Typography>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        <div className={ classes.field }>
-          <TimerIcon className={ classes.balanceIcon } />
-          <div>
-            <Typography className={ classes.title }>Vested Balance:</Typography>
-            <div className={ classes.inline }>
-              <Typography className={ classes.value }>{ formatCurrency((veIBFF && veIBFF.vestingInfo) ? veIBFF.vestingInfo.lockValue : 0) }</Typography>
-              <Typography className={ classes.valueSymbol }>{ veIBFF ? veIBFF.symbol : '' }</Typography>
+          </Grid>
+          <Grid item lg={4} md={4} sm={12} xs={12}>
+            <div className={ classes.field }>
+              <TimerIcon className={ classes.balanceIcon } />
+              <div>
+                <Typography className={ classes.title }>Vested Balance:</Typography>
+                <div className={ classes.inline }>
+                  <Typography className={ classes.value }>{ formatCurrency((veIBFF && veIBFF.vestingInfo) ? veIBFF.vestingInfo.lockValue : 0) }</Typography>
+                  <Typography className={ classes.valueSymbol }>{ veIBFF ? veIBFF.symbol : '' }</Typography>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        <div className={ classes.field }>
-          <AttachMoneyIcon className={ classes.balanceIcon } />
-          <div>
-            <Typography className={ classes.title }>Rewards Available:</Typography>
-            <div className={ classes.inline }>
-              <Typography className={ classes.value }>{ formatCurrency(rewards ? rewards.faucet.faucet : 0) }</Typography>
-              <Typography className={ classes.valueSymbol }>{ ibff ? ibff.symbol : '' }</Typography>
+          </Grid>
+          <Grid item lg={4} md={4} sm={12} xs={12}>
+            <div className={ classes.field }>
+              <AttachMoneyIcon className={ classes.balanceIcon } />
+              <div>
+                <Typography className={ classes.title }>Rewards Available:</Typography>
+                <div className={ classes.inline }>
+                  <Typography className={ classes.value }>{ formatCurrency(rewards ? rewards.faucet.faucet : 0) }</Typography>
+                  <Typography className={ classes.valueSymbol }>{ ibff ? ibff.symbol : '' }</Typography>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </Grid>
+        </Grid>
       </div>
     </div>
   );

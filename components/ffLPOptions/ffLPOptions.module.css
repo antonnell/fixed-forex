@@ -11,7 +11,7 @@
 }
 
 .lpOptionsContainer {
-  border: 1px solid rgba(128, 128, 128, 0.8);
+  border: 1px solid rgba(104, 108, 122, 0.25);
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -19,23 +19,25 @@
   cursor: pointer;
 }
 
-.lpOption:nth-child(1):hover {
+.lpOption1:hover {
   background: #f8b701;
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
 }
 
-.lpOption:nth-child(2):hover {
+.lpOption2:hover {
   background: #cd65ae;
 }
 
-.lpOption:nth-child(3):hover {
+.lpOption3:hover {
   background: #1162df;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
 }
 
-.lpOption {
+.lpOption1,
+.lpOption2,
+.lpOption3 {
   position: relative;
   flex: 1;
   display: flex;
@@ -72,4 +74,48 @@
   position: absolute;
   right: 12px;
   top: 12px;
+}
+
+@media screen and (max-width: 1200px) {
+  .container {
+    margin-top: 30px;
+  }
+
+  .lpOption1 {
+    background: #f8b701;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 0;
+  }
+
+  .lpOption1:hover {
+    background: #f8b701;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 0;
+  }
+
+  .lpOption2 {
+    background: #cd65ae;
+  }
+
+  .lpOption3 {
+    background: #1162df;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-top-right-radius: 0px;
+  }
+
+  .lpOption3:hover {
+    background: #1162df;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-top-right-radius: 0px;
+  }
+}
+
+@media screen and (max-width: 960px) {
+  .container {
+    margin-top: 240px;
+  }
 }

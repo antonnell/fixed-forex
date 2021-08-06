@@ -39,10 +39,10 @@ const theme = createTheme({
     },
     MuiTooltip: {
       tooltip: {
-        background: "#fff !important",
+        background: "#000 !important",
         border: "1px solid #000",
         borderRadius: "8px",
-        color: "#000",
+        color: "#FFF",
         fontSize: "13px"
       }
     }

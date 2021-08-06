@@ -247,8 +247,10 @@ a.linkz { cursor: pointer !important; }
 }
 
 .yearnLogo {
-  width: 95px !important;
-  height: 42.3px !important;
+  width: 110px !important;
+  height: 50px !important;
+  left: -3px;
+  position: relative;
 }
 
 .iconHack {

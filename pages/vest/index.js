@@ -6,7 +6,7 @@ import Layout from '../../components/layout/layout.js';
 import Vesting from '../../components/ffVest';
 import Overview from '../../components/ffOverview';
 import Claim from '../../components/ffClaim';
-import ClaimDistribution from '../../components/ffClaimDistirbution'; 
+import ClaimDistribution from '../../components/ffClaimDistirbution';
 
 import classes from './vest.module.css';
 

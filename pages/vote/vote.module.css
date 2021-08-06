@@ -6,7 +6,6 @@
   margin-top: 0px;
   padding-top: 60px;
   position: relative;
-  position: relative;
 }
 
 @media screen and (max-width: 1600px) {
@@ -14,7 +13,9 @@
 }
 
 @media screen and (max-width: 1200px) {
-
+  .ffContainer {
+    padding-top: 0px;
+  }
 }
 
 @media screen and (max-width: 1000px) {

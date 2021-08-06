@@ -7,13 +7,13 @@ export default function noBalances({ ibff, veIBFF }) {
 
     <Paper elevation={0} className={ classes.container }>
       <div className={ classes.noBalancesContainer }>
-        <div>
+        <div className={classes.contentBox}>
           <Typography className={ classes.title }>What is vesting ibff?</Typography>
           <Typography className={ classes.paragraph }>The ibff token is the emission token of the Fixed Forex ecosystem.</Typography>
           <Typography className={ classes.paragraph }>Vesting your ibff in the Fixed Forex gauge means that you will be locking up your assets in order to gain a voting right in how the protocol emits rewards.</Typography>
           <Typography className={ classes.paragraph }>You will also be eligible to receive your portion of the weekly protocol fees.</Typography>
         </div>
-        <div>
+        <div className={classes.contentBox}>
           <Typography className={ classes.title }>How does vesting work?</Typography>
           <Typography className={ classes.paragraph }>Vesting your ibff in the Fixed Forex gauge requires you to specify 2 parameters:</Typography>
           <div className={ classes.paragraph }>
@@ -30,7 +30,7 @@ export default function noBalances({ ibff, veIBFF }) {
           </div>
         </div>
         <div>
-          <div>
+          <div className={classes.contentBox}>
             <Typography className={ classes.title }>How do I get ibff?</Typography>
             <Typography className={ classes.paragraph }>You can get ibff tokens by staking your Sushiswap LP tokens in the Faucet contract here.</Typography>
             <Typography className={ classes.paragraph }>You can swap your existing assets for ibff using Sushiswap.</Typography>

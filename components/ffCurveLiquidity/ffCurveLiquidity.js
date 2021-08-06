@@ -447,6 +447,7 @@ export default function ffCurveLiquidity({ asset }) {
             <Button
               variant='contained'
               size='large'
+              className={classes.buttonOverride}
               color='primary'
               disabled={ depositLoading || !coin0DepositApprovalNotRequired || !coin1DepositApprovalNotRequired }
               onClick={ onDeposit }
@@ -463,6 +464,7 @@ export default function ffCurveLiquidity({ asset }) {
               variant='contained'
               size='large'
               color='primary'
+              className={classes.buttonOverride}
               disabled={ depositLoading }
               onClick={ onWithdraw }
               >

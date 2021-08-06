@@ -144,7 +144,7 @@ const useStyles = makeStyles((theme) => ({
     padding: '24px',
     width: '100%',
     flexWrap: 'wrap',
-    borderBottom: '1px solid rgba(128, 128, 128, 0.32)',
+    borderBottom: '1px solid rgba(104, 108, 122, 0.25)',
     background: 'radial-gradient(circle, rgba(63,94,251,0.7) 0%, rgba(47,128,237,0.7) 48%) rgba(63,94,251,0.7) 100%',
   },
   assetInfoError: {
@@ -155,7 +155,7 @@ const useStyles = makeStyles((theme) => ({
     padding: '24px',
     width: '100%',
     flexWrap: 'wrap',
-    borderBottom: '1px solid rgba(128, 128, 128, 0.32)',
+    borderBottom: '1px rgba(104, 108, 122, 0.25)',
     background: '#dc3545',
   },
   infoField: {

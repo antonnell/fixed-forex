@@ -2,7 +2,7 @@
   width: calc(100% - 48px);
   max-width: 1356px;
   display: flex;
-  border: 1px solid rgba(128, 128, 128, 0.8);
+  border: 1px solid rgba(104, 108, 122, 0.25);
   position: absolute;
   top: 240px;
   left: 24px;
@@ -11,18 +11,21 @@
   border-radius: 30px;
 }
 
+.buttonWrap {
+}
+
 .actionsContainer {
   display: grid;
   grid-gap: 12px;
   grid-template-columns: 1fr;
-  border-left: 1px solid rgba(128, 128, 128, 0.8);
+  border-left: 1px solid rgba(104, 108, 122, 0.25);
   padding: 0px 24px;
-  width: 240px;
+  width: 100%;
 }
 
 .informationContainer {
   width: 300px;
-  border-left: 1px solid rgba(128, 128, 128, 0.25);
+  border-left: 1px solid rgba(104, 108, 122, 0.25);
   min-height: 140px;
   padding: 0px 12px;
 }
@@ -58,16 +61,17 @@
 .toggleButtons {
   display: flex;
   flex-direction: column;
-  min-height: 140px;
-  width: 200px;
+  min-height: 170px;
+  width: 100%;
 }
 
 .button {
   border-radius: 0px !important;
   flex: 1;
-  border-right: 1px solid rgba(128, 128, 128, 0.25) !important;
+  border-right: 1px solid rgba(104, 108, 122, 0.25) !important;
   transition: none !important;
-  opacity: 0.5;
+  opacity: 1;
+  color: rgba(104, 108, 122, 0.5) !important;
 }
 
 .buttonActive {
@@ -101,17 +105,21 @@
 
 .topLeftButton {
   border-top-left-radius: 10px !important;
-  border-bottom: 1px solid rgba(128, 128, 128, 0.25) !important;
+  border-bottom: 1px solid rgba(104, 108, 122, 0.25) !important;
+  width: 100%;
+  min-height: 85px;
 }
 
 .bottomLeftButton {
   border-bottom-left-radius: 10px !important;
+  width: 100%;
+  min-height: 85px;
 }
 
 .inputsContainer {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-gap: 24px 48px;
+  grid-gap: 24px 0px;
   padding: 0px 24px;
   flex: 1;
 }
@@ -126,6 +134,51 @@
   display: flex;
 }
 
-@media screen and (max-width: 576px) {
+.buttonOverride {
+  background: #114DF0 !important;
+  color: #FFF !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+  width: 100% !important;
+}
 
+@media screen and (max-width: 1200px) {
+  .container {
+    margin-top: -60px;
+  }
+
+  .buttonWrap {
+    margin-top: 20px !important;
+  }
+
+  .actionsContainer {
+    border-left: 0px solid rgba(104, 108, 122, 0.25);
+  }
+
+
+}
+
+@media screen and (max-width: 960px) {
+  .container {
+    margin-top: -60px;
+  }
+
+  .toggleButtons {
+    display: flex;
+    flex-direction: column;
+    min-height: 85px;
+    width: 100%;
+  }
+
+  .topLeftButton {
+    border-top-left-radius: 10px !important;
+    border-right: 1px solid rgba(104, 108, 122, 0.25) !important;
+    border-bottom: 1px solid rgba(104, 108, 122, 0.25) !important;
+  }
+
+  .bottomLeftButton {
+    border-top-right-radius: 10px !important;
+    border-bottom-left-radius: 0px !important;
+    border-bottom: 1px solid rgba(104, 108, 122, 0.25) !important;
+  }
 }
