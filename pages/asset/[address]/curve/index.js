@@ -41,6 +41,12 @@ function Asset({ changeTheme }) {
     };
   }, []);
 
+  useEffect(function () {
+    //set asset
+    const ass = stores.fixedForexStore.getAsset(router.query.address)
+    setAsset(ass)
+  }, [router.query.address])
+
   return (
     <Layout changeTheme={changeTheme}>
       <Head>
