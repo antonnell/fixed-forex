@@ -46,7 +46,7 @@ export default function ffClaim() {
       <Paper elevation={0} className={ classes.lpOptionsContainer }>
         <div className={ classes.lpOption } onClick={ () => { claim() } }>
           <div className={ classes.lpOptionTitle }>
-            <img className={ classes.lpOptionIcon } src='/images/Curve.png' alt='Curve Logo' width={ 60 } height={ 60 } />
+            <img className={ classes.lpOptionIcon } src='/images/ff-icon.svg' alt='FF Logo' width={ 60 } height={ 60 } />
             <div>
               <Typography className={ classes.lpOptionName }>Fixed Forex</Typography>
               <Typography className={ classes.lpOptionDescription }>Vesting Rewards</Typography>
