@@ -89,7 +89,6 @@ function Navigation(props) {
   const [warningOpen, setWarningOpen] = useState(false);
 
   function handleNavigate(route) {
-    console.log(route)
     router.push(route);
   }
 
@@ -161,7 +160,7 @@ function Navigation(props) {
           <HowToVoteIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
           <HowToVoteIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
         )}
-        
+
       </React.Fragment>
     );
   };
