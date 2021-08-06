@@ -211,7 +211,7 @@ export default function EnhancedTable({ assets }) {
   }
 
   const onView = (asset) => {
-    router.push(`/asset/${asset.address}`)
+    router.push(`/asset/${asset.address}/curve`)
   }
 
   return (

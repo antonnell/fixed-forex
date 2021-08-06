@@ -53,7 +53,7 @@ function Asset({ changeTheme }) {
       </Head>
       <div className={classes.container}>
         <FfAssetOverview asset={ asset } />
-        <FfMintBurn asset={ asset } />
+        {/*<FfMintBurn asset={ asset } />*/}
         <FfLPOptions asset={ asset } />
       </div>
     </Layout>

@@ -136,13 +136,13 @@ function Navigation(props) {
         <div className={ classes.subAssets }>
           {renderSubNav(
             'ibEUR',
-            'asset/0x96E61422b6A9bA0e068B6c5ADd4fFaBC6a4aae27',
+            'asset/0x96E61422b6A9bA0e068B6c5ADd4fFaBC6a4aae27/curve',
             <img className={classes.subIcon} src="https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/0x96E61422b6A9bA0e068B6c5ADd4fFaBC6a4aae27/logo-128.png" alt="" height="30px" width="30px" />,
             <img className={classes.subIcon} src="https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/0x96E61422b6A9bA0e068B6c5ADd4fFaBC6a4aae27/logo-128.png" alt="" height="30px" width="30px" />,
           )}
           {renderSubNav(
             'ibKRW',
-            'asset/0x95dFDC8161832e4fF7816aC4B6367CE201538253',
+            'asset/0x95dFDC8161832e4fF7816aC4B6367CE201538253/curve',
             <img className={classes.subIcon}  src="https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/0x95dFDC8161832e4fF7816aC4B6367CE201538253/logo-128.png" alt="" height="30px" width="30px" />,
             <img className={classes.subIcon}  src="https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/0x95dFDC8161832e4fF7816aC4B6367CE201538253/logo-128.png" alt="" height="30px" width="30px" />,
           )}
@@ -159,12 +159,12 @@ function Navigation(props) {
           <HowToVoteIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
           <HowToVoteIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
         )}
-        {renderNav(
+        {/*renderNav(
           'Stake',
           'stake',
           <SpaceBarIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
           <SpaceBarIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
-        )}
+        )*/}
       </React.Fragment>
     );
   };
