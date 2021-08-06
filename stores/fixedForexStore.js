@@ -434,13 +434,14 @@ class Store {
       const veIBFFContract = new web3.eth.Contract(abis.veIBFFABI, VEIBFF_ADDRESS)
 
       const locked = await veIBFFContract.methods.locked(account).call()
+      const balanceOf = await veIBFFContract.methods.balanceOf(account).call()
       const lastUserSlope = await veIBFFContract.methods.get_last_user_slope(account).call()
       const totalSupply = await veIBFFContract.methods.totalSupply().call()
 
       return {
         locked: BigNumber(locked.amount).div(10**veIBFF.decimals).toFixed(veIBFF.decimals),
         lockEnds: locked.end,
-        lockValue: BigNumber(lastUserSlope).div(10**veIBFF.decimals).toFixed(veIBFF.decimals),
+        lockValue: BigNumber(balanceOf).div(10**veIBFF.decimals).toFixed(veIBFF.decimals),
         totalSupply: BigNumber(totalSupply).div(10**veIBFF.decimals).toFixed(veIBFF.decimals)
       }
     } catch(ex) {
