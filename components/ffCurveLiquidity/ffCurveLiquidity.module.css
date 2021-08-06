@@ -2,7 +2,7 @@
   width: calc(100% - 48px);
   max-width: 1356px;
   display: flex;
-  border: 1px solid rgba(128, 128, 128, 0.8);
+  border: 1px solid rgba(104, 108, 122, 0.25);
   position: absolute;
   top: 240px;
   left: 0;
@@ -13,7 +13,7 @@
 
 .topLeftButton {
   border-top-left-radius: 10px !important;
-  border-bottom: 1px solid rgba(128, 128, 128, 0.25) !important;
+  border-bottom: 1px solid rgba(104, 108, 122, 0.25) !important;
 }
 
 .bottomLeftButton {
@@ -117,7 +117,7 @@
   display: grid;
   grid-gap: 12px;
   grid-template-columns: 1fr;
-  border-left: 1px solid rgba(128, 128, 128, 0.8);
+  border-left: 1px solid rgba(104, 108, 122, 0.25);
   padding: 0px 24px;
   width: 240px;
 }
@@ -154,7 +154,7 @@
 .button {
   border-radius: 0px !important;
   flex: 1;
-  border-right: 1px solid rgba(128, 128, 128, 0.25) !important;
+  border-right: 1px solid rgba(104, 108, 122, 0.25) !important;
   transition: none !important;
   opacity: 0.5;
 }
@@ -175,11 +175,18 @@
   display: grid;
   grid-gap: 12px;
   grid-template-columns: 1fr;
-  border-left: 1px solid rgba(128, 128, 128, 0.8);
+  border-left: 1px solid rgba(104, 108, 122, 0.25);
   padding: 0px 24px;
   width: 240px;
 }
 
 .extraTF {
   padding-bottom: 12px;
+}
+
+.buttonOverride {
+  background: #114DF0 !important;
+  color: #FFF !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
 }

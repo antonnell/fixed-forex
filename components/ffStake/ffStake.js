@@ -261,6 +261,7 @@ export default function ffStake() {
               variant='contained'
               size='large'
               color='primary'
+              className={classes.buttonOverride}
               disabled={ depositApprovalNotRequired || approvalLoading }
               onClick={ onApprove }
               >
@@ -271,6 +272,7 @@ export default function ffStake() {
               variant='contained'
               size='large'
               color='primary'
+              className={classes.buttonOverride}
               disabled={ stakeLoading }
               onClick={ onStake }
               >
@@ -285,6 +287,7 @@ export default function ffStake() {
             <Button
               variant='contained'
               size='large'
+              className={classes.buttonOverride}
               color='primary'
               disabled={ stakeLoading }
               onClick={ onUnstake }

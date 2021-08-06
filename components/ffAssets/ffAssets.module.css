@@ -10,13 +10,13 @@
   width: calc(100% - 48px);
   max-width: 1356px;
   display: flex;
-  border: 1px solid rgba(128, 128, 128, 0.8);
+  border: 1px solid rgba(104, 108, 122, 0.25);
   position: absolute;
-  top: 240px;
+  top: 252px;
   left: 24px;
   right: 24px;
   margin: auto;
-  padding: 24px 0px;
+  padding: 0 0 20px 0px;
 }
 
 .title {
@@ -25,6 +25,18 @@
 }
 
 .tableContainer {
-  border: 1px solid rgba(128, 128, 128, 0.8);
+  border: 1px solid rgba(104, 108, 122, 0.25);
   margin: 0 auto;
+}
+
+@media screen and (max-width: 1200px) {
+  .container {
+    margin-top: -60px;
+  }
+}
+
+@media screen and (max-width: 960px) {
+  .container {
+    margin-top: 117px;
+  }
 }

@@ -235,6 +235,7 @@
 
 @media screen and (max-width: 1200px) {
   .headerContainer {
+    display: none;
   }
 }
 

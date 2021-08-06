@@ -68,7 +68,7 @@ export default function ffGauges() {
       </div>
       <div className={ classes.actionButtons }>
         <Button
-          className={ classes.actionButton }
+          className={ classes.buttonOverride }
           variant='contained'
           size='large'
           color='primary'

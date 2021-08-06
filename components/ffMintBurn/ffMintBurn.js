@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Typography, Paper, Button, TextField, InputAdornment } from '@material-ui/core';
+import React, { useState, useEffect } from 'react';
+import { Typography, Paper, Grid, Button, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
@@ -130,7 +130,7 @@ export default function ffMintBurn() {
             renderOption={(option) => (
               <React.Fragment>
                 <img
-                  src={option && option.icon ? option.icon : `tokens/unknown-logo.png`}
+                  src={option && option.icon ? option.icon : 'https://raw.githubusercontent.com/x33q/cryptologos/main/unknown-logo.png'}
                   alt=""
                   width={30}
                   height={30}
@@ -152,7 +152,7 @@ export default function ffMintBurn() {
                     startAdornment: (
                       <InputAdornment position="start">
                         <img
-                          src={assetValue && assetValue.icon ? assetValue.icon : `tokens/unknown-logo.png`}
+                          src={assetValue && assetValue.icon ? assetValue.icon : 'https://raw.githubusercontent.com/x33q/cryptologos/main/unknown-logo.png'}
                           alt=""
                           width={30}
                           height={30}
@@ -174,69 +174,91 @@ export default function ffMintBurn() {
 
   return (
     <Paper elevation={0} className={classes.container}>
-      <div className={classes.toggleButtons}>
-        <Button className={ `${activeTab === 'deposit' ? classes.buttonActive : classes.button} ${ classes.topLeftButton }` } onClick={ toggleDeposit }>
-          <Typography variant='h5'>Deposit / Mint</Typography>
-          <div className={ `${activeTab === 'deposit' ? classes.activeIcon : ''}` }></div>
-        </Button>
-        <Button className={ `${activeTab === 'withdraw' ? classes.buttonActive : classes.button}  ${ classes.bottomLeftButton }` } onClick={ toggleWithdraw }>
-          <Typography variant='h5'>Withdraw / Burn</Typography>
-          <div className={ `${activeTab === 'withdraw' ? classes.activeIcon : ''}` }></div>
-        </Button>
-      </div>
-      <div className={ classes.reAddPadding }>
-        <div className={ classes.inputsContainer }>
-          {
-            activeTab === 'deposit' &&
-            <>
-              { renderInput('deposit', 'Deposit', onAmountChanged, onAmountPercentChanged, depositAmount, onAssetChanged, depositAsset) }
-              { renderInput('mint', 'Mint', onAmountChanged, onAmountPercentChanged, mintAmount, onAssetChanged, mintAsset) }
-            </>
-          }
-          {
-            activeTab === 'withdraw' &&
-            <>
-              { renderInput('withdraw', 'Withdraw', onAmountChanged, onAmountPercentChanged, withdrawAmount, onAssetChanged, withdrawAsset) }
-              { renderInput('burn', 'Burn', onAmountChanged, onAmountPercentChanged, burnAmount, onAssetChanged, burnAsset) }
-            </>
-          }
+      <Grid container spacing={0}>
+        <Grid item lg={2} md={3} xs={12}>
+        <div className={classes.toggleButtons}>
+          <Grid container spacing={0}>
+            <Grid item lg={12} md={12} sm={6} xs={6}>
+              <Button className={ `${activeTab === 'deposit' ? classes.buttonActive : classes.button} ${ classes.topLeftButton }` } onClick={ toggleDeposit }>
+                <Typography variant='h5'>Deposit / Mint</Typography>
+                <div className={ `${activeTab === 'deposit' ? classes.activeIcon : ''}` }></div>
+              </Button>
+            </Grid>
+            <Grid item lg={12} md={12} sm={6} xs={6}>
+              <Button className={ `${activeTab === 'withdraw' ? classes.buttonActive : classes.button}  ${ classes.bottomLeftButton }` } onClick={ toggleWithdraw }>
+                <Typography variant='h5'>Withdraw / Burn</Typography>
+                <div className={ `${activeTab === 'withdraw' ? classes.activeIcon : ''}` }></div>
+              </Button>
+            </Grid>
+          </Grid>
         </div>
-        {
-          activeTab === 'deposit' &&
-          <div className={ classes.actionsContainer }>
-            <Button
-              variant='contained'
-              size='large'
-              color='primary'>
-              <Typography className={ classes.actionButtonText }>Approve</Typography>
-            </Button>
-            <Button
-              variant='contained'
-              size='large'
-              color='primary'>
-              <Typography className={ classes.actionButtonText }>Deposit & Mint</Typography>
-            </Button>
-          </div>
-        }
-        {
-          activeTab === 'withdraw' &&
-          <div className={ classes.actionsContainer }>
-            <Button
-              variant='contained'
-              size='large'
-              color='primary'>
-              <Typography className={ classes.actionButtonText }>Approve</Typography>
-            </Button>
-            <Button
-              variant='contained'
-              size='large'
-              color='primary'>
-              <Typography className={ classes.actionButtonText }>Withdraw & Burn</Typography>
-            </Button>
-          </div>
-        }
-      </div>
+        </Grid>
+        <Grid item lg={10} md={9}>
+        <div className={ classes.reAddPadding }>
+          <Grid container spacing={0}>
+            <Grid item lg={9} xs={12}>
+              <div className={ classes.inputsContainer }>
 
+                  {
+                    activeTab === 'deposit' &&
+                    <>
+                      { renderInput('deposit', 'Deposit', onAmountChanged, onAmountPercentChanged, depositAmount, onAssetChanged, depositAsset) }
+                      { renderInput('mint', 'Mint', onAmountChanged, onAmountPercentChanged, mintAmount, onAssetChanged, mintAsset) }
+                    </>
+                  }
+                  {
+                    activeTab === 'withdraw' &&
+                    <>
+                      { renderInput('withdraw', 'Withdraw', onAmountChanged, onAmountPercentChanged, withdrawAmount, onAssetChanged, withdrawAsset) }
+                      { renderInput('burn', 'Burn', onAmountChanged, onAmountPercentChanged, burnAmount, onAssetChanged, burnAsset) }
+                    </>
+                  }
+              </div>
+            </Grid>
+            <Grid item lg={3} xs={12} className={classes.buttonWrap}>
+              {
+                activeTab === 'deposit' &&
+                <div className={ classes.actionsContainer }>
+                  <Button
+                    variant='contained'
+                    size='large'
+                    color='white'
+                    className={classes.buttonOverride}>
+                    <Typography className={ classes.actionButtonText }>Approve</Typography>
+                  </Button>
+                  <Button
+                    variant='contained'
+                    size='large'
+                    color='white'
+                    className={classes.buttonOverride}>
+                    <Typography className={ classes.actionButtonText }>Deposit & Mint</Typography>
+                  </Button>
+                </div>
+              }
+              {
+                activeTab === 'withdraw' &&
+                <div className={ classes.actionsContainer }>
+                  <Button
+                    variant='contained'
+                    size='large'
+                    color='white'
+                    className={classes.buttonOverride}>
+                    <Typography className={ classes.actionButtonText }>Approve</Typography>
+                  </Button>
+                  <Button
+                    variant='contained'
+                    size='large'
+                    color='white'
+                    className={classes.buttonOverride}>
+                    <Typography className={ classes.actionButtonText }>Withdraw & Burn</Typography>
+                  </Button>
+                </div>
+              }
+            </Grid>
+          </Grid>
+        </div>
+        </Grid>
+      </Grid>
     </Paper>
   );
 }

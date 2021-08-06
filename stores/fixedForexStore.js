@@ -652,7 +652,7 @@ class Store {
       return this.emitter.emit(FIXED_FOREX_STAKING_REWARD_CLAIMED, res);
     });
   }
- 
+
   _callClaimCurveReward = async (web3, account, asset, gasSpeed, callback) => {
     try {
       const gaugeContract = new web3.eth.Contract(abis.gaugeABI, asset.gauge.address)

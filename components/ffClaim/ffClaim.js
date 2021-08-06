@@ -37,6 +37,7 @@ export default function ffClaim() {
       setLoading(true)
       stores.dispatcher.dispatch({ type: FIXED_FOREX_CLAIM_VESTING_REWARD, content: {}})
     // }
+
   }
 
   return (

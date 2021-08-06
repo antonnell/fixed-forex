@@ -11,7 +11,7 @@
 }
 
 .lpOptionsContainer {
-  border: 1px solid rgba(128, 128, 128, 0.8);
+  border: 1px solid rgba(104, 108, 122, 0.25);
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -63,8 +63,6 @@
   top: 12px;
 }
 
-
-
 .lpOption:nth-child(1):hover > div {
   color: #fff !important;
 }
@@ -72,4 +70,10 @@
 .amountText {
   font-size: 60px !important;
   font-weight: bold !important;
+}
+
+@media screen and (max-width: 1200px) {
+  .container {
+    margin-top: 60px;
+  }
 }

@@ -20,7 +20,7 @@
 }
 
 .title {
-  background: rgba(256, 256, 256, 0.3);
+  background: rgba(256, 256, 256, 0.2);
   border-radius: 30px;
   padding: 4px 20px;
   width: fit-content;
@@ -49,7 +49,7 @@
 
 .balanceIcon {
   color: #fff;
-  border: 1px solid #fff;
+  border: 1px solid rgba(255,255,255,0.2);
   border-radius: 50%;
   padding: 16px;
   font-size: 70px !important;
