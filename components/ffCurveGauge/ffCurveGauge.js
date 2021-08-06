@@ -1,16 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Typography, Button, TextField, InputAdornment, CircularProgress, RadioGroup, Radio, FormControlLabel } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { Paper, Typography, Button, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
 import BigNumber from 'bignumber.js';
-import Skeleton from '@material-ui/lab/Skeleton';
-import moment from 'moment';
 import { formatCurrency } from '../../utils';
 import classes from './ffCurveGauge.module.css';
 import stores from '../../stores'
 import {
   ERROR,
-  FIXED_FOREX_UPDATED,
-  MAX_UINT256,
   FIXED_FOREX_APPROVE_STAKE_CURVE,
   FIXED_FOREX_STAKE_CURVE_APPROVED,
   FIXED_FOREX_STAKE_CURVE,
@@ -18,7 +13,6 @@ import {
   FIXED_FOREX_UNSTAKE_CURVE,
   FIXED_FOREX_CURVE_UNSTAKED
 } from '../../stores/constants';
-import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 
 export default function ffCurveGauge({ asset }) {
 
@@ -26,10 +20,10 @@ export default function ffCurveGauge({ asset }) {
   const [ depositLoading, setDepositLoading ] = useState(false)
 
   const [ amount, setAmount ] = useState('');
-  const [ amountError, setAmountError ] = useState(false);
+  const [ amountError/*, setAmountError*/ ] = useState(false);
 
   const [ withdrawAmount, setWithdrawAmount ] = useState('');
-  const [ withdrawAmountError, setWithdrawAmountError ] = useState(false);
+  const [ withdrawAmountError/*, setWithdrawAmountError*/ ] = useState(false);
 
   const [ activeTab, setActiveTab ] = useState('deposit')
 

@@ -55,7 +55,10 @@ export default function ffClaimDistirbution() {
           </div>
           <div>
             { BigNumber(rewards && rewards.feeDistribution ? rewards.feeDistribution.earned : 0).gt(0) &&
-              <Typography>Claim Now</Typography>
+              (
+                loading ? <Typography>Claiming</Typography> : <Typography>Claim Now</Typography>
+              )
+
             }
             { !BigNumber(rewards && rewards.feeDistribution ? rewards.feeDistribution.earned : 0).gt(0) &&
               <Typography>Vest ibff to earn rewards</Typography>

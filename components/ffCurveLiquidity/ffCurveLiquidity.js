@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Typography, Button, TextField, InputAdornment, CircularProgress, RadioGroup, Radio, FormControlLabel } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import { Paper, Typography, Button, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
 import BigNumber from 'bignumber.js';
-import Skeleton from '@material-ui/lab/Skeleton';
-import moment from 'moment';
 import { formatCurrency } from '../../utils';
 import classes from './ffCurveLiquidity.module.css';
 import stores from '../../stores'
 import {
   ERROR,
-  FIXED_FOREX_UPDATED,
   MAX_UINT256,
   FIXED_FOREX_APPROVE_DEPOSIT_CURVE,
   FIXED_FOREX_DEPOSIT_CURVE_APPROVED,
@@ -18,27 +14,24 @@ import {
   FIXED_FOREX_WITHDRAW_CURVE,
   FIXED_FOREX_CURVE_WITHDRAWN
 } from '../../stores/constants';
-import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 
 export default function ffCurveLiquidity({ asset }) {
-
-  console.log(asset)
 
   const [ approvalLoading0, setApprovalLoading0 ] = useState(false)
   const [ approvalLoading1, setApprovalLoading1 ] = useState(false)
   const [ depositLoading, setDepositLoading ] = useState(false)
 
   const [ amount0, setAmount0 ] = useState('');
-  const [ amount0Error, setAmount0Error ] = useState(false);
+  const [ amount0Error/*, setAmount0Error*/ ] = useState(false);
   const [ amount1, setAmount1 ] = useState('');
-  const [ amount1Error, setAmount1Error ] = useState(false);
+  const [ amount1Error/*, setAmount1Error*/ ] = useState(false);
 
   const [ withdrawAmount, setWithdrawAmount ] = useState('');
-  const [ withdrawAmountError, setWithdrawAmountError ] = useState(false);
+  const [ withdrawAmountError/*, setWithdrawAmountError*/ ] = useState(false);
   const [ withdrawAmount0, setWithdrawAmount0 ] = useState('');
-  const [ withdrawAmount0Error, setWithdrawAmount0Error ] = useState(false);
+  const [ withdrawAmount0Error/*, setWithdrawAmount0Error*/ ] = useState(false);
   const [ withdrawAmount1, setWithdrawAmount1 ] = useState('');
-  const [ withdrawAmount1Error, setWithdrawAmount1Error ] = useState(false);
+  const [ withdrawAmount1Error/*, setWithdrawAmount1Error*/ ] = useState(false);
 
   const [ withdrawAmount0Percent, setWithdrawAmount0Percent ] = useState('');
   const [ withdrawAmount1Percent, setWithdrawAmount1Percent ] = useState('');

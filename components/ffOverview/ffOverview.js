@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Typography, Button, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import Skeleton from '@material-ui/lab/Skeleton';
+import { Typography } from '@material-ui/core';
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import TimerIcon from '@material-ui/icons/Timer';

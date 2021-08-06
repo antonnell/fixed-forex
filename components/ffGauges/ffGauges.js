@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Typography, Button, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
+import { Paper, Typography, Button, CircularProgress } from '@material-ui/core';
 import BigNumber from 'bignumber.js';
 
-import { formatCurrency } from '../../utils';
 import classes from './ffGauges.module.css';
 
 import GaugesTable from './ffGaugesTable.js'
