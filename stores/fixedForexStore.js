@@ -191,104 +191,28 @@ class Store {
   }
 
   configure = async (payload) => {
-    const web3 = await stores.accountStore.getWeb3Provider();
-    if (!web3) {
-      return null;
-    }
-
-    const account = await stores.accountStore.getStore('account');
-    if (!account) {
-      return null;
-    }
-
     try {
+      const web3 = await stores.accountStore.getWeb3Provider();
+      if (!web3) {
+        return null;
+      }
+
+      const account = await stores.accountStore.getStore('account');
+      if (!account) {
+        return null;
+      }
 
       const assets = this._getAssets(web3)
-      async.map(assets, async (asset, callback) => {
-        asset = await this._getAssetInfo(web3, asset)
-        callback(null, asset)
-      }, (err, data) => {
+      this.setStore({ assets })
 
-        if(err) {
-          this.emitter.emit(ERROR, err);
-          return
-        }
-
-        this.setStore({ assets: data })
-
-        this.emitter.emit(FIXED_FOREX_UPDATED);
-        this.emitter.emit(FIXED_FOREX_CONFIGURED);
-        this.dispatcher.dispatch({ type: GET_FIXED_FOREX_BALANCES });
-      })
-
-
+      this.emitter.emit(FIXED_FOREX_UPDATED);
+      this.emitter.emit(FIXED_FOREX_CONFIGURED);
+      this.dispatcher.dispatch({ type: GET_FIXED_FOREX_BALANCES });
     } catch(ex) {
       console.log(ex)
       this.emitter.emit(ERROR, ex)
     }
   };
-
-  _getAssets = (web3) => {
-    const assets = [
-      {
-        address: IBEUR_ADDRESS,
-        gauge: {
-          address: IBEUR_GAUGE_ADDRESS,
-          poolAddress: IBEUR_POOL_ADDRESS
-        }
-      },
-      {
-        address: IBKRW_ADDRESS,
-        gauge: {
-          address: IBKRW_GAUGE_ADDRESS,
-          poolAddress: IBKRW_POOL_ADDRESS
-        }
-      }
-    ]
-
-    return assets
-  }
-
-  _getAssetBalance = async(web3, asset, account) => {
-    try {
-      const assetContract = new web3.eth.Contract(abis.erc20ABI, asset.address)
-      const balanceOf = await assetContract.methods.balanceOf(account.address).call()
-      const balance = BigNumber(balanceOf).div(10**asset.decimals).toFixed(asset.decimals)
-      return balance
-    } catch(ex) {
-      console.log(ex)
-      return null
-    }
-  }
-
-  _getAssetInfo = async (web3, asset, account) => {
-    try {
-      const assetContract = new web3.eth.Contract(abis.ibEURABI, asset.address)
-
-      const symbol = await assetContract.methods.symbol().call()
-      const name = await assetContract.methods.name().call()
-      const decimals = parseInt(await assetContract.methods.decimals().call())
-
-      let balance = asset.balance ? asset.balance : 0
-
-      if(account) {
-        const balanceOf = await assetContract.methods.balanceOf(account.address).call()
-        balance = BigNumber(balanceOf).div(10**decimals).toFixed(decimals)
-      }
-
-      return {
-        address: web3.utils.toChecksumAddress(asset.address),
-        symbol,
-        name,
-        decimals,
-        balance,
-        gauge: asset.gauge
-      }
-    } catch(ex) {
-      console.log(ex)
-      return null
-    }
-  }
 
   _getSystemAssets = () => {
     return {
@@ -312,6 +236,74 @@ class Store {
       }
     }
   }
+
+  _getAssets = (web3) => {
+    const assets = [
+      {
+        address: IBEUR_ADDRESS,
+        symbol: 'ibEUR',
+        decimals: 18,
+        name: 'Iron Bank EUR',
+        gauge: {
+          address: IBEUR_GAUGE_ADDRESS,
+          poolAddress: IBEUR_POOL_ADDRESS
+        }
+      },
+      {
+        address: IBKRW_ADDRESS,
+        symbol: 'ibKRW',
+        decimals: 18,
+        name: 'Iron Bank KRW',
+        gauge: {
+          address: IBKRW_GAUGE_ADDRESS,
+          poolAddress: IBKRW_POOL_ADDRESS
+        }
+      }
+    ]
+
+    return assets
+  }
+
+  _getAssetBalance = async(web3, asset, account) => {
+    try {
+      const assetContract = new web3.eth.Contract(abis.erc20ABI, asset.address)
+      const balanceOf = await assetContract.methods.balanceOf(account.address).call()
+      const balance = BigNumber(balanceOf).div(10**asset.decimals).toFixed(asset.decimals)
+      return balance
+    } catch(ex) {
+      console.log(ex)
+      return null
+    }
+  }
+
+  // _getAssetInfo = async (web3, asset, account) => {
+  //   try {
+  //     const assetContract = new web3.eth.Contract(abis.ibEURABI, asset.address)
+  //
+  //     const symbol = await assetContract.methods.symbol().call()
+  //     const name = await assetContract.methods.name().call()
+  //     const decimals = parseInt(await assetContract.methods.decimals().call())
+  //
+  //     let balance = asset.balance ? asset.balance : 0
+  //
+  //     if(account) {
+  //       const balanceOf = await assetContract.methods.balanceOf(account.address).call()
+  //       balance = BigNumber(balanceOf).div(10**decimals).toFixed(decimals)
+  //     }
+  //
+  //     return {
+  //       address: web3.utils.toChecksumAddress(asset.address),
+  //       symbol,
+  //       name,
+  //       decimals,
+  //       balance,
+  //       gauge: asset.gauge
+  //     }
+  //   } catch(ex) {
+  //     console.log(ex)
+  //     return null
+  //   }
+  // }
 
   getFFBalances = async (payload) => {
     try {
@@ -375,8 +367,11 @@ class Store {
       this.emitter.emit(FIXED_FOREX_UPDATED);
 
       const gaugeProxyContract = new web3.eth.Contract(abis.gaugeProxyABI, GAUGE_PROXY_ADDRESS)
-      const totalGaugeVotes = await gaugeProxyContract.methods.totalWeight().call()
-      const totalUserVotes = await gaugeProxyContract.methods.usedWeights(account.address).call()
+
+      const [totalGaugeVotes, totalUserVotes] = await Promise.all([
+        gaugeProxyContract.methods.totalWeight().call(),
+        gaugeProxyContract.methods.usedWeights(account.address).call()
+      ]);
 
       // get asset balances
       // get asset approvals (swap/stake/vest)
@@ -385,49 +380,64 @@ class Store {
         const balanceOf = await assetContract.methods.balanceOf(account.address).call()
 
         const gaugeContract = new web3.eth.Contract(abis.gaugeABI, asset.gauge.address)
-        const userRewards = await gaugeContract.methods.earned(account.address).call()
-        const userGaugeBalance = await gaugeContract.methods.balanceOf(account.address).call()
 
-        const gaugeVotes = await gaugeProxyContract.methods.weights(asset.gauge.poolAddress).call()
-        const userGaugeVotes = await gaugeProxyContract.methods.votes(account.address, asset.gauge.poolAddress).call()
+        const [userRewards, userGaugeBalance, gaugeVotes, userGaugeVotes] = await Promise.all([
+          gaugeContract.methods.earned(account.address).call(),
+          gaugeContract.methods.balanceOf(account.address).call(),
+          gaugeProxyContract.methods.weights(asset.gauge.poolAddress).call(),
+          gaugeProxyContract.methods.votes(account.address, asset.gauge.poolAddress).call()
+        ]);
 
         const poolContract = new web3.eth.Contract(abis.poolABI, asset.gauge.poolAddress)
-        const poolBalances = await poolContract.methods.get_balances().call()
-        const userPoolBalance = await poolContract.methods.balanceOf(account.address).call()
-        const poolSymbol = await poolContract.methods.symbol().call()
-        const virtualPrice = await poolContract.methods.get_virtual_price().call()
-        const poolGaugeAllowance = await poolContract.methods.allowance(account.address, asset.gauge.address).call()
 
-        const coins0 = await poolContract.methods.coins(0).call()
+        const [poolBalances, userPoolBalance, poolSymbol, virtualPrice, poolGaugeAllowance, coins0, coins1] = await Promise.all([
+          poolContract.methods.get_balances().call(),
+          poolContract.methods.balanceOf(account.address).call(),
+          poolContract.methods.symbol().call(),
+          poolContract.methods.get_virtual_price().call(),
+          poolContract.methods.allowance(account.address, asset.gauge.address).call(),
+          poolContract.methods.coins(0).call(),
+          poolContract.methods.coins(1).call()
+        ]);
+
+        // get coin asset info
         const coin0Contract = new web3.eth.Contract(abis.erc20ABI, coins0)
-        const coin0Symbol = await coin0Contract.methods.symbol().call()
-        const coin0Decimals = parseInt(await coin0Contract.methods.decimals().call())
-        const coin0Balance = await coin0Contract.methods.balanceOf(account.address).call()
-        const coin0GaugeAllowance = await coin0Contract.methods.allowance(account.address, asset.gauge.poolAddress).call()
-
-        const coins1 = await poolContract.methods.coins(1).call()
         const coin1Contract = new web3.eth.Contract(abis.erc20ABI, coins1)
-        const coin1Symbol = await coin1Contract.methods.symbol().call()
-        const coin1Decimals = parseInt(await coin1Contract.methods.decimals().call())
-        const coin1Balance = await coin1Contract.methods.balanceOf(account.address).call()
-        const coin1GaugeAllowance = await coin1Contract.methods.allowance(account.address, asset.gauge.poolAddress).call()
+
+        const [
+          coin0Symbol, coin0Decimals, coin0Balance, coin0GaugeAllowance,
+          coin1Symbol, coin1Decimals, coin1Balance, coin1GaugeAllowance
+        ] = await Promise.all([
+          coin0Contract.methods.symbol().call(),
+          coin0Contract.methods.decimals().call(),
+          coin0Contract.methods.balanceOf(account.address).call(),
+          coin0Contract.methods.allowance(account.address, asset.gauge.poolAddress).call(),
+
+          coin1Contract.methods.symbol().call(),
+          coin1Contract.methods.decimals().call(),
+          coin1Contract.methods.balanceOf(account.address).call(),
+          coin1Contract.methods.allowance(account.address, asset.gauge.poolAddress).call()
+        ]);
+
+        let intCoin0Decimasls = parseInt(coin0Decimals)
+        let intCoin1Decimasls = parseInt(coin1Decimals)
 
         const coin0 = {
           address: coins0,
           symbol: coin0Symbol,
-          decimals: coin0Decimals,
-          balance: BigNumber(coin0Balance).div(10**coin0Decimals).toFixed(coin0Decimals),
-          poolBalance: BigNumber(poolBalances[0]).div(10**coin0Decimals).toFixed(coin0Decimals),
-          gaugeAllowance: BigNumber(coin0GaugeAllowance).div(10**coin0Decimals).toFixed(coin0Decimals),
+          decimals: intCoin0Decimasls,
+          balance: BigNumber(coin0Balance).div(10**intCoin0Decimasls).toFixed(intCoin0Decimasls),
+          poolBalance: BigNumber(poolBalances[0]).div(10**intCoin0Decimasls).toFixed(intCoin0Decimasls),
+          gaugeAllowance: BigNumber(coin0GaugeAllowance).div(10**intCoin0Decimasls).toFixed(intCoin0Decimasls),
         }
 
         const coin1 = {
           address: coins1,
           symbol: coin1Symbol,
-          decimals: coin1Decimals,
-          balance: BigNumber(coin1Balance).div(10**coin1Decimals).toFixed(coin1Decimals),
-          poolBalance: BigNumber(poolBalances[1]).div(10**coin1Decimals).toFixed(coin1Decimals),
-          gaugeAllowance: BigNumber(coin1GaugeAllowance).div(10**coin1Decimals).toFixed(coin1Decimals),
+          decimals: intCoin1Decimasls,
+          balance: BigNumber(coin1Balance).div(10**intCoin1Decimasls).toFixed(intCoin1Decimasls),
+          poolBalance: BigNumber(poolBalances[1]).div(10**intCoin1Decimasls).toFixed(intCoin1Decimasls),
+          gaugeAllowance: BigNumber(coin1GaugeAllowance).div(10**intCoin1Decimasls).toFixed(intCoin1Decimasls),
         }
 
         return {
@@ -439,10 +449,10 @@ class Store {
           gaugeVotes,
           userGaugeVotes,
           poolSymbol,
-          virtualPrice: BigNumber(virtualPrice).div(10**18).toFixed(18),
-          userPoolBalance: BigNumber(userPoolBalance).div(10**18).toFixed(18),
-          userGaugeBalance: BigNumber(userGaugeBalance).div(10**18).toFixed(18),
-          poolGaugeAllowance: BigNumber(poolGaugeAllowance).div(10**18).toFixed(18),
+          virtualPrice,
+          userPoolBalance,
+          userGaugeBalance,
+          poolGaugeAllowance,
         }
       })
 
@@ -457,10 +467,10 @@ class Store {
         assets[i].gauge.coin0 = assetsBalances[i].coin0
         assets[i].gauge.coin1 = assetsBalances[i].coin1
         assets[i].gauge.poolSymbol = assetsBalances[i].poolSymbol
-        assets[i].gauge.userPoolBalance = assetsBalances[i].userPoolBalance
-        assets[i].gauge.userGaugeBalance = assetsBalances[i].userGaugeBalance
-        assets[i].gauge.virtualPrice = assetsBalances[i].virtualPrice
-        assets[i].gauge.poolGaugeAllowance = assetsBalances[i].poolGaugeAllowance
+        assets[i].gauge.userPoolBalance = BigNumber(assetsBalances[i].userPoolBalance).div(10**18).toFixed(18)
+        assets[i].gauge.userGaugeBalance = BigNumber(assetsBalances[i].userGaugeBalance).div(10**18).toFixed(18)
+        assets[i].gauge.virtualPrice = BigNumber(assetsBalances[i].virtualPrice).div(10**18).toFixed(18)
+        assets[i].gauge.poolGaugeAllowance = BigNumber(assetsBalances[i].poolGaugeAllowance).div(10**18).toFixed(18)
       }
 
       this.setStore({

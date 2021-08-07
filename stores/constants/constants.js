@@ -17,7 +17,7 @@ export const IBKRW_ADDRESS = '0x95dFDC8161832e4fF7816aC4B6367CE201538253'       
 export const IBKRW_GAUGE_ADDRESS = '0xCADEA5B814917c0D03a8cF7612c1e4B09f49dbc7'       // -> KRW Gauge
 export const IBKRW_POOL_ADDRESS = '0x8461A004b50d321CB22B7d034969cE6803911899'        // -> KRW Pool
 
-export const IBEUR_ADDRESS = '0x96e61422b6a9ba0e068b6c5add4ffabc6a4aae27'             // -> EUR
+export const IBEUR_ADDRESS = '0x96E61422b6A9bA0e068B6c5ADd4fFaBC6a4aae27'             // -> EUR
 export const IBEUR_GAUGE_ADDRESS = '0xFFb57364d63D5C5cf299D12Fa73cfabEFc301Dc4'       // -> EUR Gauge
 export const IBEUR_POOL_ADDRESS = '0x19b080FE1ffA0553469D20Ca36219F17Fcf03859'        // -> EUR Pool
 
