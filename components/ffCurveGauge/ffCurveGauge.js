@@ -161,21 +161,6 @@ export default function ffCurveGauge({ asset }) {
                   />
                 </div>
                 <div className={classes.textField}>
-                  <div className={classes.inputTitle}>
-                    <Typography variant="h5" className={ classes.inputTitleText }>
-                      Some info:
-                    </Typography>
-                  </div>
-                  <div className={classes.inputTitle}>
-                    <Typography variant="h5" className={ classes.inputTitleText }>
-                      Weekly rewards:
-                    </Typography>
-                  </div>
-                  <div className={classes.inputTitle}>
-                    <Typography variant="h5" className={ classes.inputTitleText }>
-                      I don't know - What do you want to see here?:
-                    </Typography>
-                  </div>
                 </div>
               </>
             }

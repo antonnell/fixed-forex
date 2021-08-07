@@ -68,3 +68,32 @@ export function sqrt(value) {
 
   return newtonIteration(value, 1n)
 }
+
+export function multiplyBnToFixed(...args) {
+  if (args.length < 3) throw new Error('multiplyBnToFixed needs at least 3 arguments: first bn, second bn to multiply with first, and number of decimals.')
+
+  const decimals = args[args.length - 1]
+  const bigNumbers = args.slice(0, -1)
+
+  return bnToFixed(multiplyArray(bigNumbers), decimals * bigNumbers.length, decimals)
+};
+
+export function sumArray (numbers) {
+  return numbers.reduce((total, n) => total + Number(n), 0)
+}
+
+export function bnToFixed (bn, decimals, displayDecimals = decimals) {
+  const bnDecimals = new BigNumber(10).pow(decimals)
+
+  return new BigNumber(bn)
+    .dividedBy(bnDecimals)
+    .toFixed(displayDecimals, BigNumber.ROUND_DOWN)
+};
+
+export function floatToFixed (float, decimals = 0) {
+  return new BigNumber(float).toFixed(decimals, BigNumber.ROUND_DOWN)
+}
+
+export function multiplyArray (numbers) {
+  return numbers.reduce((total, n) => total * n, 1)
+}

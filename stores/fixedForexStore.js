@@ -58,14 +58,16 @@ import {
   FIXED_FOREX_CLAIM_DISTRIBUTION_REWARD,
   FIXED_FOREX_DISTRIBUTION_REWARD_CLAIMED,
   FIXED_FOREX_CLAIM_CURVE_REWARDS,
-  FIXED_FOREX_CURVE_REWARD_CLAIMED
+  FIXED_FOREX_CURVE_REWARD_CLAIMED,
+  FIXED_FOREX_GET_SLIPPAGE_INFO,
+  FIXED_FOREX_SLIPPAGE_INFO_RETURNED,
 } from './constants';
 
 import * as moment from 'moment';
 
 import stores from './';
 import abis from './abis';
-import { bnDec } from '../utils';
+import { bnDec, bnToFixed, multiplyBnToFixed, sumArray } from '../utils';
 
 import BigNumber from 'bignumber.js';
 const fetch = require('node-fetch');
@@ -141,6 +143,9 @@ class Store {
             break;
           case FIXED_FOREX_WITHDRAW_CURVE:
             this.withdrawCurve(payload);
+            break;
+          case FIXED_FOREX_GET_SLIPPAGE_INFO:
+            this.getSlippageInfo(payload)
             break;
             // STAKING CURVE LP
           case FIXED_FOREX_APPROVE_STAKE_CURVE:
@@ -1171,9 +1176,48 @@ class Store {
     }
   };
 
+  getSlippageInfo = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
 
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
 
+    const { asset, amount0, amount1 } = payload.content;
 
+    const sendAmount0 = BigNumber(amount0 === '' ? 0 : amount0)
+      .times(10 ** asset.gauge.coin0.decimals)
+      .toFixed(0);
+
+    const sendAmount1 = BigNumber(amount1 === '' ? 0 : amount1)
+      .times(10 ** asset.gauge.coin1.decimals)
+      .toFixed(0);
+
+    const poolContract = new web3.eth.Contract(abis.poolABI, asset.gauge.poolAddress)
+
+    const [receiveAmount, virtualPrice] = await Promise.all([
+      poolContract.methods.calc_token_amount([sendAmount0, sendAmount1], true).call(),
+      poolContract.methods.get_virtual_price().call(),
+    ])
+
+    const rec = bnToFixed(receiveAmount, 18)
+    let slippage;
+
+    if (Number(rec)) {
+      const virtualValue = BigNumber(virtualPrice).times(rec).div(10**18).toFixed(18)
+      const realValue = sumArray([amount0, amount1]) // Assuming each component is at peg
+
+      slippage = (virtualValue / realValue) - 1;
+    }
+
+    this.emitter.emit(FIXED_FOREX_SLIPPAGE_INFO_RETURNED, typeof slippage !== 'undefined' ? slippage * 100 : slippage)
+  }
 
 
 
