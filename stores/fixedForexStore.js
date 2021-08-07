@@ -249,6 +249,18 @@ class Store {
     return assets
   }
 
+  _getAssetBalance = async(web3, asset, account) => {
+    try {
+      const assetContract = new web3.eth.Contract(abis.erc20ABI, asset.address)
+      const balanceOf = await assetContract.methods.balanceOf(account.address).call()
+      const balance = BigNumber(balanceOf).div(10**asset.decimals).toFixed(asset.decimals)
+      return balance
+    } catch(ex) {
+      console.log(ex)
+      return null
+    }
+  }
+
   _getAssetInfo = async (web3, asset, account) => {
     try {
       const assetContract = new web3.eth.Contract(abis.ibEURABI, asset.address)
@@ -278,9 +290,31 @@ class Store {
     }
   }
 
+  _getSystemAssets = () => {
+    return {
+      ibff: {
+        address: IBFF_ADDRESS,
+        decimals: 18,
+        symbol: 'ibff',
+        name: 'Iron Bank Fixed Forex'
+      },
+      veIBFF: {
+        address: VEIBFF_ADDRESS,
+        decimals: 18,
+        symbol: 'veIBFF',
+        name: 'Vested IBFF'
+      },
+      ibERUETH: {
+        address: IBEUR_ETH_ADDRESS,
+        decimals: 18,
+        symbol: 'SLP',
+        name: 'SushiSwap LP Token'
+      }
+    }
+  }
+
   getFFBalances = async (payload) => {
     try {
-
       const assets = this.getStore('assets');
       if (!assets) {
         return null;
@@ -296,20 +330,32 @@ class Store {
         return null;
       }
 
-      // get ibFF bal
-      const ibff = await this._getAssetInfo(web3, { address: IBFF_ADDRESS }, account)
+      const systemAssets = this._getSystemAssets()
+
+      // GET IBFF balance and vesting allowance
+      const ibff = systemAssets.ibff
+      ibff.balance = await this._getAssetBalance(web3, ibff, account)
       const vestingContractApprovalAmount = await this._getApprovalAmount(web3, ibff, account.address, VEIBFF_ADDRESS)
       ibff.vestAllowance = vestingContractApprovalAmount
 
-      // get veIBFF bal
-      const veIBFF = await this._getAssetInfo(web3, { address: VEIBFF_ADDRESS }, account)
+      this.setStore({ ibff })
+      this.emitter.emit(FIXED_FOREX_UPDATED);
+
+      // get veIBFF balance and vesting info
+      const veIBFF = systemAssets.veIBFF
+      veIBFF.balance = await this._getAssetBalance(web3, veIBFF, account)
       const vestingInfo = await this._getVestingInfo(web3, account.address, veIBFF)
       veIBFF.vestingInfo = vestingInfo
 
+      this.setStore({ veIBFF })
+      this.emitter.emit(FIXED_FOREX_UPDATED);
+
       // get IBEUR ETH bal
-      const veEURETHSLP = await this._getAssetInfo(web3, { address: IBEUR_ETH_ADDRESS }, account)
+      const veEURETHSLP = systemAssets.ibERUETH
+      veEURETHSLP.balance = await this._getAssetBalance(web3, veEURETHSLP, account)
       const faucetContractApprovalAmount = await this._getApprovalAmount(web3, veEURETHSLP, account.address, FF_FAUCET_ADDRESS)
 
+      // get different reward contract info
       let rewards = {}
       const faucetRewards = await this._getFaucetRewards(web3, account, ibff)
       const feeDistributionRewards = await this._getFeeDistributionRewards(web3, account, ibff)
@@ -321,6 +367,12 @@ class Store {
 
       veEURETHSLP.faucetAllowance = faucetContractApprovalAmount
       veEURETHSLP.faucetBalance = faucetRewards.balance
+
+      this.setStore({
+        veEURETHSLP,
+        rewards,
+      })
+      this.emitter.emit(FIXED_FOREX_UPDATED);
 
       const gaugeProxyContract = new web3.eth.Contract(abis.gaugeProxyABI, GAUGE_PROXY_ADDRESS)
       const totalGaugeVotes = await gaugeProxyContract.methods.totalWeight().call()
@@ -491,14 +543,12 @@ class Store {
       const veIBFFContract = new web3.eth.Contract(abis.veIBFFABI, VEIBFF_ADDRESS)
 
       const locked = await veIBFFContract.methods.locked(account).call()
-      const balanceOf = await veIBFFContract.methods.balanceOf(account).call()
-      const lastUserSlope = await veIBFFContract.methods.get_last_user_slope(account).call()
       const totalSupply = await veIBFFContract.methods.totalSupply().call()
 
       return {
         locked: BigNumber(locked.amount).div(10**veIBFF.decimals).toFixed(veIBFF.decimals),
         lockEnds: locked.end,
-        lockValue: BigNumber(balanceOf).div(10**veIBFF.decimals).toFixed(veIBFF.decimals),
+        lockValue: veIBFF.balance,
         totalSupply: BigNumber(totalSupply).div(10**veIBFF.decimals).toFixed(veIBFF.decimals)
       }
     } catch(ex) {
