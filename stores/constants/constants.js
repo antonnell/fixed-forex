@@ -10,15 +10,15 @@ export const IBFF_ADDRESS = '0xb347132eFf18a3f63426f4988ef626d2CbE274F5'        
 export const VEIBFF_ADDRESS = '0x4d0518c9136025903751209ddddf6c67067357b1'            // -> vested reward asset  (think veCRV)
 export const FF_FAUCET_ADDRESS = '0x7d254d9adc588126edaee52a1029278180a802e8'         // -> stake sushi lp pair, get reward asset
 export const FF_FEE_CLAIM_DISTRIBUTION_ADDRESS = '0x27761efeb0c7b411e71d0fd0aee5dde35c810cc2'   // -> after locking, get protocol fees
-export const GAUGE_PROXY_ADDRESS = '0xd9c8620c0c0b866b7b5180d2d70093165340326d'       // -> gauge proxy for voting etc.
+export const GAUGE_PROXY_ADDRESS = '0xBb02Fb954700fB9859CDD697C0F8982a30eB2824'       // -> gauge proxy for voting etc.
 export const FF_VEIBFF_DISTRIBUTION_ADDRESS = '0x83893c4A42F8654c2dd4FF7b4a7cd0e33ae8C859'   // -> some other distribution contract ????
 
 export const IBKRW_ADDRESS = '0x95dFDC8161832e4fF7816aC4B6367CE201538253'             // -> KRW
-export const IBKRW_GAUGE_ADDRESS = '0x8992FD229B574b8083de1249BC6Fd3711fDA45dD'       // -> KRW Gauge
+export const IBKRW_GAUGE_ADDRESS = '0xBb02Fb954700fB9859CDD697C0F8982a30eB2824'       // -> KRW Gauge
 export const IBKRW_POOL_ADDRESS = '0x8461A004b50d321CB22B7d034969cE6803911899'        // -> KRW Pool
 
 export const IBEUR_ADDRESS = '0x96e61422b6a9ba0e068b6c5add4ffabc6a4aae27'             // -> EUR
-export const IBEUR_GAUGE_ADDRESS = '0x9d7CA778d067045a9d6B871c9D28589875308018'       // -> EUR Gauge
+export const IBEUR_GAUGE_ADDRESS = '0xb23CA4445752E8b2a058B996646D6a0840b1709A'       // -> EUR Gauge
 export const IBEUR_POOL_ADDRESS = '0x19b080FE1ffA0553469D20Ca36219F17Fcf03859'        // -> EUR Pool
 
 
