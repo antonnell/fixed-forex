@@ -450,7 +450,7 @@ class Store {
 
   _getFeeDistributionRewards = async (web3, account, ibff) => {
     try {
-      const distributionContract = new web3.eth.Contract(abi.feeClaimDistributionABI, FF_FEE_CLAIM_DISTRIBUTION_ADDRESS)
+      const distributionContract = new web3.eth.Contract(abis.feeClaimDistributionABI, FF_FEE_CLAIM_DISTRIBUTION_ADDRESS)
 
       const timeCursor = await distributionContract.methods.time_cursor().call()
       const veAtSnapshot = await distributionContract.methods.ve_for_at(account.address, timeCursor).call()  // user's veIBFF at snapshot point
@@ -474,7 +474,7 @@ class Store {
 
   _getVEIBFFDistributionRewards = async (web3, account, ibff) => {
     try {
-      const distributionContract = new web3.eth.Contract(abi.distributionABI, FF_VEIBFF_DISTRIBUTION_ADDRESS)
+      const distributionContract = new web3.eth.Contract(abis.distributionABI, FF_VEIBFF_DISTRIBUTION_ADDRESS)
       const claimable = await distributionContract.methods.claimable(account.address).call()
 
       return {
