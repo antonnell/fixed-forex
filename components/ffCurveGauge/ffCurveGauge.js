@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Typography, Button, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
+import { Paper, Grid, Typography, Button, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
 import BigNumber from 'bignumber.js';
 import { formatCurrency } from '../../utils';
 import classes from './ffCurveGauge.module.css';
@@ -102,159 +102,180 @@ export default function ffCurveGauge({ asset }) {
     <div className={ classes.container}>
       <Typography variant="h5" className={ classes.title}>Stake in Gauge</Typography>
       <Paper elevation={0} className={ classes.lpOptionsContainer }>
-        <div className={classes.toggleButtons}>
-          <Button className={ `${activeTab === 'deposit' ? classes.buttonActive : classes.button} ${ classes.topLeftButton }` } onClick={ toggleDeposit } disabled={ depositLoading || approvalLoading }>
-            <Typography variant='h5'>Stake</Typography>
-            <div className={ `${activeTab === 'deposit' ? classes.activeIcon : ''}` }></div>
-          </Button>
-          <Button className={ `${activeTab === 'withdraw' ? classes.buttonActive : classes.button}  ${ classes.bottomLeftButton }` } onClick={ toggleWithdraw } disabled={ depositLoading || approvalLoading }>
-            <Typography variant='h5'>Unstake</Typography>
-            <div className={ `${activeTab === 'withdraw' ? classes.activeIcon : ''}` }></div>
-          </Button>
-        </div>
-        <div className={ classes.reAddPadding }>
-          <div className={ classes.inputsContainer }>
-            {
-              activeTab === 'deposit' &&
-              <>
-                <div className={classes.textField}>
-                  <div className={classes.inputTitleContainer}>
-                    <div className={classes.inputTitle}>
-                      <Typography variant="h5" className={ classes.inputTitleText }>
-                        Stake Amounts:
-                      </Typography>
-                    </div>
-                    <div className={classes.balances}>
-                      <Typography
-                        variant="h5"
-                        onClick={() => {
-                          setAmountPercent('amount', 100);
-                        }}
-                        className={classes.value}
-                        noWrap
-                      >
-                        Balance: {formatCurrency(asset && asset.gauge ? asset.gauge.userPoolBalance : 0)}
-                      </Typography>
-                    </div>
-                  </div>
-                  <TextField
-                    variant="outlined"
-                    fullWidth
-                    placeholder="0.00"
-                    value={amount}
-                    error={amountError}
-                    onChange={(e) => {
-                      setAmount(e.target.value);
-                    }}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <img src={ `/tokens/unknown-logo.png` } alt="" width={30} height={30} />
-                        </InputAdornment>
-                      ),
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <Typography>{asset?.gauge?.poolSymbol}</Typography>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                </div>
-                <div className={classes.textField}>
-                </div>
-              </>
-            }
-            {
-              activeTab === 'withdraw' &&
-              <>
-                <div className={classes.textField}>
-                  <div className={classes.inputTitleContainer}>
-                    <div className={classes.inputTitle}>
-                      <Typography variant="h5" className={ classes.inputTitleText }>
-                        Unstake Amount:
-                      </Typography>
-                    </div>
-                    <div className={classes.balances}>
-                      <Typography
-                        variant="h5"
-                        onClick={() => {
-                          setAmountPercent('withdrawAmount', 100);
-                        }}
-                        className={classes.value}
-                        noWrap
-                      >
-                        Balance: {formatCurrency(asset?.gauge?.userGaugeBalance)}
-                      </Typography>
-                    </div>
-                  </div>
-                  <TextField
-                    variant="outlined"
-                    fullWidth
-                    placeholder="0.00"
-                    value={withdrawAmount}
-                    error={withdrawAmountError}
-                    onChange={(e) => {
-                      setWithdrawAmount(e.target.value);
-                    }}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <img src={ `/tokens/unknown-logo.png` } alt="" width={30} height={30} />
-                        </InputAdornment>
-                      ),
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <Typography>{asset?.gauge?.poolSymbol}</Typography>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                </div>
-              </>
-            }
-          </div>
-          {
-            activeTab === 'deposit' &&
-            <div className={ classes.actionsContainer }>
-              <Button
-                className={ classes.multiApprovalButton }
-                variant='contained'
-                size='large'
-                color='primary'
-                disabled={ depositApprovalNotRequired || approvalLoading }
-                onClick={ () => { onApprove() } }
-                >
-                <Typography className={ classes.actionButtonText }>{ depositApprovalNotRequired ? formatApproved(asset?.gauge?.poolGaugeAllowance) : (approvalLoading ? `Approving` : `Approve`)}</Typography>
-                { approvalLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
-              </Button>
-              <Button
-                variant='contained'
-                size='large'
-                color='primary'
-                disabled={ depositLoading || !depositApprovalNotRequired }
-                onClick={ onDeposit }
-                >
-                <Typography className={ classes.actionButtonText }>{ depositLoading ? `Depositing` : `Deposit` }</Typography>
-                { depositLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
-              </Button>
+        <Grid container spacing={0}>
+          <Grid item lg={2} md={3} xs={12}>
+            <div className={classes.toggleButtons}>
+              <Grid container spacing={0}>
+                <Grid item lg={12} md={12} sm={6} xs={6}>
+                  <Button className={ `${activeTab === 'deposit' ? classes.buttonActive : classes.button} ${ classes.topLeftButton }` } onClick={ toggleDeposit } disabled={ depositLoading || approvalLoading }>
+                    <Typography variant='h5'>Stake</Typography>
+                    <div className={ `${activeTab === 'deposit' ? classes.activeIcon : ''}` }></div>
+                  </Button>
+                </Grid>
+                <Grid item lg={12} md={12} sm={6} xs={6}>
+                  <Button className={ `${activeTab === 'withdraw' ? classes.buttonActive : classes.button}  ${ classes.bottomLeftButton }` } onClick={ toggleWithdraw } disabled={ depositLoading || approvalLoading }>
+                    <Typography variant='h5'>Unstake</Typography>
+                    <div className={ `${activeTab === 'withdraw' ? classes.activeIcon : ''}` }></div>
+                  </Button>
+                </Grid>
+              </Grid>
             </div>
-          }
-          {
-            activeTab === 'withdraw' &&
-            <div className={ classes.actionsContainerWithdraw }>
-              <Button
-                variant='contained'
-                size='large'
-                color='primary'
-                disabled={ depositLoading }
-                onClick={ onWithdraw }
-                >
-                <Typography className={ classes.actionButtonText }>{ depositLoading ? `Withdrawing` : `Withdraw` }</Typography>
-                { depositLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
-              </Button>
+          </Grid>
+          <Grid item lg={10} md={9} sm={12}>
+            <div className={ classes.reAddPadding }>
+            <Grid container spacing={0}>
+              <Grid item lg={9} xs={12}>
+              <div className={ classes.inputsContainer }>
+                {
+                  activeTab === 'deposit' &&
+                  <>
+                    <div className={classes.textField}>
+                      <div className={classes.inputTitleContainer}>
+                        <div className={classes.inputTitle}>
+                          <Typography variant="h5" className={ classes.inputTitleText }>
+                            Stake Amounts:
+                          </Typography>
+                        </div>
+                        <div className={classes.balances}>
+                          <Typography
+                            variant="h5"
+                            onClick={() => {
+                              setAmountPercent('amount', 100);
+                            }}
+                            className={classes.value}
+                            noWrap
+                          >
+                            Balance: {formatCurrency(asset && asset.gauge ? asset.gauge.userPoolBalance : 0)}
+                          </Typography>
+                        </div>
+                      </div>
+                      <TextField
+                        variant="outlined"
+                        fullWidth
+                        placeholder="0.00"
+                        value={amount}
+                        error={amountError}
+                        onChange={(e) => {
+                          setAmount(e.target.value);
+                        }}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <img src={ `/tokens/unknown-logo.png` } alt="" width={30} height={30} />
+                            </InputAdornment>
+                          ),
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <Typography>{asset?.gauge?.poolSymbol}</Typography>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    </div>
+                    <div className={classes.textField}>
+                    </div>
+                  </>
+                }
+                {
+                  activeTab === 'withdraw' &&
+                  <>
+                    <div className={classes.textField}>
+                      <div className={classes.inputTitleContainer}>
+                        <div className={classes.inputTitle}>
+                          <Typography variant="h5" className={ classes.inputTitleText }>
+                            Unstake Amount:
+                          </Typography>
+                        </div>
+                        <div className={classes.balances}>
+                          <Typography
+                            variant="h5"
+                            onClick={() => {
+                              setAmountPercent('withdrawAmount', 100);
+                            }}
+                            className={classes.value}
+                            noWrap
+                          >
+                            Balance: {formatCurrency(asset?.gauge?.userGaugeBalance)}
+                          </Typography>
+                        </div>
+                      </div>
+                      <TextField
+                        variant="outlined"
+                        fullWidth
+                        placeholder="0.00"
+                        value={withdrawAmount}
+                        error={withdrawAmountError}
+                        onChange={(e) => {
+                          setWithdrawAmount(e.target.value);
+                        }}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <img src={ `/tokens/unknown-logo.png` } alt="" width={30} height={30} />
+                            </InputAdornment>
+                          ),
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <Typography>{asset?.gauge?.poolSymbol}</Typography>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    </div>
+                  </>
+                }
+              </div>
+              </Grid>
+              <Grid item lg={3} xs={12} className={classes.buttonWrap}>
+              {
+                activeTab === 'deposit' &&
+                <div className={ classes.actionsContainer }>
+                  <Button
+                    className={ classes.multiApprovalButton }
+                    variant='contained'
+                    size='large'
+                    color='primary'
+
+                    disabled={ depositApprovalNotRequired || approvalLoading }
+                    onClick={ () => { onApprove() } }
+                    >
+                    <Typography className={ classes.actionButtonText }>{ depositApprovalNotRequired ? formatApproved(asset?.gauge?.poolGaugeAllowance) : (approvalLoading ? `Approving` : `Approve`)}</Typography>
+                    { approvalLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
+                  </Button>
+                  <Button
+                    variant='contained'
+                    size='large'
+                    color='primary'
+                    className={classes.buttonOverride}
+                    disabled={ depositLoading || !depositApprovalNotRequired }
+                    onClick={ onDeposit }
+                    >
+                    <Typography className={ classes.actionButtonText }>{ depositLoading ? `Depositing` : `Deposit` }</Typography>
+                    { depositLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
+                  </Button>
+                </div>
+              }
+              {
+                activeTab === 'withdraw' &&
+                <div className={ classes.actionsContainer }>
+                  <Button
+                    variant='contained'
+                    size='large'
+                    color='primary'
+                    className={classes.buttonOverride}
+                    disabled={ depositLoading }
+                    onClick={ onWithdraw }
+                    >
+                    <Typography className={ classes.actionButtonText }>{ depositLoading ? `Withdrawing` : `Withdraw` }</Typography>
+                    { depositLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
+                  </Button>
+                </div>
+              }
+              </Grid>
+            </Grid>
             </div>
-          }
-        </div>
+          </Grid>
+        </Grid>
       </Paper>
     </div>
   );

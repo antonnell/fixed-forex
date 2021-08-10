@@ -130,9 +130,9 @@
 
 .noBalancesContainer {
   padding: 0px 24px;
-  display: grid;
+  /* display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-column-gap: 24px;
+  grid-column-gap: 24px; */
 }
 .title {
   font-size: 20px !important;
@@ -214,4 +214,16 @@
   margin: 0px 48px !important;
   width: 100%;
   height: 130px;
+}
+
+@media screen and (max-width: 1200px) {
+  .container {
+    top: 180px;
+  }
+}
+
+@media screen and (max-width: 960px) {
+  .container {
+    top: 360px;
+  }
 }

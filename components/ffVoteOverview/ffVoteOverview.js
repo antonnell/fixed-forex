@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Typography, Button, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
+import { Paper, Grid, Typography, Button, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Skeleton from '@material-ui/lab/Skeleton';
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
@@ -41,36 +41,44 @@ export default function ffVoteOverview() {
   return (
     <div className={ classes.container }>
       <div className={ classes.fieldsContainer }>
-        <div className={ classes.field }>
-          <AccountBalanceWalletIcon className={ classes.balanceIcon } />
-          <div>
-            <Typography className={ classes.title }>Your Voting Power:</Typography>
-            <div className={ classes.inline }>
-              <Typography className={ classes.value }>{ formatCurrency((veIBFF && veIBFF.vestingInfo) ? veIBFF.vestingInfo.lockValue : 0) }</Typography>
-              <Typography className={ classes.valueSymbol }>{ veIBFF ? veIBFF.symbol : '' }</Typography>
+      <Grid container spacing={2}>
+        <Grid item lg={4} md={4} sm={12}>
+          <div className={ classes.field }>
+            <AccountBalanceWalletIcon className={ classes.balanceIcon } />
+            <div>
+              <Typography className={ classes.title }>Your Voting Power:</Typography>
+              <div className={ classes.inline }>
+                <Typography className={ classes.value }>{ formatCurrency((veIBFF && veIBFF.vestingInfo) ? veIBFF.vestingInfo.lockValue : 0) }</Typography>
+                <Typography className={ classes.valueSymbol }>{ veIBFF ? veIBFF.symbol : '' }</Typography>
+              </div>
             </div>
           </div>
-        </div>
-        <div className={ classes.field }>
-          <TimerIcon className={ classes.balanceIcon } />
-          <div>
-            <Typography className={ classes.title }>Total Voting Power:</Typography>
-            <div className={ classes.inline }>
-              <Typography className={ classes.value }>{ formatCurrency((veIBFF && veIBFF.vestingInfo) ? veIBFF.vestingInfo.totalSupply : 0) }</Typography>
-              <Typography className={ classes.valueSymbol }>{ veIBFF ? veIBFF.symbol : '' }</Typography>
+        </Grid>
+        <Grid item lg={4} md={4} sm={12}>
+          <div className={ classes.field }>
+            <TimerIcon className={ classes.balanceIcon } />
+            <div>
+              <Typography className={ classes.title }>Total Voting Power:</Typography>
+              <div className={ classes.inline }>
+                <Typography className={ classes.value }>{ formatCurrency((veIBFF && veIBFF.vestingInfo) ? veIBFF.vestingInfo.totalSupply : 0) }</Typography>
+                <Typography className={ classes.valueSymbol }>{ veIBFF ? veIBFF.symbol : '' }</Typography>
+              </div>
             </div>
           </div>
-        </div>
-        <div className={ classes.field }>
-          <div className={ classes.pieField }>
-            <GaugeVotesPie data={gauges.map((gauge) => {
-              return {
-                description: `${gauge?.gauge?.coin0?.symbol} - ${gauge?.gauge?.coin1?.symbol}`,
-                value: BigNumber(gauge?.gauge?.votePercent).toNumber()
-              }
-            })} />
+        </Grid>
+        <Grid item lg={4} md={4} sm={12}>
+          <div className={ classes.field }>
+            <div className={ classes.pieField }>
+              <GaugeVotesPie data={gauges.map((gauge) => {
+                return {
+                  description: `${gauge?.gauge?.coin0?.symbol} - ${gauge?.gauge?.coin1?.symbol}`,
+                  value: BigNumber(gauge?.gauge?.votePercent).toNumber()
+                }
+              })} />
+            </div>
           </div>
-        </div>
+        </Grid>
+      </Grid>
       </div>
     </div>
   );
