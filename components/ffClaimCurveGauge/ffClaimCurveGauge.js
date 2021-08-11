@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Typography } from '@material-ui/core';
+import { Paper, Grid, Typography } from '@material-ui/core';
 import BigNumber from 'bignumber.js';
 
 import { formatCurrency } from '../../utils';
@@ -35,6 +35,8 @@ export default function ffClaimCurveGauge({ asset }) {
       <Typography variant="h5" className={ classes.title}>Claimable Rewards</Typography>
       <Paper elevation={0} className={ classes.lpOptionsContainer }>
         <div className={ classes.lpOption } onClick={ () => { claim() } }>
+        <Grid container spacing={2}>
+          <Grid item lg={4} md={4} xs={12}>
           <div className={ classes.lpOptionTitle }>
             <img className={ classes.lpOptionIcon } src='/images/ff-icon.svg' alt='FF Logo' width={ 60 } height={ 60 } />
             <div>
@@ -42,9 +44,13 @@ export default function ffClaimCurveGauge({ asset }) {
               <Typography className={ classes.lpOptionDescription }>Gauge Rewards</Typography>
             </div>
           </div>
+          </Grid>
+          <Grid item lg={4} md={4} xs={12}>
           <div>
             <Typography className={ classes.amountText }>{ formatCurrency(asset && asset.gauge ? asset.gauge.earned : 0) } ibff</Typography>
           </div>
+          </Grid>
+          <Grid item lg={4} md={4} xs={12}>
           <div>
             { BigNumber(asset && asset.gauge ? asset.gauge.earned : 0).gt(0) &&
               <Typography>Claim Now</Typography>
@@ -53,6 +59,8 @@ export default function ffClaimCurveGauge({ asset }) {
               <Typography>Stake in gauge to earn rewards</Typography>
             }
           </div>
+          </Grid>
+          </Grid>
           { BigNumber(asset && asset.gauge ? asset.gauge.earned : 0).gt(0) &&
             <div className={ classes.activeIcon }></div>
           }

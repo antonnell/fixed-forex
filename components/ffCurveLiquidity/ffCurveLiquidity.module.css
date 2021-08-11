@@ -3,8 +3,8 @@
   max-width: 1356px;
   display: flex;
   border: 1px solid rgba(104, 108, 122, 0.25);
-  position: absolute;
-  top: 240px;
+  position: relative;
+  top: -240px;
   left: 0;
   right: 0;
   margin: auto;
@@ -14,18 +14,22 @@
 .topLeftButton {
   border-top-left-radius: 10px !important;
   border-bottom: 1px solid rgba(104, 108, 122, 0.25) !important;
+  width: 100%;
+  min-height: 130px;
 }
 
 .bottomLeftButton {
   border-bottom-left-radius: 10px !important;
+  width: 100%;
+  min-height: 130px;
 }
 
 .inputsContainer {
-  display: grid;
+  /* display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-gap: 24px 48px;
+  grid-gap: 24px 0px; */
   padding: 0px 24px;
-  flex: 1;
+  /* flex: 1; */
 }
 
 .multiApproval {
@@ -85,7 +89,8 @@
 }
 
 .inputTitleText {
-  font-size: 20px !important;
+  font-size: 17px !important;
+  margin-bottom: 10px !important;
 }
 
 .infoContainer {
@@ -119,7 +124,8 @@
   grid-template-columns: 1fr;
   border-left: 1px solid rgba(104, 108, 122, 0.25);
   padding: 0px 24px;
-  width: 240px;
+  width: 100%;
+  height: 100%;
 }
 
 .actionButtonText {
@@ -147,8 +153,8 @@
 .toggleButtons {
   display: flex;
   flex-direction: column;
-  min-height: 140px;
-  width: 200px;
+  min-height: 170px;
+  width: 100%;
 }
 
 .button {
@@ -156,7 +162,8 @@
   flex: 1;
   border-right: 1px solid rgba(104, 108, 122, 0.25) !important;
   transition: none !important;
-  opacity: 0.5;
+  opacity: 1;
+  color: rgba(104, 108, 122, 0.5) !important;
 }
 
 .buttonActive {
@@ -189,4 +196,54 @@
   color: #FFF !important;
   font-weight: 700 !important;
   box-shadow: none !important;
+}
+
+@media screen and (max-width: 1280px) {
+  .actionsContainer {
+    border-left: 0px solid rgba(104, 108, 122, 0.25) !important;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .container {
+    margin-top: 0px;
+  }
+
+  .buttonWrap {
+    margin-top: 20px !important;
+  }
+
+  .actionsContainer {
+    border-left: 0px solid rgba(104, 108, 122, 0.25);
+  }
+}
+
+@media screen and (max-width: 960px) {
+  .container {
+    margin-top: 0px;
+  }
+
+  .toggleButtons {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .topLeftButton {
+    border-top-left-radius: 10px !important;
+    border-right: 1px solid rgba(104, 108, 122, 0.25) !important;
+    border-bottom: 1px solid rgba(104, 108, 122, 0.25) !important;
+    min-height: 83px;
+  }
+
+  .bottomLeftButton {
+    border-top-right-radius: 10px !important;
+    border-bottom-left-radius: 0px !important;
+    border-bottom: 1px solid rgba(104, 108, 122, 0.25) !important;
+    min-height: 83px;
+  }
+
+  .inputsContainer {
+    margin-top: -90px;
+  }
 }

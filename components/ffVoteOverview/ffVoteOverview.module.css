@@ -62,5 +62,16 @@
 .pieField {
   position: absolute;
   right: 0px;
-  top: -150px;
+  top: -115px;
+}
+
+@media screen and (max-width: 1200px) {
+
+}
+
+@media screen and (max-width: 960px) {
+  .pieField {
+    left: 0px;
+    top: -90px;
+  }
 }

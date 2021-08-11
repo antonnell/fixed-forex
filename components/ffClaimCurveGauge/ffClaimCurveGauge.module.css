@@ -2,7 +2,9 @@
   width: calc(100% - 48px);
   max-width: 1356px;
   margin: 0 auto;
-  margin-bottom: 48px;
+  margin-bottom: -148px;
+  position: relative;
+  top: -240px;
 }
 
 .title {
