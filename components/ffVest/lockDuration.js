@@ -16,7 +16,7 @@ export default function ffLockDuration({ ibff, veIBFF }) {
 
   const [ lockLoading, setLockLoading ] = useState(false)
 
-  const [selectedDate, setSelectedDate] = useState(moment().add(7, 'days').format('YYYY-MM-DD'));
+  const [selectedDate, setSelectedDate] = useState(moment().add(8, 'days').format('YYYY-MM-DD'));
   const [selectedDateError, setSelectedDateError] = useState(false);
   const [selectedValue, setSelectedValue] = useState('week');
 
@@ -54,7 +54,7 @@ export default function ffLockDuration({ ibff, veIBFF }) {
     let days = 0;
     switch (event.target.value) {
       case 'week':
-        days = 7;
+        days = 8;
         break;
       case 'month':
         days = 30;
