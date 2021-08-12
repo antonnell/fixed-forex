@@ -3,7 +3,9 @@
   max-width: 1356px;
   margin: 0 auto;
   margin-bottom: 48px;
-  margin-top: 60px;
+  margin-top: 50px;
+  position: relative;
+  top: -240px;
 }
 
 .title {
@@ -23,18 +25,22 @@
 .topLeftButton {
   border-top-left-radius: 10px !important;
   border-bottom: 1px solid rgba(104, 108, 122, 0.25) !important;
+  width: 100%;
+  min-height: 85px;
 }
 
 .bottomLeftButton {
   border-bottom-left-radius: 10px !important;
+  width: 100%;
+  min-height: 85px;
 }
 
 .inputsContainer {
-  display: grid;
+  /* display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-gap: 24px 48px;
+  grid-gap: 24px 0px; */
   padding: 0px 24px;
-  flex: 1;
+  /* flex: 1; */
 }
 
 .multiApproval {
@@ -93,7 +99,8 @@
 }
 
 .inputTitleText {
-  font-size: 20px !important;
+  font-size: 17px !important;
+  margin-bottom: 10px !important;
 }
 
 .infoContainer {
@@ -127,7 +134,8 @@
   grid-template-columns: 1fr;
   border-left: 1px solid rgba(104, 108, 122, 0.25);
   padding: 0px 24px;
-  width: 240px;
+  width: 100%;
+  height: 100%;
 }
 
 .actionButtonText {
@@ -155,16 +163,17 @@
 .toggleButtons {
   display: flex;
   flex-direction: column;
-  min-height: 140px;
-  width: 200px;
+  min-height: 170px;
+  width: 100%;
 }
 
 .button {
   border-radius: 0px !important;
   flex: 1;
-  border-right: 1px solid rgba(128, 128, 128, 0.25) !important;
+  border-right: 1px solid rgba(104, 108, 122, 0.25) !important;
   transition: none !important;
-  opacity: 0.5;
+  opacity: 1;
+  color: rgba(104, 108, 122, 0.5) !important;
 }
 
 .buttonActive {
@@ -185,9 +194,72 @@
   grid-template-columns: 1fr;
   border-left: 1px solid rgba(128, 128, 128, 0.8);
   padding: 0px 24px;
-  width: 240px;
+  width: 100%;
 }
 
 .extraTF {
   padding-bottom: 12px;
+}
+
+.buttonOverride {
+  background: #114DF0 !important;
+  color: #FFF !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+}
+
+@media screen and (max-width: 1280px) {
+  .actionsContainer {
+    border-left: 0px solid rgba(104, 108, 122, 0.25) !important;
+    margin-top: 10px;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .container {
+    margin-top: 0px;
+  }
+
+  .buttonWrap {
+    margin-top: 20px !important;
+  }
+
+  .actionsContainer {
+    border-left: 0px solid rgba(104, 108, 122, 0.25) !important;
+  }
+}
+
+@media screen and (max-width: 960px) {
+  .container {
+    margin-top: 40px;
+  }
+
+  .toggleButtons {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+
+  .actionsContainer {
+    border-left: 0px solid rgba(104, 108, 122, 0.25) !important;
+  }
+
+  .topLeftButton {
+    border-top-left-radius: 10px !important;
+    border-right: 1px solid rgba(104, 108, 122, 0.25) !important;
+    border-bottom: 1px solid rgba(104, 108, 122, 0.25) !important;
+    min-height: 83px;
+  }
+
+  .bottomLeftButton {
+    border-top-right-radius: 10px !important;
+    border-bottom-left-radius: 0px !important;
+    border-bottom: 1px solid rgba(104, 108, 122, 0.25) !important;
+    min-height: 83px;
+  }
+
+  .inputsContainer {
+    margin-top: -90px;
+  }
 }
