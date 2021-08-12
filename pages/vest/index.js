@@ -45,10 +45,10 @@ function Vest({ changeTheme }) {
       <div className={classes.ffContainer}>
         <Overview />
         <Vesting />
-        { !(ibff && veIBFF && BigNumber(ibff.balance).eq(0) && BigNumber(veIBFF.balance).eq(0)) &&
+        { !(BigNumber(ibff ? ibff.balance : 0).eq(0) && BigNumber(veIBFF && veIBFF.vestingInfo ? veIBFF.vestingInfo.locked : 0).eq(0)) &&
           <Claim />
         }
-        { !(ibff && veIBFF && BigNumber(ibff.balance).eq(0) && BigNumber(veIBFF.balance).eq(0)) &&
+        { !(BigNumber(ibff ? ibff.balance : 0).eq(0) && BigNumber(veIBFF && veIBFF.vestingInfo ? veIBFF.vestingInfo.locked : 0).eq(0)) &&
           <ClaimDistribution />
         }
       </div>

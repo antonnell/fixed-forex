@@ -44,10 +44,10 @@ export default function ffVest() {
         <Lock ibff={ibff} veIBFF={veIBFF} />
       }
       { veIBFF && BigNumber(veIBFF.balance).gt(0) &&   // lock still valid
-        <ExistingLock ibff={ibff} veIBFF={veIBFF} />
+        <ExistingLock ibff={ibff} veIBFF={veIBFF} expired={ false } />
       }
       { veIBFF && veIBFF.vestingInfo && BigNumber(veIBFF.vestingInfo.lockEnds).lte(moment().unix()) && BigNumber(veIBFF.vestingInfo.lockEnds).gt(0) && // Lock expired
-        <Unlock ibff={ibff} veIBFF={veIBFF} />
+        <Unlock />
       }
     </>
   );

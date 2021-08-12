@@ -5,6 +5,8 @@ export const GAS_PRICE_API = 'https://gasprice.poa.network/';
 export const ZAPPER_GAS_PRICE_API = 'https://api.zapper.fi/v1/gas-price?api_key=96e0cc51-a62e-42ca-acee-910ea7d2a241';
 export const ETHERSCAN_URL = 'https://etherscan.io/';
 
+export const FF_FEE_DISTRIBUTION_LOOKUP_ADDRESS = '0x7779C09F6a42834758349C31A26471483E8D2D71'
+export const FF_MULTICALL_ADDRESS = '0xb1c3f9277fb3a7a3220c18435e7c7d10d34a569a'      // -> get data in 3 calls
 export const IBEUR_ETH_ADDRESS = '0xa2d81bedf22201a77044cdf3ab4d9dc1ffbc391b'         // -> sushi lp pair for EUR
 export const IBFF_ADDRESS = '0xb347132eFf18a3f63426f4988ef626d2CbE274F5'              // -> reward asset (think CRV)
 export const VEIBFF_ADDRESS = '0x4d0518c9136025903751209ddddf6c67067357b1'            // -> vested reward asset  (think veCRV)
@@ -105,6 +107,9 @@ export const FIXED_FOREX_CURVE_REWARD_CLAIMED = 'FIXED_FOREX_CURVE_REWARD_CLAIME
 
 export const FIXED_FOREX_GET_SLIPPAGE_INFO = 'FIXED_FOREX_GET_SLIPPAGE_INFO'
 export const FIXED_FOREX_SLIPPAGE_INFO_RETURNED = 'FIXED_FOREX_SLIPPAGE_INFO_RETURNED'
+
+export const FIXED_FOREX_WITHDRAW_LOCK = 'FIXED_FOREX_WITHDRAW_LOCK'
+export const FIXED_FOREX_LOCK_WITHDRAWN = 'FIXED_FOREX_LOCK_WITHDRAWN'
 
 export const APPROVE_FUSD = 'APPROVE_FUSD'
 export const FUSD_APPROVED = 'FUSD_APPROVED'

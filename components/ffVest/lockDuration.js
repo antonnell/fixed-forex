@@ -36,6 +36,13 @@ export default function ffLockDuration({ ibff, veIBFF }) {
     };
   }, []);
 
+  useEffect(() => {
+    if(veIBFF.vestingInfo.lockEnds) {
+      setSelectedDate(moment.unix(veIBFF.vestingInfo.lockEnds).format('YYYY-MM-DD'))
+      setSelectedValue(null)
+    }
+  }, [ veIBFF ])
+
   const handleDateChange = (event) => {
     setSelectedDate(event.target.value);
     setSelectedValue(null);
@@ -60,7 +67,7 @@ export default function ffLockDuration({ ibff, veIBFF }) {
         break;
       default:
     }
-    const newDate = moment().add(days, 'days').format('YYYY-MM-DD');
+    const newDate = moment.unix(veIBFF.vestingInfo.lockEnds).add(days, 'days').format('YYYY-MM-DD');
 
     setSelectedDate(newDate);
   }

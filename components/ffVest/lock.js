@@ -196,7 +196,7 @@ export default function ffLock({ ibff, veIBFF }) {
           variant='contained'
           size='large'
           color='primary'
-          disabled={ lockLoading }
+          disabled={ lockLoading || !depositApprovalNotRequired }
           onClick={ onLock }
           >
           <Typography className={ classes.actionButtonText }>{ lockLoading ? `Locking` : `Lock` }</Typography>

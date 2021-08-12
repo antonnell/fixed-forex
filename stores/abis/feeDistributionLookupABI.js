@@ -1,0 +1,1 @@
+export const feeDistributionLookupABI = [{"inputs":[{"internalType":"address","name":"addr","type":"address"}],"name":"claimable","outputs":[{"internalType":"uint256","name":"_to_distribute","type":"uint256"}],"stateMutability":"view","type":"function"}]

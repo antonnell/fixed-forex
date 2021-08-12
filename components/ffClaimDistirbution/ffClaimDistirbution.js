@@ -12,10 +12,12 @@ export default function ffClaimDistirbution() {
 
   const [ loading, setLoading ] = useState(false)
   const [ rewards, setRewards] = useState(null)
+  const [ veIBFF, setVeIBFF] = useState(null)
 
   useEffect(() => {
     const forexUpdated = () => {
       setRewards(stores.fixedForexStore.getStore('rewards'))
+      setVeIBFF(stores.fixedForexStore.getStore('veIBFF'))
     }
 
     const rewardClaimed = () => {
@@ -23,6 +25,7 @@ export default function ffClaimDistirbution() {
     }
 
     setRewards(stores.fixedForexStore.getStore('rewards'))
+    setVeIBFF(stores.fixedForexStore.getStore('veIBFF'))
 
     stores.emitter.on(FIXED_FOREX_UPDATED, forexUpdated);
     stores.emitter.on(FIXED_FOREX_DISTRIBUTION_REWARD_CLAIMED, rewardClaimed);
@@ -51,19 +54,26 @@ export default function ffClaimDistirbution() {
             </div>
           </div>
           <div>
-            <Typography className={ classes.amountText }>{ formatCurrency(rewards && rewards.feeDistribution ? rewards.feeDistribution.earned : 0) } ibEUR</Typography>
-          </div>
-          <div>
-            { BigNumber(rewards && rewards.feeDistribution ? rewards.feeDistribution.earned : 0).gt(0) &&
-              (
-                loading ? <Typography>Claiming</Typography> : <Typography>Claim Now</Typography>
-              )
-
+            {
+              BigNumber(veIBFF && veIBFF.vestingInfo && veIBFF.vestingInfo.lockValue ? veIBFF.vestingInfo.lockValue : 0).gt(0) &&
+              <Typography className={ classes.amountText }>{ formatCurrency(rewards && rewards.feeDistribution ? rewards.feeDistribution.earned : 0) } ibEUR</Typography>
             }
-            { !BigNumber(rewards && rewards.feeDistribution ? rewards.feeDistribution.earned : 0).gt(0) &&
-              <Typography>Vest ibff to earn rewards</Typography>
+            { !BigNumber(veIBFF && veIBFF.vestingInfo && veIBFF.vestingInfo.lockValue ? veIBFF.vestingInfo.lockValue : 0).gt(0) &&
+              <Typography className={ classes.vestText }>Vest ibff to earn rewards</Typography>
             }
           </div>
+          { BigNumber(veIBFF && veIBFF.vestingInfo && veIBFF.vestingInfo.lockValue ? veIBFF.vestingInfo.lockValue : 0).gt(0) &&
+            <div>
+              { BigNumber(rewards && rewards.feeDistribution ? rewards.feeDistribution.earned : 0).gt(0) &&
+                (
+                  loading ? <Typography>Claiming</Typography> : <Typography>Claim Now</Typography>
+                )
+              }
+              { !BigNumber(rewards && rewards.feeDistribution ? rewards.feeDistribution.earned : 0).gt(0) &&
+                <Typography>Nothing to Claim</Typography>
+              }
+            </div>
+          }
           { BigNumber(rewards && rewards.feeDistribution ? rewards.feeDistribution.earned : 0).gt(0) &&
             <div className={ classes.activeIcon }></div>
           }

@@ -9,6 +9,7 @@ import { gaugeABI } from './gaugeABI';
 import { poolABI } from './poolABI';
 import { feeClaimDistributionABI } from './feeClaimDistributionABI';
 import { multicallABI } from './multicallABI';
+import { feeDistributionLookupABI } from './feeDistributionLookupABI'
 
 export default {
   erc20ABI: erc20ABI,
@@ -21,5 +22,6 @@ export default {
   gaugeABI: gaugeABI,
   poolABI: poolABI,
   feeClaimDistributionABI: feeClaimDistributionABI,
-  multicallABI: multicallABI
+  multicallABI: multicallABI,
+  feeDistributionLookupABI: feeDistributionLookupABI
 };

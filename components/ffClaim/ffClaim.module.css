@@ -72,6 +72,10 @@
   font-weight: bold !important;
 }
 
+.vestText {
+  font-size: 30px !important;
+}
+
 @media screen and (max-width: 1200px) {
   .container {
     margin-bottom: 48px;
