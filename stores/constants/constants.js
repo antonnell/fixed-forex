@@ -5,6 +5,7 @@ export const GAS_PRICE_API = 'https://gasprice.poa.network/';
 export const ZAPPER_GAS_PRICE_API = 'https://api.zapper.fi/v1/gas-price?api_key=96e0cc51-a62e-42ca-acee-910ea7d2a241';
 export const ETHERSCAN_URL = 'https://etherscan.io/';
 
+export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 export const FF_FEE_DISTRIBUTION_LOOKUP_ADDRESS = '0x7779C09F6a42834758349C31A26471483E8D2D71'
 export const FF_MULTICALL_ADDRESS = '0xb1c3f9277fb3a7a3220c18435e7c7d10d34a569a'      // -> get data in 3 calls
 export const IBEUR_ETH_ADDRESS = '0xa2d81bedf22201a77044cdf3ab4d9dc1ffbc391b'         // -> sushi lp pair for EUR
@@ -14,6 +15,7 @@ export const FF_FAUCET_ADDRESS = '0x7d254d9adc588126edaee52a1029278180a802e8'   
 export const FF_FEE_CLAIM_DISTRIBUTION_ADDRESS = '0x27761efeb0c7b411e71d0fd0aee5dde35c810cc2'   // -> after locking, get protocol fees
 export const GAUGE_PROXY_ADDRESS = '0x90aAb6C9D887A7Ff8320e56fbd1F4Ff80A0811d5'       // -> gauge proxy for voting etc.
 export const FF_VEIBFF_DISTRIBUTION_ADDRESS = '0x15E61581AFa2707bca42Bae529387eEa11f68E6e'   // -> some other distribution contract ????
+export const FF_BOOST_DELEGATE_ADDRESS = '0x0ea89fb2E5b8FA8F14b741ffe1A4617A32611DfC'
 
 export const IBKRW_ADDRESS = '0x95dFDC8161832e4fF7816aC4B6367CE201538253'             // -> KRW
 export const IBKRW_GAUGE_ADDRESS = '0xCADEA5B814917c0D03a8cF7612c1e4B09f49dbc7'       // -> KRW Gauge

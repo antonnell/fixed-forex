@@ -76,7 +76,6 @@ export default class GaugeVotePie extends PureComponent {
 
 
   render() {
-    console.log(this.props.data)
     return (
       <ResponsiveContainer width={400} height={400}>
         <PieChart width={400} height={400}>

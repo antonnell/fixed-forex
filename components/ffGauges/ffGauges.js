@@ -19,7 +19,6 @@ export default function ffGauges() {
     const forexUpdated = () => {
       const as = stores.fixedForexStore.getStore('assets');
       setGauges(as)
-
       setVotes(as.map((asset) => {
         return {
           address: asset.gauge.poolAddress,
@@ -72,7 +71,7 @@ export default function ffGauges() {
           variant='contained'
           size='large'
           color='primary'
-          disabled={ voteLoading }
+          disabled={ voteLoading || BigNumber(totalVotes).eq(0) || BigNumber(totalVotes).gt(100) }
           onClick={ onVote }
           >
           <Typography className={ classes.actionButtonText }>{ voteLoading ? `Casting Votes` : `Cast Votes` }</Typography>

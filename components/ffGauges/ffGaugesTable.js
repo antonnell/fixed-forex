@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { lighten, makeStyles, withStyles } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography, Slider } from '@material-ui/core';
+import BigNumber from 'bignumber.js';
 
 import { formatCurrency } from '../../utils';
 
@@ -276,6 +277,12 @@ export default function EnhancedTable({ gauges, setParentSliderValues, defaultVo
               if (!row) {
                 return null;
               }
+              let sliderValue = sliderValues.find((el) => el.address === row.gauge.poolAddress)?.value
+              if(BigNumber(sliderValue).gt(0)) {
+                sliderValue = parseInt(sliderValue)
+              } else {
+                sliderValue = 0
+              }
 
               return (
                 <TableRow key={row.gauge.address}>
@@ -317,7 +324,7 @@ export default function EnhancedTable({ gauges, setParentSliderValues, defaultVo
                     </Typography>
                   </TableCell>
                   <TableCell className={classes.cell} align="right">
-                    <PrettoSlider valueLabelDisplay="auto" aria-label="Vote Precednt" value={ sliderValues.find((el) => el?.gauge?.address === row.address)?.value } onChange={ (event, value) => { onSliderChange(event, value, row) } } />
+                    <PrettoSlider valueLabelDisplay="auto" aria-label="Vote Precednt" value={ sliderValue } onChange={ (event, value) => { onSliderChange(event, value, row) } } />
                   </TableCell>
                 </TableRow>
               );

@@ -10,6 +10,7 @@ import { poolABI } from './poolABI';
 import { feeClaimDistributionABI } from './feeClaimDistributionABI';
 import { multicallABI } from './multicallABI';
 import { feeDistributionLookupABI } from './feeDistributionLookupABI'
+import { boostDelegateABI } from './boostDelegateABI'
 
 export default {
   erc20ABI: erc20ABI,
@@ -23,5 +24,6 @@ export default {
   poolABI: poolABI,
   feeClaimDistributionABI: feeClaimDistributionABI,
   multicallABI: multicallABI,
-  feeDistributionLookupABI: feeDistributionLookupABI
+  feeDistributionLookupABI: feeDistributionLookupABI,
+  boostDelegateABI: boostDelegateABI
 };

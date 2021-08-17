@@ -1,6 +1,7 @@
 import async from 'async';
 import {
   MAX_UINT256,
+  ZERO_ADDRESS,
   FF_FEE_DISTRIBUTION_LOOKUP_ADDRESS,
   FF_MULTICALL_ADDRESS,
   IBKRW_ADDRESS,
@@ -17,6 +18,7 @@ import {
   GAUGE_PROXY_ADDRESS,
   FF_VEIBFF_DISTRIBUTION_ADDRESS,
   FF_FEE_CLAIM_DISTRIBUTION_ADDRESS,
+  FF_BOOST_DELEGATE_ADDRESS,
   ERROR,
   TX_SUBMITTED,
   STORE_UPDATED,
@@ -384,10 +386,10 @@ class Store {
 
       const gaugeProxyContract = new web3.eth.Contract(abis.gaugeProxyABI, GAUGE_PROXY_ADDRESS)
 
-      const [totalGaugeVotes, totalUserVotes] = await Promise.all([
+      const [totalGaugeVotes] = await Promise.all([
         gaugeProxyContract.methods.totalWeight().call(),
-        gaugeProxyContract.methods.usedWeights(account.address).call()
       ]);
+
 
       // get asset balances
       // get asset approvals (swap/stake/vest)
@@ -473,6 +475,11 @@ class Store {
       })
 
       const assetsBalances = await Promise.all(assetsBalancesPromise);
+
+      const totalUserVotes = assetsBalances.reduce((curr, acc) => {
+        return BigNumber(curr).plus(acc.userGaugeVotes)
+      }, 0)
+
       for(let i = 0; i < assets.length; i++) {
         assets[i].balance = BigNumber(assetsBalances[i].balanceOf).div(10**assets[i].decimals).toFixed(assets[i].decimals)
         assets[i].gauge.earned = BigNumber(assetsBalances[i].userRewards).div(10**assets[i].decimals).toFixed(assets[i].decimals)
