@@ -221,6 +221,9 @@ const useStyles = makeStyles((theme) => ({
   },
   imgLogo: {
     marginRight: '12px'
+  },
+  tableContainer: {
+    overflowX: 'hidden'
   }
 }));
 
@@ -269,7 +272,7 @@ export default function EnhancedTable({ gauges, setParentSliderValues, defaultVo
 
   return (
     <div className={classes.root}>
-      <TableContainer>
+      <TableContainer className={ classes.tableContainer }>
         <Table className={classes.table} aria-labelledby="tableTitle" size={'medium'} aria-label="enhanced table">
           <EnhancedTableHead classes={classes} order={order} orderBy={orderBy} onRequestSort={handleRequestSort} />
           <TableBody>
