@@ -12,7 +12,7 @@ import Brightness2Icon from '@material-ui/icons/Brightness2';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 
-import { CONNECT_WALLET, ACCOUNT_CONFIGURED, ACCOUNT_CHANGED, FIXED_FOREX_BALANCES_RETURNED, FIXED_FOREX_CLAIM_VECLAIM, FIXED_FOREX_VECLAIM_CLAIMED, ERROR } from '../../stores/constants';
+import { CONNECT_WALLET, ACCOUNT_CONFIGURED, ACCOUNT_CHANGED, FIXED_FOREX_BALANCES_RETURNED, FIXED_FOREX_CLAIM_VECLAIM, FIXED_FOREX_VECLAIM_CLAIMED, FIXED_FOREX_UPDATED, ERROR } from '../../stores/constants';
 
 import Unlock from '../unlock';
 
@@ -102,10 +102,12 @@ function Header(props) {
       setChainInvalid(invalid)
     }
     const balancesReturned = () => {
-      const rewards = stores.fixedForexStore.getSTore('rewards')
+      const rewards = stores.fixedForexStore.getStore('rewards')
       setClaimable(rewards?.veClaimRewards?.claimable)
     }
     const claimedReturned = () => {
+      const rewards = stores.fixedForexStore.getStore('rewards')
+      setClaimable(rewards?.veClaimRewards?.claimable)
       setLoading(false)
     }
 
@@ -115,6 +117,7 @@ function Header(props) {
     stores.emitter.on(ACCOUNT_CONFIGURED, accountConfigure);
     stores.emitter.on(CONNECT_WALLET, connectWallet);
     stores.emitter.on(ACCOUNT_CHANGED, accountChanged);
+    stores.emitter.on(FIXED_FOREX_UPDATED, balancesReturned);
     stores.emitter.on(FIXED_FOREX_BALANCES_RETURNED, balancesReturned);
     stores.emitter.on(FIXED_FOREX_VECLAIM_CLAIMED, claimedReturned);
     stores.emitter.on(ERROR, claimedReturned);
@@ -122,6 +125,7 @@ function Header(props) {
       stores.emitter.removeListener(ACCOUNT_CONFIGURED, accountConfigure);
       stores.emitter.removeListener(CONNECT_WALLET, connectWallet);
       stores.emitter.removeListener(ACCOUNT_CHANGED, accountChanged);
+      stores.emitter.removeListener(FIXED_FOREX_UPDATED, balancesReturned);
       stores.emitter.removeListener(FIXED_FOREX_BALANCES_RETURNED, balancesReturned);
       stores.emitter.removeListener(FIXED_FOREX_VECLAIM_CLAIMED, claimedReturned);
       stores.emitter.removeListener(ERROR, claimedReturned);
@@ -179,7 +183,7 @@ function Header(props) {
           onClick={() => callClaim()}
           disabled={ loading }
         >
-          <Typography className={classes.headBtnTxt}>Claim { claimable } vKP3R</Typography>
+          <Typography className={classes.headBtnTxt}>Claim { claimable == undefined ? 0 : parseFloat(claimable).toFixed(0) } vKP3R</Typography>
         </Button>
         <Button
           disableElevation

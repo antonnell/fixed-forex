@@ -60,7 +60,7 @@ export default function ffClaim() {
               <Typography className={ classes.amountText }>{ formatCurrency(rewards && rewards.veIBFFDistribution ? rewards.veIBFFDistribution.earned : 0) } kp3r</Typography>
             }
             { !BigNumber(veIBFF && veIBFF.vestingInfo && veIBFF.vestingInfo.lockValue ? veIBFF.vestingInfo.lockValue : 0).gt(0) &&
-              <Typography className={ classes.vestText }>Vest ibff to earn rewards</Typography>
+              <Typography className={ classes.vestText }>Vest kp3r to earn rewards</Typography>
             }
           </div>
           { BigNumber(veIBFF && veIBFF.vestingInfo && veIBFF.vestingInfo.lockValue ? veIBFF.vestingInfo.lockValue : 0).gt(0) &&
