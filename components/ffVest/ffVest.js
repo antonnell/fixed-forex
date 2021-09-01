@@ -15,15 +15,18 @@ export default function ffVest() {
 
   const [ ibff, setIBFF] = useState(null)
   const [ veIBFF, setVeIBFF] = useState(null)
+  const [ veIBFFOld, setVeIBFFOld] = useState(null)
 
   useEffect(() => {
     const forexUpdated = () => {
       setIBFF(stores.fixedForexStore.getStore('ibff'))
       setVeIBFF(stores.fixedForexStore.getStore('veIBFF'))
+      setVeIBFFOld(stores.fixedForexStore.getStore('veIBFFOld'))
     }
 
     setIBFF(stores.fixedForexStore.getStore('ibff'))
     setVeIBFF(stores.fixedForexStore.getStore('veIBFF'))
+    setVeIBFFOld(stores.fixedForexStore.getStore('veIBFFOld'))
 
     stores.emitter.on(FIXED_FOREX_UPDATED, forexUpdated);
     return () => {
@@ -41,10 +44,10 @@ export default function ffVest() {
         <NoBalances ibff={ibff} veIBFF={veIBFF} />
       }
       { ibff && veIBFF && BigNumber(ibff.balance).gt(0) && BigNumber(veIBFF.balance).eq(0) &&   // has ibff, nothing locked
-        <Lock ibff={ibff} veIBFF={veIBFF} />
+        <Lock ibff={ibff} veIBFF={veIBFF} veIBFFOld={veIBFFOld} />
       }
       { veIBFF && BigNumber(veIBFF.balance).gt(0) &&   // lock still valid
-        <ExistingLock ibff={ibff} veIBFF={veIBFF} expired={ false } />
+        <ExistingLock ibff={ibff} veIBFF={veIBFF} veIBFFOld={veIBFFOld} expired={ false } />
       }
       { veIBFF && veIBFF.vestingInfo && BigNumber(veIBFF.vestingInfo.lockEnds).lte(moment().unix()) && BigNumber(veIBFF.vestingInfo.lockEnds).gt(0) && // Lock expired
         <Unlock />

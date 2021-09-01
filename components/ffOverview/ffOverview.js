@@ -43,7 +43,7 @@ export default function ffOverview() {
             <div className={ classes.field }>
               <AccountBalanceWalletIcon className={ classes.balanceIcon } />
               <div>
-                <Typography className={ classes.title }>IBFF Balance:</Typography>
+                <Typography className={ classes.title }>KP3R Balance:</Typography>
                 <div className={ classes.inline }>
                   <Typography className={ classes.value }>{ formatCurrency(ibff ? ibff.balance : 0) }</Typography>
                   <Typography className={ classes.valueSymbol }>{ ibff ? ibff.symbol : '' }</Typography>

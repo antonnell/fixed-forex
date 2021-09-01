@@ -106,7 +106,7 @@ export default function ffLockAmount({ ibff, veIBFF }) {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <img src={ ibff && ibff.address ? `https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/${ibff.address}/logo-128.png` : '/tokens/unknown-logo.png'} alt="" width={30} height={30} />
+                  <img src={ ibff && ibff.address ? `https://assets.coingecko.com/coins/images/12966/large/kp3r_logo.jpg` : '/tokens/unknown-logo.png'} alt="" width={30} height={30} />
                 </InputAdornment>
               ),
             }}
@@ -144,8 +144,8 @@ export default function ffLockAmount({ ibff, veIBFF }) {
   <div className={ classes.infoField }>
     <AttachMoneyIcon className={ classes.infoIcon } />
     <div className={ classes.infoTexts }>
-      <Typography className={ classes.infoText }>Received veIBFF:</Typography>
-      <Typography >0.00 veIBFF</Typography>
+      <Typography className={ classes.infoText }>Received vKP3R:</Typography>
+      <Typography >0.00 vKP3R</Typography>
     </div>
   </div>
 </div>

@@ -15,7 +15,7 @@ import {
 } from '../../stores/constants';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 
-export default function ffLock({ ibff, veIBFF }) {
+export default function ffLock({ ibff, veIBFF, veIBFFOld }) {
 
   const [ approvalLoading, setApprovalLoading ] = useState(false)
   const [ lockLoading, setLockLoading ] = useState(false)
@@ -106,6 +106,13 @@ export default function ffLock({ ibff, veIBFF }) {
     depositApprovalNotRequired = BigNumber(ibff.vestAllowance).gte(amount) || ((!amount || amount === '') && BigNumber(ibff.vestAllowance).gt(0) )
   }
 
+  let min = 0
+  if(BigNumber(veIBFFOld?.vestingInfo?.lockEnds).gt(0)) {
+    min = moment.unix(veIBFFOld?.vestingInfo?.lockEnds).format('YYYY-MM-DD')
+  } else {
+    min = moment().add(7, 'days').format('YYYY-MM-DD')
+  }
+
   return (
     <Paper elevation={0} className={ classes.container }>
       <div className={ classes.inputsContainer }>
@@ -141,7 +148,7 @@ export default function ffLock({ ibff, veIBFF }) {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <img src={ ibff && ibff.address ? `https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/${ibff.address}/logo-128.png` : '/tokens/unknown-logo.png'} alt="" width={30} height={30} />
+                  <img src={ ibff && ibff.address ? `https://assets.coingecko.com/coins/images/12966/large/kp3r_logo.jpg` : '/tokens/unknown-logo.png'} alt="" width={30} height={30} />
                 </InputAdornment>
               ),
             }}
@@ -175,7 +182,7 @@ export default function ffLock({ ibff, veIBFF }) {
               shrink: true,
             }}
             inputProps={{
-              min: moment().add(7, 'days').format('YYYY-MM-DD'),
+              min: min,
               max: moment().add(1461, 'days').format('YYYY-MM-DD')
             }}
           />

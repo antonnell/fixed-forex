@@ -65,6 +65,20 @@
   margin-left: 14px !important;
 }
 
+.prettyButton {
+  font-weight: 700 !important;
+  font-size: 12px !important;
+  margin-left: 14px !important;
+  background-image: linear-gradient(90deg ,#1c46f5 0,#0005d3) !important;
+  color: #fff !important;
+  -webkit-transition: background-image 1s ease-in-out;
+  transition: background-image 1s ease-in-out;
+}
+
+.prettyButton:hover {
+  background-image: linear-gradient(270deg ,#1c46f5 0,#0005d3) !important;
+}
+
 .accountIcon {
   width: 20px;
   height: 20px;

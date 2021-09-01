@@ -10,8 +10,9 @@ import InputBase from '@material-ui/core/InputBase';
 import WbSunnyOutlinedIcon from '@material-ui/icons/WbSunnyOutlined';
 import Brightness2Icon from '@material-ui/icons/Brightness2';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 
-import { CONNECT_WALLET, ACCOUNT_CONFIGURED, ACCOUNT_CHANGED } from '../../stores/constants';
+import { CONNECT_WALLET, ACCOUNT_CONFIGURED, ACCOUNT_CHANGED, FIXED_FOREX_BALANCES_RETURNED, FIXED_FOREX_CLAIM_VECLAIM, FIXED_FOREX_VECLAIM_CLAIMED, ERROR } from '../../stores/constants';
 
 import Unlock from '../unlock';
 
@@ -84,6 +85,8 @@ function Header(props) {
   const [darkMode, setDarkMode] = useState(props.theme.palette.type === 'dark' ? true : false);
   const [unlockOpen, setUnlockOpen] = useState(false);
   const [chainInvalid, setChainInvalid] = useState(false)
+  const [claimable, setClaimable] = useState(0)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const accountConfigure = () => {
@@ -98,6 +101,13 @@ function Header(props) {
       const invalid = stores.accountStore.getStore('chainInvalid');
       setChainInvalid(invalid)
     }
+    const balancesReturned = () => {
+      const rewards = stores.fixedForexStore.getSTore('rewards')
+      setClaimable(rewards?.veClaimRewards?.claimable)
+    }
+    const claimedReturned = () => {
+      setLoading(false)
+    }
 
     const invalid = stores.accountStore.getStore('chainInvalid');
     setChainInvalid(invalid)
@@ -105,10 +115,16 @@ function Header(props) {
     stores.emitter.on(ACCOUNT_CONFIGURED, accountConfigure);
     stores.emitter.on(CONNECT_WALLET, connectWallet);
     stores.emitter.on(ACCOUNT_CHANGED, accountChanged);
+    stores.emitter.on(FIXED_FOREX_BALANCES_RETURNED, balancesReturned);
+    stores.emitter.on(FIXED_FOREX_VECLAIM_CLAIMED, claimedReturned);
+    stores.emitter.on(ERROR, claimedReturned);
     return () => {
       stores.emitter.removeListener(ACCOUNT_CONFIGURED, accountConfigure);
       stores.emitter.removeListener(CONNECT_WALLET, connectWallet);
       stores.emitter.removeListener(ACCOUNT_CHANGED, accountChanged);
+      stores.emitter.removeListener(FIXED_FOREX_BALANCES_RETURNED, balancesReturned);
+      stores.emitter.removeListener(FIXED_FOREX_VECLAIM_CLAIMED, claimedReturned);
+      stores.emitter.removeListener(ERROR, claimedReturned);
     };
   }, []);
 
@@ -134,6 +150,11 @@ function Header(props) {
     router.push(url)
   }
 
+  const callClaim = () => {
+    setLoading(true)
+    stores.dispatcher.dispatch({ type: FIXED_FOREX_CLAIM_VECLAIM, content: {} })
+  }
+
   return (
     <div>
       <Paper elevation={0} className={classes.headerContainer}>
@@ -150,6 +171,16 @@ function Header(props) {
             onChange={handleToggleChange}
           />
         </div>
+        <Button
+          disableElevation
+          className={classes.prettyButton}
+          variant="contained"
+          startIcon={<MonetizationOnIcon />}
+          onClick={() => callClaim()}
+          disabled={ loading }
+        >
+          <Typography className={classes.headBtnTxt}>Claim { claimable } vKP3R</Typography>
+        </Button>
         <Button
           disableElevation
           className={classes.accountButton}

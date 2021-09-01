@@ -19,6 +19,9 @@ import {
   FF_VEIBFF_DISTRIBUTION_ADDRESS,
   FF_FEE_CLAIM_DISTRIBUTION_ADDRESS,
   FF_BOOST_DELEGATE_ADDRESS,
+  FF_KP3R_ADDRESS,
+  FF_VEKP3R_ADDRESS,
+  FF_VECLAIM_ADDRESS,
   ERROR,
   TX_SUBMITTED,
   STORE_UPDATED,
@@ -66,7 +69,9 @@ import {
   FIXED_FOREX_GET_SLIPPAGE_INFO,
   FIXED_FOREX_SLIPPAGE_INFO_RETURNED,
   FIXED_FOREX_WITHDRAW_LOCK,
-  FIXED_FOREX_LOCK_WITHDRAWN
+  FIXED_FOREX_LOCK_WITHDRAWN,
+  FIXED_FOREX_CLAIM_VECLAIM,
+  FIXED_FOREX_VECLAIM_CLAIMED,
 } from './constants';
 
 import * as moment from 'moment';
@@ -167,6 +172,8 @@ class Store {
             this.unstakeCurve(payload);
             break;
 
+          case FIXED_FOREX_CLAIM_VECLAIM:
+            this.claimVeclaim(payload);
           default: {
           }
         }
@@ -247,7 +254,19 @@ class Store {
         decimals: 18,
         symbol: 'SLP',
         name: 'SushiSwap LP Token'
-      }
+      },
+      kp3r: {
+        address: FF_KP3R_ADDRESS,
+        decimals: 18,
+        symbol: 'KP3R',
+        name: 'Keep3r'
+      },
+      vKP3R: {
+        address: FF_VEKP3R_ADDRESS,
+        decimals: 18,
+        symbol: 'vKP3R',
+        name: 'Vested Keep3r'
+      },
     }
   }
 
@@ -338,10 +357,14 @@ class Store {
 
       const systemAssets = this._getSystemAssets()
 
+      // in comes the hacks. WE have changed ibFF to kp3r. And veIBFF to vKP3R.
+      // now, veIBFF is veIBFFOld because we need values from that.
+
+
       // GET IBFF balance and vesting allowance
-      const ibff = systemAssets.ibff
+      const ibff = systemAssets.kp3r
       ibff.balance = await this._getAssetBalance(web3, ibff, account)
-      const vestingContractApprovalAmount = await this._getApprovalAmount(web3, ibff, account.address, VEIBFF_ADDRESS)
+      const vestingContractApprovalAmount = await this._getApprovalAmount(web3, ibff, account.address, FF_VEKP3R_ADDRESS)
       ibff.vestAllowance = vestingContractApprovalAmount
 
       this.setStore({ ibff })
@@ -351,13 +374,23 @@ class Store {
       const vestingInfo = await multicallContract.methods._getVestingInfo(account.address).call()
 
       // get veIBFF balance and vesting info
-      const veIBFF = systemAssets.veIBFF
+      const veIBFF = systemAssets.vKP3R
       veIBFF.balance = await this._getAssetBalance(web3, veIBFF, account)
       const vi = await this._getVestingInfo(web3, account, vestingInfo, veIBFF)
       veIBFF.vestingInfo = vi
 
       this.setStore({ veIBFF })
       this.emitter.emit(FIXED_FOREX_UPDATED);
+
+
+      const veIBFFOld = systemAssets.veIBFF
+      veIBFFOld.balance = await this._getAssetBalance(web3, veIBFFOld, account)
+      const viOld = await this._getVestingInfoOld(web3, account, veIBFFOld)
+      veIBFFOld.vestingInfo = viOld
+
+      this.setStore({ veIBFFOld })
+      this.emitter.emit(FIXED_FOREX_UPDATED);
+
 
       // get IBEUR ETH bal
       const veEURETHSLP = systemAssets.ibERUETH
@@ -370,10 +403,12 @@ class Store {
       const faucetRewards = await this._getFaucetRewards(vestingInfo, ibff)
       const feeDistributionRewards = await this._getFeeDistributionRewards(web3, account, ibff)
       const veIBFFDistributionRewards = await this._getVEIBFFDistributionRewards(vestingInfo, ibff)
+      const veClaimRewards = await this._getClaimableVKP3R(web3, account)
 
       rewards.faucet = faucetRewards
       rewards.feeDistribution = feeDistributionRewards
       rewards.veIBFFDistribution = veIBFFDistributionRewards
+      rewards.veClaimRewards = veClaimRewards
 
       veEURETHSLP.faucetAllowance = faucetContractApprovalAmount
       veEURETHSLP.faucetBalance = faucetRewards.balance
@@ -516,6 +551,19 @@ class Store {
     }
   };
 
+  _getClaimableVKP3R = async (web3, account, vKP3R) => {
+    const vKP3RContract = new web3.eth.Contract(abis.veClaimABI, FF_VECLAIM_ADDRESS)
+    const [ claimable, hasClaimed ] = await Promise.all([
+      vKP3RContract.methods.claimable(account.address).call(),
+      vKP3RContract.methods.has_claimed(account.address).call()
+    ]);
+
+    return {
+      hasClaimed: hasClaimed,
+      claimable: BigNumber(claimable).div(10**18).toFixed(18),
+    }
+  }
+
   _getFaucetRewards = async (vestingInfo, ibff) => {
     try {
       const earned = vestingInfo.earned
@@ -563,17 +611,31 @@ class Store {
 
   _getVestingInfo = async (web3, account, vestingInfo, veIBFF) => {
     try {
+      const veIBFFContract = new web3.eth.Contract(abis.veIBFFABI, FF_VEKP3R_ADDRESS)
+      const lockedInfo = await veIBFFContract.methods.locked(account.address).call()
+      const totalSupply = await veIBFFContract.methods.totalSupply().call()
+
+      return {
+        locked: BigNumber(lockedInfo.amount).div(10**veIBFF.decimals).toFixed(veIBFF.decimals),
+        lockEnds: lockedInfo.end,
+        lockValue: BigNumber(lockedInfo.amount).div(10**veIBFF.decimals).toFixed(veIBFF.decimals),
+        totalSupply: BigNumber(totalSupply).div(10**veIBFF.decimals).toFixed(veIBFF.decimals)
+      }
+    } catch(ex) {
+      console.log(ex)
+      return null
+    }
+  }
+
+  _getVestingInfoOld = async (web3, account, veIBFF) => {
+    try {
       const veIBFFContract = new web3.eth.Contract(abis.veIBFFABI, VEIBFF_ADDRESS)
       const lockedInfo = await veIBFFContract.methods.locked(account.address).call()
 
-      const locked = vestingInfo.locked
-      const totalSupply = vestingInfo.totalSupply
-
       return {
-        locked: BigNumber(locked).div(10**veIBFF.decimals).toFixed(veIBFF.decimals),
+        locked: BigNumber(lockedInfo.amount).div(10**veIBFF.decimals).toFixed(veIBFF.decimals),
         lockEnds: lockedInfo.end,
-        lockValue: BigNumber(locked).div(10**veIBFF.decimals).toFixed(veIBFF.decimals),
-        totalSupply: BigNumber(totalSupply).div(10**veIBFF.decimals).toFixed(veIBFF.decimals)
+        lockValue: BigNumber(lockedInfo.amount).div(10**veIBFF.decimals).toFixed(veIBFF.decimals),
       }
     } catch(ex) {
       console.log(ex)
@@ -881,7 +943,7 @@ class Store {
 
   _callCreateLock = async (web3, account, amount, unlockTime, gasSpeed, callback) => {
     try {
-      let veBIFFContract = new web3.eth.Contract(abis.veIBFFABI, VEIBFF_ADDRESS);
+      let veBIFFContract = new web3.eth.Contract(abis.veIBFFABI, FF_VEKP3R_ADDRESS);
 
       const sendAmount = BigNumber(amount === '' ? 0 : amount)
         .times(10 ** 18)
@@ -922,9 +984,9 @@ class Store {
   }
 
   _callApproveVest = async (web3, account, gasSpeed, callback) => {
-    const ibffContract = new web3.eth.Contract(abis.erc20ABI, IBFF_ADDRESS);
+    const ibffContract = new web3.eth.Contract(abis.erc20ABI, FF_KP3R_ADDRESS);
     const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
-    this._callContractWait(web3, ibffContract, 'approve', [VEIBFF_ADDRESS, MAX_UINT256], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    this._callContractWait(web3, ibffContract, 'approve', [FF_VEKP3R_ADDRESS, MAX_UINT256], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
   };
 
   vestAmount = async (payload) => {
@@ -954,7 +1016,7 @@ class Store {
 
   _callIncreaseAmount = async (web3, account, amount, gasSpeed, callback) => {
     try {
-      let veBIFFContract = new web3.eth.Contract(abis.veIBFFABI, VEIBFF_ADDRESS);
+      let veBIFFContract = new web3.eth.Contract(abis.veIBFFABI, FF_VEKP3R_ADDRESS);
 
       const sendAmount = BigNumber(amount === '' ? 0 : amount)
         .times(10 ** 18)
@@ -996,7 +1058,7 @@ class Store {
 
   _callIncreaseUnlockTime = async (web3, account, unlockTime, gasSpeed, callback) => {
     try {
-      let veBIFFContract = new web3.eth.Contract(abis.veIBFFABI, VEIBFF_ADDRESS);
+      let veBIFFContract = new web3.eth.Contract(abis.veIBFFABI, FF_VEKP3R_ADDRESS);
 
       const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
 
@@ -1034,7 +1096,7 @@ class Store {
 
   _callWithdrawLock = async (web3, account, gasSpeed, callback) => {
     try {
-      let veBIFFContract = new web3.eth.Contract(abis.veIBFFABI, VEIBFF_ADDRESS);
+      let veBIFFContract = new web3.eth.Contract(abis.veIBFFABI, FF_VEKP3R_ADDRESS);
       const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
 
       this._callContractWait(web3, veBIFFContract, 'withdraw', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
@@ -1381,6 +1443,96 @@ class Store {
     }
   };
 
+  claimVeclaim = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const veIBFFOld = await this.getStore('veIBFFOld');
+    if (!veIBFFOld) {
+      return false;
+      //maybe throw an error
+    }
+
+    const veIBFF = await this.getStore('veIBFF');
+    if (!veIBFF) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { gasSpeed } = payload.content;
+
+    // if(BigNumber(veIBFFOld.vestingInfo.lockEnds).eq(0) || BigNumber(veIBFFOld.vestingInfo.lockValue).eq(0)) {
+    //   return this.emitter.emit(ERROR, 'No locked veIBFF or veIBFF lock has expired');
+    // }
+
+    this._callApproveClaimVeClaim(web3, account, veIBFFOld, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      //check if a lock has already been created
+      if(BigNumber(veIBFF.vestingInfo.lockValue).gt(0) && BigNumber(veIBFF.vestingInfo.lockEnds).gt(0)) {
+        this._callClaimVeClaim(web3, account, gasSpeed, (err, res) => {
+          if (err) {
+            return this.emitter.emit(ERROR, err);
+          }
+
+          return this.emitter.emit(FIXED_FOREX_VECLAIM_CLAIMED, res);
+        });
+      } else {
+        this._callCreateLock(web3, account, veIBFFOld.vestingInfo.lockValue, veIBFFOld.vestingInfo.lockEnds, gasSpeed, (err, res) => {
+          if (err) {
+            return this.emitter.emit(ERROR, err);
+          }
+
+          this._callClaimVeClaim(web3, account, gasSpeed, (err, res) => {
+            if (err) {
+              return this.emitter.emit(ERROR, err);
+            }
+
+            return this.emitter.emit(FIXED_FOREX_VECLAIM_CLAIMED, res);
+          });
+        });
+      }
+    });
+  }
+
+  _callApproveClaimVeClaim = async (web3, account, veIBFFOld, gasSpeed, callback) => {
+    const kp3rContract = new web3.eth.Contract(abis.erc20ABI, FF_KP3R_ADDRESS);
+    const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+    const approvalAmount = await this._getApprovalAmount(web3, {
+      address: FF_KP3R_ADDRESS,
+      decimals: 18
+    }, account.address, FF_VEKP3R_ADDRESS)
+
+    if(BigNumber(approvalAmount).lt(veIBFFOld.vestingInfo.lockValue)) {
+      this._callContractWait(web3, kp3rContract, 'approve', [FF_VEKP3R_ADDRESS, MAX_UINT256], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } else {
+      callback()
+    }
+  };
+
+  _callClaimVeClaim = async (web3, account, gasSpeed, callback) => {
+    try {
+      let veClaimContract = new web3.eth.Contract(abis.veClaimABI, FF_VECLAIM_ADDRESS);
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, veClaimContract, 'claim', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  };
 
 
   mintFUSD = async (payload) => {

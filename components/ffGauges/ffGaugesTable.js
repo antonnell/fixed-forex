@@ -312,7 +312,7 @@ export default function EnhancedTable({ gauges, setParentSliderValues, defaultVo
                   </TableCell>
                   <TableCell className={classes.cell} align="right">
                     <Typography variant="h2" className={classes.textSpaced}>
-                      { formatCurrency(row?.gauge?.votes) } veIBFF
+                      { formatCurrency(row?.gauge?.votes) } vKP3R
                     </Typography>
                     <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
                       { formatCurrency(row?.gauge?.votePercent) } %
@@ -320,7 +320,7 @@ export default function EnhancedTable({ gauges, setParentSliderValues, defaultVo
                   </TableCell>
                   <TableCell className={classes.cell} align="right">
                     <Typography variant="h2" className={classes.textSpaced}>
-                      { formatCurrency(row?.gauge?.userVotes) } veIBFF
+                      { formatCurrency(row?.gauge?.userVotes) } vKP3R
                     </Typography>
                     <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
                       { formatCurrency(row?.gauge?.userVotePercent) } %

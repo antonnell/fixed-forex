@@ -12,7 +12,7 @@ import {
 } from '../../stores/constants';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 
-export default function ffLockDuration({ ibff, veIBFF }) {
+export default function ffLockDuration({ ibff, veIBFF, veIBFFOld }) {
 
   const [ lockLoading, setLockLoading ] = useState(false)
 
