@@ -1467,11 +1467,17 @@ class Store {
       //maybe throw an error
     }
 
+    const ibff = await this.getStore('ibff');
+    if (!ibff) {
+      return false;
+      //maybe throw an error
+    }
+
     const { gasSpeed } = payload.content;
 
-    // if(BigNumber(veIBFFOld.vestingInfo.lockEnds).eq(0) || BigNumber(veIBFFOld.vestingInfo.lockValue).eq(0)) {
-    //   return this.emitter.emit(ERROR, 'No locked veIBFF or veIBFF lock has expired');
-    // }
+    if(BigNumber(veIBFFOld.vestingInfo.lockEnds).eq(0) || BigNumber(veIBFFOld.vestingInfo.lockValue).eq(0)) {
+      return this.emitter.emit(ERROR, 'No locked veIBFF or veIBFF lock has expired');
+    }
 
     this._callApproveClaimVeClaim(web3, account, veIBFFOld, gasSpeed, (err, res) => {
       if (err) {
@@ -1488,7 +1494,12 @@ class Store {
           return this.emitter.emit(FIXED_FOREX_VECLAIM_CLAIMED, res);
         });
       } else {
-        this._callCreateLock(web3, account, veIBFFOld.vestingInfo.lockValue, veIBFFOld.vestingInfo.lockEnds, gasSpeed, (err, res) => {
+        let lockValue = '1'
+        if(BigNumber(ibff.balance).lt(1)) {
+          lockValue = ibff.balance
+        }
+
+        this._callCreateLock(web3, account, lockValue, veIBFFOld.vestingInfo.lockEnds, gasSpeed, (err, res) => {
           if (err) {
             return this.emitter.emit(ERROR, err);
           }

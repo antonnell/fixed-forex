@@ -329,7 +329,7 @@ function Navigation(props) {
           <img src='/images/icon-warning.svg' className={ classes.warningIcon } onClick={ openWarning }/>
         </Tooltip>
       </div>
-      <Typography className={classes.smallVersion}>Version 0.2.0-beta</Typography>
+      <Typography className={classes.smallVersion}>Version 0.2.1-beta</Typography>
       { warningOpen &&
         <FFWarning close={ closeWarning } />
       }
