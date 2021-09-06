@@ -65,7 +65,11 @@
   top: 12px;
 }
 
-
+.center {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
 
 .lpOption:nth-child(1):hover > div {
   color: #fff !important;

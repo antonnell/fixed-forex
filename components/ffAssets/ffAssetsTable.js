@@ -44,6 +44,18 @@ const headCells = [
     label: 'Wallet',
   },
   {
+    id: 'poolBalance',
+    numeric: true,
+    disablePadding: false,
+    label: 'Pool',
+  },
+  {
+    id: 'stakedBalance',
+    numeric: true,
+    disablePadding: false,
+    label: 'Staked',
+  },
+  {
     id: '',
     numeric: true,
     disablePadding: false,
@@ -230,7 +242,7 @@ export default function EnhancedTable({ assets }) {
                 <TableRow key={labelId}>
                   <TableCell className={classes.cell}>
                     <div className={ classes.inline }>
-                      <img className={ classes.imgLogo } src={`https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/${row.address}/logo-128.png`} width='35' height='35' alt='' />
+                      <img className={ classes.imgLogo } src={`https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/${row.address}/logo-128.png`} width='35' height='35' alt='' onError={(e)=>{e.target.onerror = null; e.target.src="/tokens/unknown-logo.png"}} />
                       <div>
                         <Typography variant="h2" className={classes.textSpaced}>
                           { row.symbol }
@@ -243,10 +255,26 @@ export default function EnhancedTable({ assets }) {
                   </TableCell>
                   <TableCell className={classes.cell} align="right">
                     <Typography variant="h2" className={classes.textSpaced}>
-                      { formatCurrency(row.balance) } { row.symbol }
+                      { formatCurrency(row.balance) }
                     </Typography>
                     <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
-                      $ { formatCurrency(0.00) }
+                      { row.symbol }
+                    </Typography>
+                  </TableCell>
+                  <TableCell className={classes.cell} align="right">
+                    <Typography variant="h2" className={classes.textSpaced}>
+                      { formatCurrency(row.gauge.userPoolBalance) }
+                    </Typography>
+                    <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
+                      { row.gauge.poolSymbol }
+                    </Typography>
+                  </TableCell>
+                  <TableCell className={classes.cell} align="right">
+                    <Typography variant="h2" className={classes.textSpaced}>
+                      { formatCurrency(row.gauge.userGaugeBalance) }
+                    </Typography>
+                    <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
+                      { row.gauge.poolSymbol }
                     </Typography>
                   </TableCell>
                   <TableCell className={classes.cell} align="right">

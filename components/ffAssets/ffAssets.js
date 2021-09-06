@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Paper } from '@material-ui/core';
 
 import classes from './ffAssets.module.css';
@@ -10,12 +10,16 @@ import { FIXED_FOREX_UPDATED } from '../../stores/constants';
 
 export default function ffAssets() {
 
+  const [, updateState] = useState();
+  const forceUpdate = useCallback(() => updateState({}), []);
+
   const [assets, setAssets] = useState([])
 
   useEffect(() => {
     const forexUpdated = () => {
       const as = stores.fixedForexStore.getStore('assets');
       setAssets(as)
+      forceUpdate()
     }
 
     const as = stores.fixedForexStore.getStore('assets');

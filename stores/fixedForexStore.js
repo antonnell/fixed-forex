@@ -10,6 +10,24 @@ import {
   IBEUR_ADDRESS,
   IBEUR_GAUGE_ADDRESS,
   IBEUR_POOL_ADDRESS,
+
+  IBCHF_ADDRESS,
+  IBCHF_GAUGE_ADDRESS,
+  IBCHF_POOL_ADDRESS,
+
+  IBAUD_ADDRESS,
+  IBAUD_GAUGE_ADDRESS,
+  IBAUD_POOL_ADDRESS,
+
+  IBJPY_ADDRESS,
+  IBJPY_GAUGE_ADDRESS,
+  IBJPY_POOL_ADDRESS,
+
+  IBGBP_ADDRESS,
+  IBGBP_GAUGE_ADDRESS,
+  IBGBP_POOL_ADDRESS,
+
+
   IBEUR_ETH_ADDRESS,
   IBFF_ADDRESS,
   VEIBFF_ADDRESS,
@@ -187,6 +205,7 @@ class Store {
 
   setStore = (obj) => {
     this.store = { ...this.store, ...obj };
+    console.log(this.store)
     return this.emitter.emit(STORE_UPDATED);
   };
 
@@ -290,6 +309,46 @@ class Store {
           address: IBKRW_GAUGE_ADDRESS,
           poolAddress: IBKRW_POOL_ADDRESS
         }
+      },
+      {
+        address: IBGBP_ADDRESS,
+        symbol: 'ibGBP',
+        decimals: 18,
+        name: 'Iron Bank GBP',
+        gauge: {
+          address: IBGBP_GAUGE_ADDRESS,
+          poolAddress: IBGBP_POOL_ADDRESS
+        }
+      },
+      {
+        address: IBCHF_ADDRESS,
+        symbol: 'ibCHF',
+        decimals: 18,
+        name: 'Iron Bank CHF',
+        gauge: {
+          address: IBCHF_GAUGE_ADDRESS,
+          poolAddress: IBCHF_POOL_ADDRESS
+        }
+      },
+      {
+        address: IBAUD_ADDRESS,
+        symbol: 'ibAUD',
+        decimals: 18,
+        name: 'Iron Bank AUD',
+        gauge: {
+          address: IBAUD_GAUGE_ADDRESS,
+          poolAddress: IBAUD_POOL_ADDRESS
+        }
+      },
+      {
+        address: IBJPY_ADDRESS,
+        symbol: 'ibJPY',
+        decimals: 18,
+        name: 'Iron Bank JPY',
+        gauge: {
+          address: IBJPY_GAUGE_ADDRESS,
+          poolAddress: IBJPY_POOL_ADDRESS
+        }
       }
     ]
 
@@ -356,6 +415,173 @@ class Store {
 
       const systemAssets = this._getSystemAssets()
 
+      this._setIBFF(web3, account, systemAssets)
+      this._setVEIBFF(web3, account, systemAssets)
+      this._setVEIBFFOld(web3, account, systemAssets)
+
+      this._getAssetInfo(web3, account, assets)
+
+    } catch(ex) {
+      console.log(ex)
+      this.emitter.emit(ERROR, ex)
+    }
+  }
+
+  _setIBFF = async (web3, account, systemAssets) => {
+    try {
+      const ibff = systemAssets.kp3r
+      ibff.balance = await this._getAssetBalance(web3, ibff, account)
+      const vestingContractApprovalAmount = await this._getApprovalAmount(web3, ibff, account.address, FF_VEKP3R_ADDRESS)
+      ibff.vestAllowance = vestingContractApprovalAmount
+
+      this.setStore({ ibff })
+      this.emitter.emit(FIXED_FOREX_UPDATED);
+    } catch(ex) {
+      console.log(ex)
+    }
+  }
+
+  _setVEIBFF = async (web3, account, systemAssets) => {
+    try {
+      const veIBFF = systemAssets.vKP3R
+      veIBFF.balance = await this._getAssetBalance(web3, veIBFF, account)
+      const vi = await this._getVestingInfo(web3, account, veIBFF)
+      veIBFF.vestingInfo = vi
+
+      this.setStore({ veIBFF })
+      this.emitter.emit(FIXED_FOREX_UPDATED);
+    } catch(ex) {
+      console.log(ex)
+    }
+  }
+
+  _setVEIBFFOld = async (web3, account, systemAssets) => {
+    try {
+      const veIBFFOld = systemAssets.veIBFF
+      veIBFFOld.balance = await this._getAssetBalance(web3, veIBFFOld, account)
+      const viOld = await this._getVestingInfoOld(web3, account, veIBFFOld)
+      veIBFFOld.vestingInfo = viOld
+
+      this.setStore({ veIBFFOld })
+      this.emitter.emit(FIXED_FOREX_UPDATED);
+    } catch(ex) {
+      console.log(ex)
+    }
+  }
+
+  _getAssetInfo = async (web3, account, assets) => {
+    try {
+      const assetsBalances = await Promise.all(assets.map(async (asset) => {
+        const assetContract = new web3.eth.Contract(abis.erc20ABI, asset.address)
+        const gaugeContract = new web3.eth.Contract(abis.gaugeABI, asset.gauge.address)
+        const poolContract = new web3.eth.Contract(abis.poolABI, asset.gauge.poolAddress)
+
+        const [balanceOf, userGaugeBalance, userGaugeEarned, poolBalances, userPoolBalance, poolSymbol, virtualPrice, poolGaugeAllowance, coins0, coins1] = await Promise.all([
+          assetContract.methods.balanceOf(account.address).call(),
+          gaugeContract.methods.balanceOf(account.address).call(),
+          gaugeContract.methods.claimable_reward(account.address, FF_KP3R_ADDRESS).call(),
+          poolContract.methods.get_balances().call(),
+          poolContract.methods.balanceOf(account.address).call(),
+          poolContract.methods.symbol().call(),
+          poolContract.methods.get_virtual_price().call(),
+          poolContract.methods.allowance(account.address, asset.gauge.address).call(),
+          poolContract.methods.coins(0).call(),
+          poolContract.methods.coins(1).call()
+        ]);
+
+        // get coin asset info
+        const coin0Contract = new web3.eth.Contract(abis.erc20ABI, coins0)
+        const coin1Contract = new web3.eth.Contract(abis.erc20ABI, coins1)
+
+        const [
+          coin0Symbol, coin0Decimals, coin0Balance, coin0GaugeAllowance,
+          coin1Symbol, coin1Decimals, coin1Balance, coin1GaugeAllowance
+        ] = await Promise.all([
+          coin0Contract.methods.symbol().call(),
+          coin0Contract.methods.decimals().call(),
+          coin0Contract.methods.balanceOf(account.address).call(),
+          coin0Contract.methods.allowance(account.address, asset.gauge.poolAddress).call(),
+
+          coin1Contract.methods.symbol().call(),
+          coin1Contract.methods.decimals().call(),
+          coin1Contract.methods.balanceOf(account.address).call(),
+          coin1Contract.methods.allowance(account.address, asset.gauge.poolAddress).call()
+        ]);
+
+        let intCoin0Decimasls = parseInt(coin0Decimals)
+        let intCoin1Decimasls = parseInt(coin1Decimals)
+
+        const coin0 = {
+          address: coins0,
+          symbol: coin0Symbol,
+          decimals: intCoin0Decimasls,
+          balance: BigNumber(coin0Balance).div(10**intCoin0Decimasls).toFixed(intCoin0Decimasls),
+          poolBalance: BigNumber(poolBalances[0]).div(10**intCoin0Decimasls).toFixed(intCoin0Decimasls),
+          gaugeAllowance: BigNumber(coin0GaugeAllowance).div(10**intCoin0Decimasls).toFixed(intCoin0Decimasls),
+        }
+
+        const coin1 = {
+          address: coins1,
+          symbol: coin1Symbol,
+          decimals: intCoin1Decimasls,
+          balance: BigNumber(coin1Balance).div(10**intCoin1Decimasls).toFixed(intCoin1Decimasls),
+          poolBalance: BigNumber(poolBalances[1]).div(10**intCoin1Decimasls).toFixed(intCoin1Decimasls),
+          gaugeAllowance: BigNumber(coin1GaugeAllowance).div(10**intCoin1Decimasls).toFixed(intCoin1Decimasls),
+        }
+
+        return {
+          balanceOf,
+          poolBalances,
+          coin0,
+          coin1,
+          poolSymbol,
+          virtualPrice,
+          userPoolBalance,
+          userGaugeBalance,
+          userGaugeEarned,
+          poolGaugeAllowance,
+        }
+      }))
+
+      for(let i = 0; i < assets.length; i++) {
+        assets[i].balance = BigNumber(assetsBalances[i].balanceOf).div(10**assets[i].decimals).toFixed(assets[i].decimals)
+        assets[i].gauge.coin0 = assetsBalances[i].coin0
+        assets[i].gauge.coin1 = assetsBalances[i].coin1
+        assets[i].gauge.poolSymbol = assetsBalances[i].poolSymbol
+        assets[i].gauge.userPoolBalance = BigNumber(assetsBalances[i].userPoolBalance).div(10**18).toFixed(18)
+        assets[i].gauge.userGaugeBalance = BigNumber(assetsBalances[i].userGaugeBalance).div(10**18).toFixed(18)
+        assets[i].gauge.earned = BigNumber(assetsBalances[i].userGaugeEarned).div(10**18).toFixed(18)
+        assets[i].gauge.virtualPrice = BigNumber(assetsBalances[i].virtualPrice).div(10**18).toFixed(18)
+        assets[i].gauge.poolGaugeAllowance = BigNumber(assetsBalances[i].poolGaugeAllowance).div(10**18).toFixed(18)
+      }
+
+      this.setStore({ assets })
+      this.emitter.emit(FIXED_FOREX_UPDATED);
+
+    } catch(ex) {
+      console.log(ex)
+    }
+  }
+
+  getFFBalances_old = async (payload) => {
+    try {
+      const assets = this.getStore('assets');
+      if (!assets) {
+        return null;
+      }
+
+      const account = stores.accountStore.getStore('account');
+      if (!account) {
+        return null;
+      }
+
+      const web3 = await stores.accountStore.getWeb3Provider();
+      if (!web3) {
+        return null;
+      }
+
+      const systemAssets = this._getSystemAssets()
+
       // in comes the hacks. WE have changed ibFF to kp3r. And veIBFF to vKP3R.
       // now, veIBFF is veIBFFOld because we need values from that.
 
@@ -369,13 +595,14 @@ class Store {
       this.setStore({ ibff })
       this.emitter.emit(FIXED_FOREX_UPDATED);
 
-      const multicallContract = new web3.eth.Contract(abis.multicallABI, FF_MULTICALL_ADDRESS)
-      const vestingInfo = await multicallContract.methods._getVestingInfo(account.address).call()
+      //// NOTE: scrappying this multicall contract, we've moved on from it
+      // const multicallContract = new web3.eth.Contract(abis.multicallABI, FF_MULTICALL_ADDRESS)
+      // const vestingInfo = await multicallContract.methods._getVestingInfo(account.address).call()
 
       // get veIBFF balance and vesting info
       const veIBFF = systemAssets.vKP3R
       veIBFF.balance = await this._getAssetBalance(web3, veIBFF, account)
-      const vi = await this._getVestingInfo(web3, account, vestingInfo, veIBFF)
+      const vi = await this._getVestingInfo(web3, account, veIBFF)
       veIBFF.vestingInfo = vi
 
       this.setStore({ veIBFF })
@@ -608,7 +835,7 @@ class Store {
     }
   }
 
-  _getVestingInfo = async (web3, account, vestingInfo, veIBFF) => {
+  _getVestingInfo = async (web3, account, veIBFF) => {
     try {
       const veIBFFContract = new web3.eth.Contract(abis.veIBFFABI, FF_VEKP3R_ADDRESS)
       const lockedInfo = await veIBFFContract.methods.locked(account.address).call()
