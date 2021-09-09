@@ -69,7 +69,7 @@ export default function ffOverview() {
               <div>
                 <Typography className={ classes.title }>Rewards Available:</Typography>
                 <div className={ classes.inline }>
-                  <Typography className={ classes.value }>{ formatCurrency(rewards ? rewards.faucet.faucet : 0) }</Typography>
+                  <Typography className={ classes.value }>{ formatCurrency(rewards ? rewards.veIBFFDistribution.earned : 0) }</Typography>
                   <Typography className={ classes.valueSymbol }>{ ibff ? ibff.symbol : '' }</Typography>
                 </div>
               </div>

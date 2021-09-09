@@ -36,10 +36,10 @@ export default function ffClaimDistirbution() {
   }, []);
 
   const claim = () => {
-    // if(BigNumber(rewards && rewards.feeDistribution ? rewards.feeDistribution.earned : 0).gt(0)) {
+    if(BigNumber(rewards && rewards.feeDistribution ? rewards.feeDistribution.earned : 0).gt(0)) {
       setLoading(true)
       stores.dispatcher.dispatch({ type: FIXED_FOREX_CLAIM_DISTRIBUTION_REWARD, content: {}})
-    // }
+    }
   }
 
   return (

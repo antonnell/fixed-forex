@@ -12,6 +12,8 @@ import { multicallABI } from './multicallABI';
 import { feeDistributionLookupABI } from './feeDistributionLookupABI'
 import { boostDelegateABI } from './boostDelegateABI'
 import { veClaimABI } from './veClaimABI'
+import { curveFeeDistributionABI } from './curveFeeDistributionABI'
+import { tokenMinterABI } from './tokenMinterABI'
 
 export default {
   erc20ABI: erc20ABI,
@@ -27,5 +29,7 @@ export default {
   multicallABI: multicallABI,
   feeDistributionLookupABI: feeDistributionLookupABI,
   boostDelegateABI: boostDelegateABI,
-  veClaimABI: veClaimABI
+  veClaimABI: veClaimABI,
+  curveFeeDistributionABI: curveFeeDistributionABI,
+  tokenMinterABI: tokenMinterABI
 };

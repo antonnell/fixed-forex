@@ -40,6 +40,10 @@ import {
   FF_KP3R_ADDRESS,
   FF_VEKP3R_ADDRESS,
   FF_VECLAIM_ADDRESS,
+  FF_CRV_ADDRESS,
+  FF_IBEUR_CLAIMABLE_ADDRESS,
+  FF_KP3R_CLAIMABLE_ADDRESS,
+  FF_CURVE_TOKEN_MINTER_ADDRESS,
   ERROR,
   TX_SUBMITTED,
   STORE_UPDATED,
@@ -421,6 +425,8 @@ class Store {
 
       this._getAssetInfo(web3, account, assets)
 
+      this._getRewardInfo(web3, account, assets)
+
     } catch(ex) {
       console.log(ex)
       this.emitter.emit(ERROR, ex)
@@ -479,7 +485,7 @@ class Store {
         const [balanceOf, userGaugeBalance, userGaugeEarned, poolBalances, userPoolBalance, poolSymbol, virtualPrice, poolGaugeAllowance, coins0, coins1] = await Promise.all([
           assetContract.methods.balanceOf(account.address).call(),
           gaugeContract.methods.balanceOf(account.address).call(),
-          gaugeContract.methods.claimable_reward(account.address, FF_KP3R_ADDRESS).call(),
+          gaugeContract.methods.claimable_tokens(account.address).call(),
           poolContract.methods.get_balances().call(),
           poolContract.methods.balanceOf(account.address).call(),
           poolContract.methods.symbol().call(),
@@ -556,6 +562,34 @@ class Store {
       }
 
       this.setStore({ assets })
+      this.emitter.emit(FIXED_FOREX_UPDATED);
+
+    } catch(ex) {
+      console.log(ex)
+    }
+  }
+
+  _getRewardInfo = async (web3, account) => {
+    try {
+      const ibEURClaimContract = new web3.eth.Contract(abis.curveFeeDistributionABI, FF_IBEUR_CLAIMABLE_ADDRESS)
+      const kp3rClaimContract = new web3.eth.Contract(abis.curveFeeDistributionABI, FF_KP3R_CLAIMABLE_ADDRESS)
+
+      const [ibEURClaimable, kp3rClaimable] = await Promise.all([
+        ibEURClaimContract.methods.claimable(account.address).call(),
+        kp3rClaimContract.methods.claimable(account.address).call()
+      ]);
+
+      // get different reward contract info
+      let rewards = {}
+
+      rewards.feeDistribution = {
+        earned: BigNumber(ibEURClaimable).div(1e18).toFixed(18)
+      }
+      rewards.veIBFFDistribution = {
+        earned: BigNumber(kp3rClaimable).div(1e18).toFixed(18)
+      }
+
+      this.setStore({ rewards })
       this.emitter.emit(FIXED_FOREX_UPDATED);
 
     } catch(ex) {
@@ -909,10 +943,11 @@ class Store {
 
   _callClaimVestingReward = async (web3, account, gasSpeed, callback) => {
     try {
-      const faucetContract = new web3.eth.Contract(abis.distributionABI, FF_VEIBFF_DISTRIBUTION_ADDRESS)
+
+      const claimContract = new web3.eth.Contract(abis.curveFeeDistributionABI, FF_KP3R_CLAIMABLE_ADDRESS)
       const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
 
-      this._callContractWait(web3, faucetContract, 'claim', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+      this._callContractWait(web3, claimContract, 'claim', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
     } catch (ex) {
       console.log(ex);
       return this.emitter.emit(ERROR, ex);
@@ -981,7 +1016,7 @@ class Store {
 
   _callClaimDistributionReward = async (web3, account, gasSpeed, callback) => {
     try {
-      const claimContract = new web3.eth.Contract(abis.feeClaimDistributionABI, FF_FEE_CLAIM_DISTRIBUTION_ADDRESS)
+      const claimContract = new web3.eth.Contract(abis.curveFeeDistributionABI, FF_IBEUR_CLAIMABLE_ADDRESS)
       const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
 
       this._callContractWait(web3, claimContract, 'claim', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
@@ -1017,10 +1052,10 @@ class Store {
 
   _callClaimCurveReward = async (web3, account, asset, gasSpeed, callback) => {
     try {
-      const gaugeContract = new web3.eth.Contract(abis.gaugeABI, asset.gauge.address)
+      const minterContract = new web3.eth.Contract(abis.tokenMinterABI, FF_CURVE_TOKEN_MINTER_ADDRESS)
       const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
 
-      this._callContractWait(web3, gaugeContract, 'getReward', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+      this._callContractWait(web3, minterContract, 'mint', [asset.gauge.address], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
     } catch (ex) {
       console.log(ex);
       return this.emitter.emit(ERROR, ex);

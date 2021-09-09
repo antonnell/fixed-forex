@@ -7,15 +7,20 @@ export const ETHERSCAN_URL = 'https://etherscan.io/';
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 export const FF_FEE_DISTRIBUTION_LOOKUP_ADDRESS = '0x7779C09F6a42834758349C31A26471483E8D2D71'
-export const FF_MULTICALL_ADDRESS = '0xb1c3f9277fb3a7a3220c18435e7c7d10d34a569a'      // -> get data in 3 calls
-export const IBEUR_ETH_ADDRESS = '0xa2d81bedf22201a77044cdf3ab4d9dc1ffbc391b'         // -> sushi lp pair for EUR
-export const IBFF_ADDRESS = '0xb347132eFf18a3f63426f4988ef626d2CbE274F5'              // -> reward asset (think CRV)
-export const VEIBFF_ADDRESS = '0x4d0518c9136025903751209ddddf6c67067357b1'            // -> vested reward asset  (think veCRV)
-export const FF_FAUCET_ADDRESS = '0x7d254d9adc588126edaee52a1029278180a802e8'         // -> stake sushi lp pair, get reward asset
-export const FF_FEE_CLAIM_DISTRIBUTION_ADDRESS = '0x27761efeb0c7b411e71d0fd0aee5dde35c810cc2'   // -> after locking, get protocol fees
-export const GAUGE_PROXY_ADDRESS = '0x90aAb6C9D887A7Ff8320e56fbd1F4Ff80A0811d5'       // -> gauge proxy for voting etc.
-export const FF_VEIBFF_DISTRIBUTION_ADDRESS = '0x15E61581AFa2707bca42Bae529387eEa11f68E6e'   // -> some other distribution contract ????
+export const FF_MULTICALL_ADDRESS = '0xb1c3f9277fb3a7a3220c18435e7c7d10d34a569a'              // -> get data in 3 calls
+export const IBEUR_ETH_ADDRESS = '0xa2d81bedf22201a77044cdf3ab4d9dc1ffbc391b'                 // -> sushi lp pair for EUR
+export const IBFF_ADDRESS = '0xb347132eFf18a3f63426f4988ef626d2CbE274F5'                      // -> reward asset (think CRV)
+export const VEIBFF_ADDRESS = '0x4d0518c9136025903751209ddddf6c67067357b1'                    // -> vested reward asset  (think veCRV)
+export const FF_FAUCET_ADDRESS = '0x7d254d9adc588126edaee52a1029278180a802e8'                 // -> stake sushi lp pair, get reward asset
+export const FF_FEE_CLAIM_DISTRIBUTION_ADDRESS = '0x27761efeb0c7b411e71d0fd0aee5dde35c810cc2' // -> after locking, get protocol fees
+export const GAUGE_PROXY_ADDRESS = '0x90aAb6C9D887A7Ff8320e56fbd1F4Ff80A0811d5'               // -> gauge proxy for voting etc.
+export const FF_VEIBFF_DISTRIBUTION_ADDRESS = '0x15E61581AFa2707bca42Bae529387eEa11f68E6e'    // -> some other distribution contract ????
 export const FF_BOOST_DELEGATE_ADDRESS = '0x0ea89fb2E5b8FA8F14b741ffe1A4617A32611DfC'
+export const FF_CRV_ADDRESS = '0xd533a949740bb3306d119cc777fa900ba034cd52'
+
+export const FF_IBEUR_CLAIMABLE_ADDRESS = '0xB9d18ab94cf61bB2Bcebe6aC8Ba8c19fF0CDB0cA'
+export const FF_KP3R_CLAIMABLE_ADDRESS = '0x2EcB138B616986aE27DDEaB468b74281666c7E4C'
+export const FF_CURVE_TOKEN_MINTER_ADDRESS = '0xd061D61a4d941c39E5453435B6345Dc261C2fcE0' 
 
 export const FF_KP3R_ADDRESS = '0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44'
 export const FF_VEKP3R_ADDRESS = '0x2FC52C61fB0C03489649311989CE2689D93dC1a2'

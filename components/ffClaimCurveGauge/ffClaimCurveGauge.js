@@ -38,16 +38,16 @@ export default function ffClaimCurveGauge({ asset }) {
         <Grid container spacing={2}>
           <Grid item lg={4} md={4} xs={12}>
             <div className={ classes.lpOptionTitle }>
-              <img className={ classes.lpOptionIcon } src='/images/ff-icon.svg' alt='FF Logo' width={ 60 } height={ 60 } />
+              <img className={ classes.lpOptionIcon } src='/images/Curve.png' alt='FF Logo' width={ 60 } height={ 60 } />
               <div>
-                <Typography className={ classes.lpOptionName }>Fixed Forex</Typography>
+                <Typography className={ classes.lpOptionName }>Curve</Typography>
                 <Typography className={ classes.lpOptionDescription }>Gauge Rewards</Typography>
               </div>
             </div>
           </Grid>
           <Grid item lg={4} md={4} xs={12}>
             <div>
-              <Typography className={ classes.amountText }>{ formatCurrency(asset && asset.gauge ? asset.gauge.earned : 0) } kp3r</Typography>
+              <Typography className={ classes.amountText }>{ formatCurrency(asset && asset.gauge ? asset.gauge.earned : 0) } CRV</Typography>
             </div>
           </Grid>
           <Grid item lg={4} md={4} xs={12}>
