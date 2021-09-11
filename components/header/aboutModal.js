@@ -100,6 +100,12 @@ const ContractsPrimer = () => {
       <Typography className={classes.abouttext} gutterBottom>
         <a href="https://etherscan.io/address/0x83893c4a42f8654c2dd4ff7b4a7cd0e33ae8c859#code" target="_blank">0x83893c4a42f8654c2dd4ff7b4a7cd0e33ae8c859</a> - Fixed Forex distribution contract
       </Typography>
+      <Typography className={classes.abouttext} gutterBottom>
+        <a href="https://etherscan.io/address/0x1ceb5cb57c4d4e2b2433641b95dd330a33185a44#code#code" target="_blank">0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44</a> - KP3R
+      </Typography>
+      <Typography className={classes.abouttext} gutterBottom>
+        <a href="https://etherscan.io/address/0x2fc52c61fb0c03489649311989ce2689d93dc1a2#code" target="_blank">0x2FC52C61fB0C03489649311989CE2689D93dC1a2</a> - vKP3R
+      </Typography>
     </>
   );
 };
