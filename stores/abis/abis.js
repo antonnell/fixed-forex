@@ -14,6 +14,7 @@ import { boostDelegateABI } from './boostDelegateABI'
 import { veClaimABI } from './veClaimABI'
 import { curveFeeDistributionABI } from './curveFeeDistributionABI'
 import { tokenMinterABI } from './tokenMinterABI'
+import { rKP3RABI } from './rKP3RABI'
 
 export default {
   erc20ABI: erc20ABI,
@@ -31,5 +32,6 @@ export default {
   boostDelegateABI: boostDelegateABI,
   veClaimABI: veClaimABI,
   curveFeeDistributionABI: curveFeeDistributionABI,
-  tokenMinterABI: tokenMinterABI
+  tokenMinterABI: tokenMinterABI,
+  rKP3RABI: rKP3RABI,
 };

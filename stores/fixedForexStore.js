@@ -45,6 +45,7 @@ import {
   FF_KP3R_CLAIMABLE_ADDRESS,
   FF_CURVE_TOKEN_MINTER_ADDRESS,
   FF_RKP3R_ADDRESS,
+  FF_OKP3R_ADDRESS,
 
   ERROR,
   TX_SUBMITTED,
@@ -100,6 +101,8 @@ import {
   FIXED_FOREX_ALL_CLAIMED,
   FIXED_FOREX_CLAIM_CURVE_RKP3R_REWARDS,
   FIXED_FOREX_CURVE_RKP3R_REWARD_CLAIMED,
+  FIXED_FOREX_CLAIM_RKP3R,
+  FIXED_FOREX_RKP3R_CLAIMED,
 } from './constants';
 
 import * as moment from 'moment';
@@ -121,7 +124,8 @@ class Store {
       ibff: null,
       veIBFF: null,
       veEURETHSLP: null,
-      rewards: null
+      rewards: null,
+      rKP3R: null
     };
 
     dispatcher.register(
@@ -208,6 +212,9 @@ class Store {
             break;
           case FIXED_FOREX_CLAIM_ALL:
             this.claimAll(payload);
+            break;
+          case FIXED_FOREX_CLAIM_RKP3R:
+            this.claimRKP3R(payload);
             break;
           default: {
           }
@@ -301,6 +308,18 @@ class Store {
         decimals: 18,
         symbol: 'vKP3R',
         name: 'Vested Keep3r'
+      },
+      oKP3R: {
+        address: FF_OKP3R_ADDRESS,
+        decimals: 18,
+        symbol: 'oKP3R',
+        name: 'Keep3r Options'
+      },
+      rKP3R: {
+        address: FF_RKP3R_ADDRESS,
+        decimals: 18,
+        symbol: 'rKP3R',
+        name: 'Redeemable Keep3r'
       },
     }
   }
@@ -435,6 +454,7 @@ class Store {
       this._setIBFF(web3, account, systemAssets)
       this._setVEIBFF(web3, account, systemAssets)
       this._setVEIBFFOld(web3, account, systemAssets)
+      this._setRKP3R(web3, account, systemAssets)
 
       this._getAssetInfo(web3, account, assets)
 
@@ -482,6 +502,18 @@ class Store {
       veIBFFOld.vestingInfo = viOld
 
       this.setStore({ veIBFFOld })
+      this.emitter.emit(FIXED_FOREX_UPDATED);
+    } catch(ex) {
+      console.log(ex)
+    }
+  }
+
+  _setRKP3R = async (web3, account, systemAssets) => {
+    try {
+      const rKP3R = systemAssets.rKP3R
+      rKP3R.balance = await this._getAssetBalance(web3, rKP3R, account)
+
+      this.setStore({ rKP3R })
       this.emitter.emit(FIXED_FOREX_UPDATED);
     } catch(ex) {
       console.log(ex)
@@ -1982,6 +2014,43 @@ class Store {
       return this.emitter.emit(ERROR, ex);
     }
   };
+
+  claimRKP3R = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { gasSpeed } = payload.content;
+
+    this._callClaimRKP3R(web3, account, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_RKP3R_CLAIMED, res);
+    });
+  }
+
+  _callClaimRKP3R = async (web3, account, gasSpeed, callback) => {
+    try {
+
+      const claimContract = new web3.eth.Contract(abis.rKP3RABI, FF_RKP3R_ADDRESS)
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, claimContract, 'claim', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  }
 
   mintFUSD = async (payload) => {
     const account = stores.accountStore.getStore('account');

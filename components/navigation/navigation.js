@@ -17,6 +17,7 @@ import HowToVoteIcon from '@material-ui/icons/HowToVote';
 import SpaceBarIcon from '@material-ui/icons/SpaceBar';
 import WarningIcon from '@material-ui/icons/Warning';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
+import TableChartIcon from '@material-ui/icons/TableChart';
 
 import { SvgIcon } from "@material-ui/core";
 
@@ -134,6 +135,12 @@ function Navigation(props) {
           'home',
           <SwapHorizIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
           <SwapHorizIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
+        )}
+        {renderNav(
+          'Options',
+          'options',
+          <TableChartIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
+          <TableChartIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
         )}
         {renderNav(
           'Vest',
