@@ -1902,7 +1902,11 @@ class Store {
       const { claimable, gasSpeed } = payload.content;
 
       const claimableGauges = claimable.filter((gauge) => {
-        return gauge.type === 'Curve Gauge Rewards'
+        return gauge.type === 'Curve Gauge Rewards' //&& BigNumber(gauge.earned).gt(0)
+      })
+
+      const claimableRKP3RGauges = claimable.filter((gauge) => {
+        return gauge.type === 'Curve Gauge Rewards' //&& BigNumber(gauge.rKP3REarned).gt(0)
       })
 
       const claimableFeeClaim = claimable.filter((gauge) => {
@@ -1913,42 +1917,43 @@ class Store {
         return gauge.type === 'Fixed Forex' && gauge.description === 'Vesting Rewards'
       })
 
+      const promises = []
+
       if(claimableGauges.length > 0) {
-
-        if(claimableGauges.length === 1) {
-          const retu = await new Promise((resolve, reject) => {
-            this._callClaimCurveReward(web3, account, claimableGauges[0].gauge, gasSpeed, (err, res) => {
-              if (err) { reject(err) }
-              resolve(res);
-            });
-          });
-        }
-
-        const r = await new Promise((resolve, reject) => {
+        const r = new Promise((resolve, reject) => {
           this._callMintMany(web3, account, claimableGauges, gasSpeed, (err, res) => {
             if (err) { reject(err) }
             resolve(res);
           });
         });
+        promises.push(r)
       }
 
       if(claimableFeeClaim.length > 0) {
-        const re = await new Promise((resolve, reject) => {
+        const re = new Promise((resolve, reject) => {
           this._callClaimDistributionReward(web3, account, gasSpeed, (err, res) => {
             if (err) { reject(err) }
             resolve(res);
           });
         });
+        promises.push(re)
       }
 
       if(claimableVestingReward.length > 0) {
-        const ret = await new Promise((resolve, reject) => {
+        const ret = new Promise((resolve, reject) => {
           this._callClaimVestingReward(web3, account, gasSpeed, (err, res) => {
             if (err) { reject(err) }
             resolve(res);
           });
         });
+        promises.push(ret)
       }
+
+      const result = await Promise.all(promises);
+      this.dispatcher.dispatch({ type: GET_FIXED_FOREX_BALANCES });
+
+      this.emitter.emit(FIXED_FOREX_ALL_CLAIMED)
+
     } catch(ex) {
       console.log(ex)
       return this.emitter.emit(ERROR, ex);
@@ -1961,13 +1966,15 @@ class Store {
       const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
 
       const gaugesArray = gauges.map((gauge) => {
-        return gauge.gauge.address
+        return gauge.gauge.gauge.address
       })
 
       //fill with zero address I guess?
       while (gaugesArray.length < 8) {
         gaugesArray.push(ZERO_ADDRESS)
       }
+
+      console.log(gaugesArray)
 
       this._callContractWait(web3, minterContract, 'mint_many', [gaugesArray], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
     } catch (ex) {
