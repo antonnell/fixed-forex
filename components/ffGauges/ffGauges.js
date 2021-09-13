@@ -66,7 +66,7 @@ export default function ffGauges() {
         <Typography className={ `${BigNumber(totalVotes).gt(100) ? classes.errorText : classes.helpText}` }>{ totalVotes } %</Typography>
       </div>
       <div className={ classes.actionButtons }>
-        { /* <Button
+        <Button
           className={ classes.buttonOverride }
           variant='contained'
           size='large'
@@ -76,10 +76,7 @@ export default function ffGauges() {
           >
           <Typography className={ classes.actionButtonText }>{ voteLoading ? `Casting Votes` : `Cast Votes` }</Typography>
           { voteLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
-        </Button> */}
-      </div>
-      <div className={ classes.actionButtons }>
-        <Typography color='textSecondary'>Voting is temporarily disabled, functionality is being migrated.</Typography>
+        </Button>
       </div>
     </Paper>
   );
