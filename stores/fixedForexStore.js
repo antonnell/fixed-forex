@@ -44,6 +44,8 @@ import {
   FF_IBEUR_CLAIMABLE_ADDRESS,
   FF_KP3R_CLAIMABLE_ADDRESS,
   FF_CURVE_TOKEN_MINTER_ADDRESS,
+  FF_RKP3R_ADDRESS,
+
   ERROR,
   TX_SUBMITTED,
   STORE_UPDATED,
@@ -94,6 +96,10 @@ import {
   FIXED_FOREX_LOCK_WITHDRAWN,
   FIXED_FOREX_CLAIM_VECLAIM,
   FIXED_FOREX_VECLAIM_CLAIMED,
+  FIXED_FOREX_CLAIM_ALL,
+  FIXED_FOREX_ALL_CLAIMED,
+  FIXED_FOREX_CLAIM_CURVE_RKP3R_REWARDS,
+  FIXED_FOREX_CURVE_RKP3R_REWARD_CLAIMED,
 } from './constants';
 
 import * as moment from 'moment';
@@ -139,6 +145,9 @@ class Store {
             break;
           case FIXED_FOREX_CLAIM_CURVE_REWARDS:
             this.claimCurveReward(payload);
+            break;
+          case FIXED_FOREX_CLAIM_CURVE_RKP3R_REWARDS:
+            this.claimCurveKP3RReward(payload);
             break;
             // SUSHISWAP LP
           case FIXED_FOREX_STAKE_SLP:
@@ -196,6 +205,10 @@ class Store {
 
           case FIXED_FOREX_CLAIM_VECLAIM:
             this.claimVeclaim(payload);
+            break;
+          case FIXED_FOREX_CLAIM_ALL:
+            this.claimAll(payload);
+            break;
           default: {
           }
         }
@@ -489,10 +502,11 @@ class Store {
         const gaugeContract = new web3.eth.Contract(abis.gaugeABI, asset.gauge.address)
         const poolContract = new web3.eth.Contract(abis.poolABI, asset.gauge.poolAddress)
 
-        const [balanceOf, userGaugeBalance, userGaugeEarned, poolBalances, userPoolBalance, poolSymbol, virtualPrice, poolGaugeAllowance, coins0, coins1, gaugeVotes, userGaugeVotes] = await Promise.all([
+        const [balanceOf, userGaugeBalance, userGaugeEarned, userRKP3REarned, poolBalances, userPoolBalance, poolSymbol, virtualPrice, poolGaugeAllowance, coins0, coins1, gaugeVotes, userGaugeVotes] = await Promise.all([
           assetContract.methods.balanceOf(account.address).call(),
           gaugeContract.methods.balanceOf(account.address).call(),
           gaugeContract.methods.claimable_tokens(account.address).call(),
+          gaugeContract.methods.claimable_reward(account.address, FF_RKP3R_ADDRESS).call(),
           poolContract.methods.get_balances().call(),
           poolContract.methods.balanceOf(account.address).call(),
           poolContract.methods.symbol().call(),
@@ -557,6 +571,7 @@ class Store {
           poolGaugeAllowance,
           gaugeVotes,
           userGaugeVotes,
+          userRKP3REarned,
         }
       }))
 
@@ -585,6 +600,8 @@ class Store {
         assets[i].gauge.userVotePercent = userVotePercent
         assets[i].gauge.votes = BigNumber(assetsBalances[i].gaugeVotes).div(10**assets[i].decimals).toFixed(assets[i].decimals)
         assets[i].gauge.votePercent = BigNumber(assetsBalances[i].gaugeVotes).times(100).div(totalGaugeVotes).toFixed(assets[i].decimals)
+
+        assets[i].gauge.rKP3REarned = BigNumber(assetsBalances[i].userRKP3REarned).div(10**18).toFixed(18)
       }
 
       this.setStore({ assets })
@@ -1082,6 +1099,42 @@ class Store {
       const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
 
       this._callContractWait(web3, minterContract, 'mint', [asset.gauge.address], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  }
+
+  claimCurveKP3RReward = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { gasSpeed, asset } = payload.content;
+
+    this._callClaimCurveKP3RReward(web3, account, asset, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_STAKING_REWARD_CLAIMED, res);
+    });
+  }
+
+  _callClaimCurveKP3RReward = async (web3, account, asset, gasSpeed, callback) => {
+    try {
+      const gaugeContract = new web3.eth.Contract(abis.gaugeABI, asset.gauge.address)
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, gaugeContract, 'claim_rewards', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
     } catch (ex) {
       console.log(ex);
       return this.emitter.emit(ERROR, ex);
@@ -1832,6 +1885,96 @@ class Store {
     }
   };
 
+  claimAll = async (payload) => {
+    try {
+      const account = stores.accountStore.getStore('account');
+      if (!account) {
+        return false;
+        //maybe throw an error
+      }
+
+      const web3 = await stores.accountStore.getWeb3Provider();
+      if (!web3) {
+        return false;
+        //maybe throw an error
+      }
+
+      const { claimable, gasSpeed } = payload.content;
+
+      const claimableGauges = claimable.filter((gauge) => {
+        return gauge.type === 'Curve Gauge Rewards'
+      })
+
+      const claimableFeeClaim = claimable.filter((gauge) => {
+        return gauge.type === 'Fixed Forex' && gauge.description === 'Fee Claim'
+      })
+
+      const claimableVestingReward = claimable.filter((gauge) => {
+        return gauge.type === 'Fixed Forex' && gauge.description === 'Vesting Rewards'
+      })
+
+      if(claimableGauges.length > 0) {
+
+        if(claimableGauges.length === 1) {
+          const retu = await new Promise((resolve, reject) => {
+            this._callClaimCurveReward(web3, account, claimableGauges[0].gauge, gasSpeed, (err, res) => {
+              if (err) { reject(err) }
+              resolve(res);
+            });
+          });
+        }
+
+        const r = await new Promise((resolve, reject) => {
+          this._callMintMany(web3, account, claimableGauges, gasSpeed, (err, res) => {
+            if (err) { reject(err) }
+            resolve(res);
+          });
+        });
+      }
+
+      if(claimableFeeClaim.length > 0) {
+        const re = await new Promise((resolve, reject) => {
+          this._callClaimDistributionReward(web3, account, gasSpeed, (err, res) => {
+            if (err) { reject(err) }
+            resolve(res);
+          });
+        });
+      }
+
+      if(claimableVestingReward.length > 0) {
+        const ret = await new Promise((resolve, reject) => {
+          this._callClaimVestingReward(web3, account, gasSpeed, (err, res) => {
+            if (err) { reject(err) }
+            resolve(res);
+          });
+        });
+      }
+    } catch(ex) {
+      console.log(ex)
+      return this.emitter.emit(ERROR, ex);
+    }
+  }
+
+  _callMintMany = async (web3, account, gauges, gasSpeed, callback) => {
+    try {
+      const minterContract = new web3.eth.Contract(abis.tokenMinterABI, FF_CURVE_TOKEN_MINTER_ADDRESS)
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      const gaugesArray = gauges.map((gauge) => {
+        return gauge.gauge.address
+      })
+
+      //fill with zero address I guess?
+      while (gaugesArray.length < 8) {
+        gaugesArray.push(ZERO_ADDRESS)
+      }
+
+      this._callContractWait(web3, minterContract, 'mint_many', [gaugesArray], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  };
 
   mintFUSD = async (payload) => {
     const account = stores.accountStore.getStore('account');

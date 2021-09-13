@@ -16,6 +16,7 @@ import TimerIcon from '@material-ui/icons/Timer';
 import HowToVoteIcon from '@material-ui/icons/HowToVote';
 import SpaceBarIcon from '@material-ui/icons/SpaceBar';
 import WarningIcon from '@material-ui/icons/Warning';
+import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 
 import { SvgIcon } from "@material-ui/core";
 
@@ -146,7 +147,12 @@ function Navigation(props) {
           <HowToVoteIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
           <HowToVoteIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
         )}
-
+        {renderNav(
+          'Rewards',
+          'rewards',
+          <MonetizationOnIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
+          <MonetizationOnIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
+        )}
       </React.Fragment>
     );
   };
@@ -358,7 +364,7 @@ function Navigation(props) {
           <img src='/images/icon-warning.svg' className={ classes.warningIcon } onClick={ openWarning }/>
         </Tooltip>
       </div>
-      <Typography className={classes.smallVersion}>Version 0.3.1-beta</Typography>
+      <Typography className={classes.smallVersion}>Version 0.4.0-beta</Typography>
       { warningOpen &&
         <FFWarning close={ closeWarning } />
       }

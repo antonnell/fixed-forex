@@ -3,12 +3,12 @@ import { Paper, Grid, Typography } from '@material-ui/core';
 import BigNumber from 'bignumber.js';
 
 import { formatCurrency } from '../../utils';
-import classes from './ffClaimCurveGauge.module.css';
+import classes from './ffClaimCurveRKP3RGauge.module.css';
 
 import stores from '../../stores'
-import { ERROR, FIXED_FOREX_CLAIM_CURVE_REWARDS, FIXED_FOREX_CURVE_REWARD_CLAIMED } from '../../stores/constants';
+import { ERROR, FIXED_FOREX_CLAIM_CURVE_RKP3R_REWARDS, FIXED_FOREX_CURVE_RKP3R_REWARD_CLAIMED } from '../../stores/constants';
 
-export default function ffClaimCurveGauge({ asset }) {
+export default function ffClaimCurveRKP3RGauge({ asset }) {
 
   const [ loading, setLoading ] = useState(false)
 
@@ -17,24 +17,23 @@ export default function ffClaimCurveGauge({ asset }) {
       setLoading(false)
     }
 
-    stores.emitter.on(FIXED_FOREX_CURVE_REWARD_CLAIMED, rewardClaimed);
+    stores.emitter.on(FIXED_FOREX_CURVE_RKP3R_REWARD_CLAIMED, rewardClaimed);
     stores.emitter.on(ERROR, rewardClaimed);
     return () => {
-      stores.emitter.removeListener(FIXED_FOREX_CURVE_REWARD_CLAIMED, rewardClaimed);
+      stores.emitter.removeListener(FIXED_FOREX_CURVE_RKP3R_REWARD_CLAIMED, rewardClaimed);
       stores.emitter.removeListener(ERROR, rewardClaimed);
     };
   }, []);
 
   const claim = () => {
-    if(BigNumber(asset && asset.gauge ? asset.gauge.earned : 0).gt(0)) {
+    if(BigNumber(asset && asset.gauge ? asset.gauge.rKP3REarned : 0).gt(0)) {
       setLoading(true)
-      stores.dispatcher.dispatch({ type: FIXED_FOREX_CLAIM_CURVE_REWARDS, content: { asset }})
+      stores.dispatcher.dispatch({ type: FIXED_FOREX_CLAIM_CURVE_RKP3R_REWARDS, content: { asset }})
     }
   }
 
   return (
     <div className={ classes.container}>
-      <Typography variant="h5" className={ classes.title}>Claimable Rewards</Typography>
       <Paper elevation={0} className={ classes.lpOptionsContainer }>
         <div className={ classes.lpOption } onClick={ () => { claim() } }>
         <Grid container spacing={2}>
@@ -49,21 +48,21 @@ export default function ffClaimCurveGauge({ asset }) {
           </Grid>
           <Grid item lg={4} md={4} xs={12}>
             <div>
-              <Typography className={ classes.amountText }>{ formatCurrency(asset && asset.gauge ? asset.gauge.earned : 0) } CRV</Typography>
+              <Typography className={ classes.amountText }>{ formatCurrency(asset && asset.gauge ? asset.gauge.rKP3REarned : 0) } rKP3R</Typography>
             </div>
           </Grid>
           <Grid item lg={4} md={4} xs={12}>
             <div className={ classes.center}>
-              { BigNumber(asset && asset.gauge ? asset.gauge.earned : 0).gt(0) &&
+              { BigNumber(asset && asset.gauge ? asset.gauge.rKP3REarned : 0).gt(0) &&
                 <Typography>Claim Now</Typography>
               }
-              { !BigNumber(asset && asset.gauge ? asset.gauge.earned : 0).gt(0) &&
+              { !BigNumber(asset && asset.gauge ? asset.gauge.rKP3REarned : 0).gt(0) &&
                 <Typography>Stake in gauge to earn rewards</Typography>
               }
             </div>
           </Grid>
         </Grid>
-        { BigNumber(asset && asset.gauge ? asset.gauge.earned : 0).gt(0) &&
+        { BigNumber(asset && asset.gauge ? asset.gauge.rKP3REarned : 0).gt(0) &&
           <div className={ classes.activeIcon }></div>
         }
       </div>
