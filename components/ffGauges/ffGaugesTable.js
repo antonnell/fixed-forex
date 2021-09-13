@@ -282,7 +282,7 @@ export default function EnhancedTable({ gauges, setParentSliderValues, defaultVo
               }
               let sliderValue = sliderValues.find((el) => el.address === row.gauge.poolAddress)?.value
               if(BigNumber(sliderValue).gt(0)) {
-                sliderValue = parseInt(sliderValue)
+                sliderValue = BigNumber(sliderValue).toNumber(0)
               } else {
                 sliderValue = 0
               }

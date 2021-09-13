@@ -477,12 +477,19 @@ class Store {
 
   _getAssetInfo = async (web3, account, assets) => {
     try {
+      const gaugeProxyContract = new web3.eth.Contract(abis.gaugeProxyABI, GAUGE_PROXY_ADDRESS)
+
+      const [totalGaugeVotes] = await Promise.all([
+        gaugeProxyContract.methods.totalWeight().call(),
+      ]);
+
+
       const assetsBalances = await Promise.all(assets.map(async (asset) => {
         const assetContract = new web3.eth.Contract(abis.erc20ABI, asset.address)
         const gaugeContract = new web3.eth.Contract(abis.gaugeABI, asset.gauge.address)
         const poolContract = new web3.eth.Contract(abis.poolABI, asset.gauge.poolAddress)
 
-        const [balanceOf, userGaugeBalance, userGaugeEarned, poolBalances, userPoolBalance, poolSymbol, virtualPrice, poolGaugeAllowance, coins0, coins1] = await Promise.all([
+        const [balanceOf, userGaugeBalance, userGaugeEarned, poolBalances, userPoolBalance, poolSymbol, virtualPrice, poolGaugeAllowance, coins0, coins1, gaugeVotes, userGaugeVotes] = await Promise.all([
           assetContract.methods.balanceOf(account.address).call(),
           gaugeContract.methods.balanceOf(account.address).call(),
           gaugeContract.methods.claimable_tokens(account.address).call(),
@@ -492,7 +499,9 @@ class Store {
           poolContract.methods.get_virtual_price().call(),
           poolContract.methods.allowance(account.address, asset.gauge.address).call(),
           poolContract.methods.coins(0).call(),
-          poolContract.methods.coins(1).call()
+          poolContract.methods.coins(1).call(),
+          gaugeProxyContract.methods.weights(asset.gauge.poolAddress).call(),
+          gaugeProxyContract.methods.votes(account.address, asset.gauge.poolAddress).call()
         ]);
 
         // get coin asset info
@@ -546,10 +555,22 @@ class Store {
           userGaugeBalance,
           userGaugeEarned,
           poolGaugeAllowance,
+          gaugeVotes,
+          userGaugeVotes,
         }
       }))
 
+
+      const totalUserVotes = assetsBalances.reduce((curr, acc) => {
+        return BigNumber(curr).plus(acc.userGaugeVotes)
+      }, 0)
+
       for(let i = 0; i < assets.length; i++) {
+        let userVotePercent = '0'
+        if(BigNumber(totalUserVotes).gt(0)) {
+          userVotePercent = BigNumber(assetsBalances[i].userGaugeVotes).times(100).div(totalUserVotes).toFixed(assets[i].decimals)
+        }
+
         assets[i].balance = BigNumber(assetsBalances[i].balanceOf).div(10**assets[i].decimals).toFixed(assets[i].decimals)
         assets[i].gauge.coin0 = assetsBalances[i].coin0
         assets[i].gauge.coin1 = assetsBalances[i].coin1
@@ -559,6 +580,11 @@ class Store {
         assets[i].gauge.earned = BigNumber(assetsBalances[i].userGaugeEarned).div(10**18).toFixed(18)
         assets[i].gauge.virtualPrice = BigNumber(assetsBalances[i].virtualPrice).div(10**18).toFixed(18)
         assets[i].gauge.poolGaugeAllowance = BigNumber(assetsBalances[i].poolGaugeAllowance).div(10**18).toFixed(18)
+
+        assets[i].gauge.userVotes = BigNumber(assetsBalances[i].userGaugeVotes).div(10**assets[i].decimals).toFixed(assets[i].decimals)
+        assets[i].gauge.userVotePercent = userVotePercent
+        assets[i].gauge.votes = BigNumber(assetsBalances[i].gaugeVotes).div(10**assets[i].decimals).toFixed(assets[i].decimals)
+        assets[i].gauge.votePercent = BigNumber(assetsBalances[i].gaugeVotes).times(100).div(totalGaugeVotes).toFixed(assets[i].decimals)
       }
 
       this.setStore({ assets })
