@@ -334,6 +334,13 @@ class Store {
         symbol: 'rKP3R',
         name: 'Redeemable Keep3r'
       },
+      crv: {
+        address: FF_CRV_ADDRESS,
+        decimals: 18,
+        symbol: 'crv',
+        name: 'Curve DAO Token',
+        oracleAddress: '0xB8c5af54bbDCc61453144CF472A9276aE36109F9'
+      }
     }
   }
 
@@ -475,14 +482,28 @@ class Store {
       this._setVEIBFFOld(web3, account, systemAssets)
       this._setRKP3R(web3, account, systemAssets)
       this._setOKP3R(web3, account, systemAssets)
-
+      this._getCRV(web3, account, systemAssets)
       this._getAssetInfo(web3, account, assets)
-
       this._getRewardInfo(web3, account, assets)
 
     } catch(ex) {
       console.log(ex)
       this.emitter.emit(ERROR, ex)
+    }
+  }
+
+  _getCRV = async (web3, account, systemAssets) => {
+    try {
+      const crv = systemAssets.crv
+
+      const priceOracleContract = new web3.eth.Contract(abis.creamPriceOracleABI, CREAM_PRICE_ORACLE_ADDRESS)
+      const price = await priceOracleContract.methods.getUnderlyingPrice(crv.oracleAddress).call()
+      crv.price = BigNumber(price).div(10 ** (36 - crv.decimals)).toFixed(18)
+
+      this.setStore({ crv })
+      this.emitter.emit(FIXED_FOREX_UPDATED);
+    } catch(ex) {
+      console.log(ex)
     }
   }
 
@@ -541,9 +562,10 @@ class Store {
       const rKP3R = systemAssets.rKP3R
       rKP3R.balance = await this._getAssetBalance(web3, rKP3R, account)
 
-      // const priceOracleContract = new web3.eth.Contract(abis.creamPriceOracleABI, CREAM_PRICE_ORACLE_ADDRESS)
-      // const price = await priceOracleContract.methods.getUnderlyingPrice(FF_KP3R_ADDRESS).call()
-      // rKP3R.price = BigNumber(price).div(10 ** (36 - rKP3R.decimals))
+      const rKP3RContract = new web3.eth.Contract(abis.rKP3RABI, FF_RKP3R_ADDRESS)
+      const price = await rKP3RContract.methods.twap().call()
+      console.log(price)
+      rKP3R.price = BigNumber(price).div(10**6).toFixed(18)
 
       this.setStore({ rKP3R })
       this.emitter.emit(FIXED_FOREX_UPDATED);

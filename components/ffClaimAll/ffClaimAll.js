@@ -7,19 +7,28 @@ import classes from './ffClaimAll.module.css';
 import RewardsTable from './ffClaimAllTable.js'
 
 import stores from '../../stores'
-import { FIXED_FOREX_UPDATED, FIXED_FOREX_CLAIM_ALL, FIXED_FOREX_ALL_CLAIMED, ERROR } from '../../stores/constants';
+import { FIXED_FOREX_UPDATED, FIXED_FOREX_CLAIM_ALL, FIXED_FOREX_ALL_CLAIMED, ERROR, IBEUR_ADDRESS } from '../../stores/constants';
 
 export default function ffClaimAll() {
 
   const [ claimLoading, setClaimLoading ] = useState(false)
   const [ claimable, setClaimable ] = useState([])
+  const [ crv, setCRV ] = useState(null)
+  const [ ibEUR, setIBEUR ] = useState(null)
+  const [ rKP3R, setRKP3R ] = useState(null)
 
   useEffect(() => {
     const forexUpdated = () => {
       getClaimable()
+      setGetIBEUR()
+      setCRV(stores.fixedForexStore.getStore('crv'))
+      setRKP3R(stores.fixedForexStore.getStore('rKP3R'))
     }
 
     getClaimable()
+    setGetIBEUR()
+    setCRV(stores.fixedForexStore.getStore('crv'))
+    setRKP3R(stores.fixedForexStore.getStore('rKP3R'))
 
     const claimReturned = () => {
       setClaimLoading(false)
@@ -34,6 +43,17 @@ export default function ffClaimAll() {
       stores.emitter.removeListener(ERROR, claimReturned);
     };
   }, []);
+
+  const setGetIBEUR = () => {
+    const assets = stores.fixedForexStore.getStore('assets')
+    const ibEURArr = assets.filter((as) => {
+      return as.address === IBEUR_ADDRESS
+    })
+
+    if(ibEURArr.length > 0) {
+      setIBEUR(ibEURArr[0])
+    }
+  }
 
   const getClaimable = () => {
     const gauges = stores.fixedForexStore.getStore('assets')
@@ -92,7 +112,7 @@ export default function ffClaimAll() {
 
   return (
     <Paper elevation={0} className={ classes.container }>
-      <RewardsTable claimable={ claimable } />
+      <RewardsTable claimable={ claimable } crv={ crv } ibEUR={ ibEUR } rKP3R={ rKP3R } />
       <div className={ classes.infoSection }>
       </div>
       <div className={ classes.actionButtons }>

@@ -204,8 +204,10 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function EnhancedTable({ claimable }) {
+export default function EnhancedTable({ claimable, crv, ibEUR, rKP3R }) {
   const classes = useStyles();
+
+  console.log(rKP3R)
 
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('balance');
@@ -283,7 +285,23 @@ export default function EnhancedTable({ claimable }) {
                       { formatCurrency(row?.earned) } { row.symbol }
                     </Typography>
                     <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
-                      $ { formatCurrency(0.00) }
+                      ${
+                        row.symbol === 'CRV' &&
+                        formatCurrency(BigNumber(row?.earned).times(crv?.price))
+                      }
+                      {
+                        row.symbol === 'ibEUR' &&
+                        formatCurrency(BigNumber(row?.earned).times(ibEUR?.price))
+                      }
+                      {
+                        (row.symbol === 'rKP3R' || row.symbol === 'KP3R') &&
+                        formatCurrency(BigNumber(row?.earned).times(rKP3R?.price))
+
+                      }
+                      {
+                        !['CRV', 'ibEUR', 'rKP3R', 'KP3R'].includes(row.symbol) &&
+                        formatCurrency(0)
+                      }
                     </Typography>
                   </TableCell>
                   <TableCell className={classes.cell} align="right">
