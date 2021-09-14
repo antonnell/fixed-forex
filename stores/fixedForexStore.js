@@ -46,6 +46,7 @@ import {
   FF_CURVE_TOKEN_MINTER_ADDRESS,
   FF_RKP3R_ADDRESS,
   FF_OKP3R_ADDRESS,
+  USDC_ADDRESS,
 
   ERROR,
   TX_SUBMITTED,
@@ -103,6 +104,10 @@ import {
   FIXED_FOREX_CURVE_RKP3R_REWARD_CLAIMED,
   FIXED_FOREX_CLAIM_RKP3R,
   FIXED_FOREX_RKP3R_CLAIMED,
+  FIXED_FOREX_REDEEM_OPTION,
+  FIXED_FOREX_OPTION_REDEEMED,
+  FIXED_FOREX_APPROVE_REDEEM_OPTION,
+  FIXED_FOREX_REDEEM_OPTION_APPROVED,
 } from './constants';
 
 import * as moment from 'moment';
@@ -216,6 +221,13 @@ class Store {
           case FIXED_FOREX_CLAIM_RKP3R:
             this.claimRKP3R(payload);
             break;
+          case FIXED_FOREX_REDEEM_OPTION:
+            this.redeemOption(payload);
+            break;
+          case FIXED_FOREX_APPROVE_REDEEM_OPTION:
+            this.approveRedeemOption(payload);
+            break;
+
           default: {
           }
         }
@@ -455,6 +467,7 @@ class Store {
       this._setVEIBFF(web3, account, systemAssets)
       this._setVEIBFFOld(web3, account, systemAssets)
       this._setRKP3R(web3, account, systemAssets)
+      this._setOKP3R(web3, account, systemAssets)
 
       this._getAssetInfo(web3, account, assets)
 
@@ -514,6 +527,37 @@ class Store {
       rKP3R.balance = await this._getAssetBalance(web3, rKP3R, account)
 
       this.setStore({ rKP3R })
+      this.emitter.emit(FIXED_FOREX_UPDATED);
+    } catch(ex) {
+      console.log(ex)
+    }
+  }
+
+  _setOKP3R = async (web3, account, systemAssets) => {
+    try {
+      const oKP3RContract = new web3.eth.Contract(abis.oKP3RABI, FF_OKP3R_ADDRESS)
+      const rKP3RContract = new web3.eth.Contract(abis.rKP3RABI, FF_RKP3R_ADDRESS)
+      const usdcContract = new web3.eth.Contract(abis.erc20ABI, USDC_ADDRESS)
+
+      const balanceOf = await oKP3RContract.methods.balanceOf(account.address).call()
+      const arr = [...Array(parseInt(balanceOf)).keys()]
+
+      const oKP3ROptions = await Promise.all(arr.map(async (idx) => {
+        const tokenIdx = await oKP3RContract.methods.tokenOfOwnerByIndex(account.address, idx).call()
+        const option = await rKP3RContract.methods.options(tokenIdx).call()
+        const rKP3RAllowance = await usdcContract.methods.allowance(account.address, FF_RKP3R_ADDRESS).call()
+
+        return {
+          id: tokenIdx,
+          amount: BigNumber(option.amount).div(10**18).toFixed(18), //kp3r with 18 decimals
+          strike: BigNumber(option.strike).div(10**6).toFixed(6), //USDC with 6 decimals
+          expiry: option.expiry,
+          exercised: option.exercised,
+          rKP3RAllowance: BigNumber(rKP3RAllowance).div(10**6).toFixed(18), //USDC with 6 decimals
+        }
+      }));
+
+      this.setStore({ oKP3ROptions })
       this.emitter.emit(FIXED_FOREX_UPDATED);
     } catch(ex) {
       console.log(ex)
@@ -2051,6 +2095,73 @@ class Store {
       return this.emitter.emit(ERROR, ex);
     }
   }
+
+  redeemOption = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { option, gasSpeed } = payload.content;
+
+    this._callRedeemOption(web3, account, option, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_OPTION_REDEEMED, res);
+    });
+  }
+
+  _callRedeemOption = async (web3, account, option, gasSpeed, callback) => {
+    try {
+
+      const claimContract = new web3.eth.Contract(abis.rKP3RABI, FF_RKP3R_ADDRESS)
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, claimContract, 'redeem', [option.id], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  }
+
+  approveRedeemOption = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { gasSpeed } = payload.content;
+
+    this._callApproveRedeemOption(web3, account, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_REDEEM_OPTION_APPROVED, res);
+    });
+  }
+
+  _callApproveRedeemOption = async (web3, account, gasSpeed, callback) => {
+    const usdcContract = new web3.eth.Contract(abis.erc20ABI, USDC_ADDRESS);
+    const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+    this._callContractWait(web3, usdcContract, 'approve', [FF_RKP3R_ADDRESS, MAX_UINT256], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+  };
 
   mintFUSD = async (payload) => {
     const account = stores.accountStore.getStore('account');

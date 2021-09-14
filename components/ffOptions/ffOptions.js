@@ -13,17 +13,15 @@ export default function ffOptions() {
   const [, updateState] = useState();
   const forceUpdate = useCallback(() => updateState({}), []);
 
-  const [assets, setAssets] = useState([])
+  const [oKP3ROptions, setOKP3ROptions] = useState([])
 
   useEffect(() => {
     const forexUpdated = () => {
-      const as = stores.fixedForexStore.getStore('assets');
-      setAssets(as)
+      setOKP3ROptions(stores.fixedForexStore.getStore('oKP3ROptions'))
       forceUpdate()
     }
 
-    const as = stores.fixedForexStore.getStore('assets');
-    setAssets(as)
+    setOKP3ROptions(stores.fixedForexStore.getStore('oKP3ROptions'))
 
     stores.emitter.on(FIXED_FOREX_UPDATED, forexUpdated);
     return () => {
@@ -33,7 +31,7 @@ export default function ffOptions() {
 
   return (
     <Paper elevation={0}  className={ classes.container}>
-      <OptionsTable assets={assets} />
+      <OptionsTable oKP3ROptions={oKP3ROptions} />
     </Paper>
   );
 }

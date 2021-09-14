@@ -2,10 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography } from '@material-ui/core';
+import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography, CircularProgress } from '@material-ui/core';
 import { useRouter } from "next/router";
+import moment from 'moment';
+import BigNumber from 'bignumber.js';
 
 import { formatCurrency } from '../../utils';
+import stores from '../../stores'
+import { FIXED_FOREX_REDEEM_OPTION, FIXED_FOREX_OPTION_REDEEMED, ERROR, FIXED_FOREX_APPROVE_REDEEM_OPTION, FIXED_FOREX_REDEEM_OPTION_APPROVED } from '../../stores/constants';
 
 function descendingComparator(a, b, orderBy) {
   if (!a || !b) {
@@ -36,24 +40,24 @@ function stableSort(array, comparator) {
 }
 
 const headCells = [
-  { id: 'asset', numeric: false, disablePadding: false, label: 'Asset' },
+  { id: 'id', numeric: false, disablePadding: false, label: 'Option' },
   {
-    id: 'balance',
+    id: 'amount',
     numeric: true,
     disablePadding: false,
-    label: 'Wallet',
+    label: 'Amount',
   },
   {
-    id: 'poolBalance',
+    id: 'strike',
     numeric: true,
     disablePadding: false,
-    label: 'Pool',
+    label: 'Strike',
   },
   {
-    id: 'stakedBalance',
+    id: 'expiry',
     numeric: true,
     disablePadding: false,
-    label: 'Staked',
+    label: 'Expiry',
   },
   {
     id: '',
@@ -193,15 +197,55 @@ const useStyles = makeStyles((theme) => ({
   },
   imgLogo: {
     marginRight: '12px'
+  },
+  tableContainer: {
+    overflowX: 'hidden'
+  },
+  buttonOverride: {
+    color: '#FFF !important',
+    fontWeight: '700 !important',
+    boxShadow: 'none !important',
+    width: '140px',
+    marginLeft: '12px'
+  },
+  actionButtonText: {
+    fontSize: '12px !important',
+    textTransform: 'capitalize !important'
+  },
+  loadingCircle: {
+    marginLeft: '6px !important'
+  },
+  centerThis: {
+
   }
 }));
 
-export default function EnhancedTable({ assets }) {
+export default function EnhancedTable({ oKP3ROptions }) {
   const classes = useStyles();
   const router = useRouter();
 
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('balance');
+  const [claimLoading, setClaimLoading ] = React.useState(false)
+  const [approvalLoading, setApprovalLoading] = React.useState(false)
+
+  React.useEffect(() => {
+    const rewardClaimed = () => {
+      setClaimLoading(false)
+    }
+    const approveReturned = () => {
+      setApprovalLoading(false)
+    }
+
+    stores.emitter.on(FIXED_FOREX_OPTION_REDEEMED, rewardClaimed);
+    stores.emitter.on(FIXED_FOREX_REDEEM_OPTION_APPROVED, approveReturned);
+    stores.emitter.on(ERROR, rewardClaimed);
+    return () => {
+      stores.emitter.removeListener(FIXED_FOREX_OPTION_REDEEMED, rewardClaimed);
+      stores.emitter.removeListener(FIXED_FOREX_REDEEM_OPTION_APPROVED, approveReturned);
+      stores.emitter.removeListener(ERROR, rewardClaimed);
+    };
+  }, []);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -209,7 +253,7 @@ export default function EnhancedTable({ assets }) {
     setOrderBy(property);
   };
 
-  if (!assets) {
+  if (!oKP3ROptions) {
     return (
       <div className={classes.root}>
         <Skeleton variant="rect" width={'100%'} height={40} className={classes.skelly1} />
@@ -222,8 +266,21 @@ export default function EnhancedTable({ assets }) {
     );
   }
 
-  const onView = (asset) => {
-    router.push(`/asset/${asset.address}/curve`)
+  const onRedeem = (option) => {
+    setClaimLoading(true)
+    stores.dispatcher.dispatch({ type: FIXED_FOREX_REDEEM_OPTION, content: { option }})
+  }
+  const onApprove = (option) => {
+    setApprovalLoading(true)
+    stores.dispatcher.dispatch({ type: FIXED_FOREX_APPROVE_REDEEM_OPTION, content: { option: option } })
+  }
+
+  const formatApproved = (am) => {
+    if(BigNumber(am).gte(1000000000000000)) {
+      return 'Approved Forever'
+    }
+
+    return `Approved ${formatCurrency(am)}`
   }
 
   return (
@@ -232,53 +289,85 @@ export default function EnhancedTable({ assets }) {
         <Table className={classes.table} aria-labelledby="tableTitle" size={'medium'} aria-label="enhanced table">
           <EnhancedTableHead classes={classes} order={order} orderBy={orderBy} onRequestSort={handleRequestSort} />
           <TableBody>
-            {stableSort(assets, getComparator(order, orderBy)).map((row, index) => {
+            {
+              oKP3ROptions.length === 0 &&
+              <TableRow key={'nothing'}>
+                <TableCell className={classes.cell} colspan={5}>
+                  <Typography>No options available</Typography>
+                </TableCell>
+              </TableRow>
+            }
+            {
+              oKP3ROptions.length > 0 &&
+              stableSort(oKP3ROptions, getComparator(order, orderBy)).map((row, index) => {
               if (!row) {
                 return null;
               }
               const labelId = `enhanced-table-checkbox-${index}`;
 
+              let depositApprovalNotRequired = false
+              if(row) {
+                depositApprovalNotRequired = BigNumber(row.rKP3RAllowance).gte(row.strike)
+              }
+
               return (
                 <TableRow key={labelId}>
                   <TableCell className={classes.cell}>
                     <div className={ classes.inline }>
-                      <img className={ classes.imgLogo } src={`https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/${row.address}/logo-128.png`} width='35' height='35' alt='' onError={(e)=>{e.target.onerror = null; e.target.src="/tokens/unknown-logo.png"}} />
+                      <img className={ classes.imgLogo } src={`https://assets.coingecko.com/coins/images/12966/large/kp3r_logo.jpg`} width='35' height='35' alt='' onError={(e)=>{e.target.onerror = null; e.target.src="/tokens/unknown-logo.png"}} />
                       <div>
                         <Typography variant="h2" className={classes.textSpaced}>
-                          { row.symbol }
-                        </Typography>
-                        <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
-                          { row.name }
+                          { row.id }
                         </Typography>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell className={classes.cell} align="right">
                     <Typography variant="h2" className={classes.textSpaced}>
-                      { formatCurrency(row.balance) }
+                      { formatCurrency(row.amount) }
                     </Typography>
                     <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
-                      { row.symbol }
+                      KP3R
                     </Typography>
                   </TableCell>
                   <TableCell className={classes.cell} align="right">
                     <Typography variant="h2" className={classes.textSpaced}>
-                      { formatCurrency(row.gauge.userPoolBalance) }
+                      { formatCurrency(row.strike) }
                     </Typography>
                     <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
-                      { row.gauge.poolSymbol }
+                      USDC
                     </Typography>
                   </TableCell>
                   <TableCell className={classes.cell} align="right">
                     <Typography variant="h2" className={classes.textSpaced}>
-                      { formatCurrency(row.gauge.userGaugeBalance) }
+                      { moment.unix(row.expiry).format('YYYY-MM-DD') }
                     </Typography>
                     <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
-                      { row.gauge.poolSymbol }
+                      { moment.unix(row.expiry).fromNow() }
                     </Typography>
                   </TableCell>
                   <TableCell className={classes.cell} align="right">
-                    <Button variant='outlined' color='primary' onClick={ () => { onView(row) } }>View</Button>
+                    <Button
+                      className={ classes.buttonOverride }
+                      variant='contained'
+                      size='large'
+                      color='primary'
+                      disabled={ depositApprovalNotRequired || approvalLoading }
+                      onClick={ () => { onApprove(row) } }
+                      >
+                      <Typography className={ classes.actionButtonText }>{ depositApprovalNotRequired ? formatApproved(row.rKP3RAllowance) : (approvalLoading ? `Approving` : `Approve USDC`)} </Typography>
+                      { approvalLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
+                    </Button>
+                    <Button
+                      className={ classes.buttonOverride }
+                      variant='contained'
+                      size='large'
+                      color='primary'
+                      disabled={ claimLoading || !depositApprovalNotRequired }
+                      onClick={ () => { onRedeem(row) } }>
+                      <Typography className={ classes.actionButtonText }>{ claimLoading ? `Redeeming` : `Redeem` }</Typography>
+                      { claimLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
+                    </Button>
                   </TableCell>
                 </TableRow>
               );

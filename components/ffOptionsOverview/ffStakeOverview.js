@@ -15,17 +15,20 @@ import { FIXED_FOREX_UPDATED, FIXED_FOREX_CLAIM_RKP3R, FIXED_FOREX_RKP3R_CLAIMED
 export default function ffStakeOverview() {
 
   const [ rKP3R, setRKP3R ] = useState(null)
+  const [ oKP3ROptions, setOKP3ROptions ] = useState(null)
   const [ loading, setLoading ] = useState(false)
 
   useEffect(() => {
     const forexUpdated = () => {
       setRKP3R(stores.fixedForexStore.getStore('rKP3R'))
+      setOKP3ROptions(stores.fixedForexStore.getStore('setOKP3ROptions'))
     }
     const claimReturned = () => {
       setLoading(false)
     }
 
     setRKP3R(stores.fixedForexStore.getStore('rKP3R'))
+    setOKP3ROptions(stores.fixedForexStore.getStore('setOKP3ROptions'))
 
     stores.emitter.on(FIXED_FOREX_UPDATED, forexUpdated);
     stores.emitter.on(FIXED_FOREX_RKP3R_CLAIMED, claimReturned);
@@ -64,7 +67,7 @@ export default function ffStakeOverview() {
           <div>
             <Typography className={ classes.title }>Options:</Typography>
             <div className={ classes.inline }>
-              <Typography className={ classes.value }>{ formatCurrency(0) }</Typography>
+              <Typography className={ classes.value }>{ oKP3ROptions ? oKP3ROptions.length : 0 }</Typography>
               <Typography className={ classes.valueSymbol }>{ '' }</Typography>
             </div>
           </div>
