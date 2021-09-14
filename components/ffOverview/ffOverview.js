@@ -5,6 +5,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import TimerIcon from '@material-ui/icons/Timer';
+import BigNumber from 'bignumber.js';
 
 import { formatCurrency } from '../../utils';
 import classes from './ffOverview.module.css';
@@ -17,23 +18,53 @@ export default function ffOverview() {
   const [ ibff, setIBFF] = useState(null)
   const [ veIBFF, setVeIBFF] = useState(null)
   const [ rewards, setRewards] = useState(null)
+  const [ assets, setAssets] = useState(null)
+  const [ totalBalance, setTotalBalance ] = useState(0)
 
   useEffect(() => {
     const forexUpdated = () => {
       setIBFF(stores.fixedForexStore.getStore('ibff'))
       setVeIBFF(stores.fixedForexStore.getStore('veIBFF'))
       setRewards(stores.fixedForexStore.getStore('rewards'))
+      const ass = stores.fixedForexStore.getStore('assets')
+      setAssets(ass)
+
+      calculateTotalBalance(ass)
     }
 
     setIBFF(stores.fixedForexStore.getStore('ibff'))
     setVeIBFF(stores.fixedForexStore.getStore('veIBFF'))
     setRewards(stores.fixedForexStore.getStore('rewards'))
+    const ass = stores.fixedForexStore.getStore('assets')
+    setAssets(ass)
+
+    calculateTotalBalance(ass)
 
     stores.emitter.on(FIXED_FOREX_UPDATED, forexUpdated);
     return () => {
       stores.emitter.removeListener(FIXED_FOREX_UPDATED, forexUpdated);
     };
   }, []);
+
+  const calculateTotalBalance = (ass) => {
+    if(!ass) {
+      return
+    }
+
+    let balance = 0
+
+    for(let i = 0; i < ass.length; i++) {
+      let asset = ass[i]
+      if(asset && asset.gauge) {
+        let pooledBalance = BigNumber(asset.gauge.userPoolBalance).times(asset.gauge.virtualPrice)
+        let stakedBalance = BigNumber(asset.gauge.userGaugeBalance).times(asset.gauge.virtualPrice)
+        let tot = BigNumber(asset.balance).plus(pooledBalance).plus(stakedBalance).times(asset.price)
+        balance = BigNumber(balance).plus(tot)
+      }
+    }
+
+    setTotalBalance(balance)
+  }
 
   return (
     <div className={ classes.container }>
@@ -67,10 +98,9 @@ export default function ffOverview() {
             <div className={ classes.field }>
               <AttachMoneyIcon className={ classes.balanceIcon } />
               <div>
-                <Typography className={ classes.title }>Rewards Available:</Typography>
+                <Typography className={ classes.title }>ib* Balances:</Typography>
                 <div className={ classes.inline }>
-                  <Typography className={ classes.value }>{ formatCurrency(rewards ? rewards.veIBFFDistribution.earned : 0) }</Typography>
-                  <Typography className={ classes.valueSymbol }>{ ibff ? ibff.symbol : '' }</Typography>
+                  <Typography className={ classes.value }>${ formatCurrency(totalBalance) }</Typography>
                 </div>
               </div>
             </div>

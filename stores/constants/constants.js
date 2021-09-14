@@ -5,6 +5,7 @@ export const GAS_PRICE_API = 'https://gasprice.poa.network/';
 export const ZAPPER_GAS_PRICE_API = 'https://api.zapper.fi/v1/gas-price?api_key=96e0cc51-a62e-42ca-acee-910ea7d2a241';
 export const ETHERSCAN_URL = 'https://etherscan.io/';
 
+export const CREAM_PRICE_ORACLE_ADDRESS = '0xde19f5a7cf029275be9cec538e81aa298e297266';
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 export const FF_FEE_DISTRIBUTION_LOOKUP_ADDRESS = '0x7779C09F6a42834758349C31A26471483E8D2D71'
 export const FF_MULTICALL_ADDRESS = '0xb1c3f9277fb3a7a3220c18435e7c7d10d34a569a'              // -> get data in 3 calls

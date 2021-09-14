@@ -47,6 +47,7 @@ import {
   FF_RKP3R_ADDRESS,
   FF_OKP3R_ADDRESS,
   USDC_ADDRESS,
+  CREAM_PRICE_ORACLE_ADDRESS,
 
   ERROR,
   TX_SUBMITTED,
@@ -343,6 +344,7 @@ class Store {
         symbol: 'ibEUR',
         decimals: 18,
         name: 'Iron Bank EUR',
+        oracleAddress: '0x00e5c0774A5F065c285068170b20393925C84BF3',
         gauge: {
           address: IBEUR_GAUGE_ADDRESS,
           poolAddress: IBEUR_POOL_ADDRESS
@@ -353,6 +355,7 @@ class Store {
         symbol: 'ibKRW',
         decimals: 18,
         name: 'Iron Bank KRW',
+        oracleAddress: '0x3c9f5385c288cE438Ed55620938A4B967c080101',
         gauge: {
           address: IBKRW_GAUGE_ADDRESS,
           poolAddress: IBKRW_POOL_ADDRESS
@@ -363,6 +366,7 @@ class Store {
         symbol: 'ibGBP',
         decimals: 18,
         name: 'Iron Bank GBP',
+        oracleAddress: '0xecaB2C76f1A8359A06fAB5fA0CEea51280A97eCF',
         gauge: {
           address: IBGBP_GAUGE_ADDRESS,
           poolAddress: IBGBP_POOL_ADDRESS
@@ -373,6 +377,7 @@ class Store {
         symbol: 'ibCHF',
         decimals: 18,
         name: 'Iron Bank CHF',
+        oracleAddress: '0x1b3E95E8ECF7A7caB6c4De1b344F94865aBD12d5',
         gauge: {
           address: IBCHF_GAUGE_ADDRESS,
           poolAddress: IBCHF_POOL_ADDRESS
@@ -383,6 +388,7 @@ class Store {
         symbol: 'ibAUD',
         decimals: 18,
         name: 'Iron Bank AUD',
+        oracleAddress: '0x86BBD9ac8B9B44C95FFc6BAAe58E25033B7548AA',
         gauge: {
           address: IBAUD_GAUGE_ADDRESS,
           poolAddress: IBAUD_POOL_ADDRESS
@@ -393,6 +399,7 @@ class Store {
         symbol: 'ibJPY',
         decimals: 18,
         name: 'Iron Bank JPY',
+        oracleAddress: '0x215F34af6557A6598DbdA9aa11cc556F5AE264B1',
         gauge: {
           address: IBJPY_GAUGE_ADDRESS,
           poolAddress: IBJPY_POOL_ADDRESS
@@ -486,6 +493,10 @@ class Store {
       const vestingContractApprovalAmount = await this._getApprovalAmount(web3, ibff, account.address, FF_VEKP3R_ADDRESS)
       ibff.vestAllowance = vestingContractApprovalAmount
 
+      // const priceOracleContract = new web3.eth.Contract(abis.creamPriceOracleABI, CREAM_PRICE_ORACLE_ADDRESS)
+      // const price = await priceOracleContract.methods.getUnderlyingPrice(ibff.address).call()
+      // ibff.price = BigNumber(price).div(10 ** (36 - ibff.decimals))
+
       this.setStore({ ibff })
       this.emitter.emit(FIXED_FOREX_UPDATED);
     } catch(ex) {
@@ -499,6 +510,10 @@ class Store {
       veIBFF.balance = await this._getAssetBalance(web3, veIBFF, account)
       const vi = await this._getVestingInfo(web3, account, veIBFF)
       veIBFF.vestingInfo = vi
+
+      // const priceOracleContract = new web3.eth.Contract(abis.creamPriceOracleABI, CREAM_PRICE_ORACLE_ADDRESS)
+      // const price = await priceOracleContract.methods.getUnderlyingPrice(veIBFF.address).call()
+      // veIBFF.price = BigNumber(price).div(10 ** (36 - veIBFF.decimals))
 
       this.setStore({ veIBFF })
       this.emitter.emit(FIXED_FOREX_UPDATED);
@@ -525,6 +540,10 @@ class Store {
     try {
       const rKP3R = systemAssets.rKP3R
       rKP3R.balance = await this._getAssetBalance(web3, rKP3R, account)
+
+      // const priceOracleContract = new web3.eth.Contract(abis.creamPriceOracleABI, CREAM_PRICE_ORACLE_ADDRESS)
+      // const price = await priceOracleContract.methods.getUnderlyingPrice(FF_KP3R_ADDRESS).call()
+      // rKP3R.price = BigNumber(price).div(10 ** (36 - rKP3R.decimals))
 
       this.setStore({ rKP3R })
       this.emitter.emit(FIXED_FOREX_UPDATED);
@@ -567,6 +586,7 @@ class Store {
   _getAssetInfo = async (web3, account, assets) => {
     try {
       const gaugeProxyContract = new web3.eth.Contract(abis.gaugeProxyABI, GAUGE_PROXY_ADDRESS)
+      const priceOracleContract = new web3.eth.Contract(abis.creamPriceOracleABI, CREAM_PRICE_ORACLE_ADDRESS)
 
       const [totalGaugeVotes] = await Promise.all([
         gaugeProxyContract.methods.totalWeight().call(),
@@ -578,7 +598,7 @@ class Store {
         const gaugeContract = new web3.eth.Contract(abis.gaugeABI, asset.gauge.address)
         const poolContract = new web3.eth.Contract(abis.poolABI, asset.gauge.poolAddress)
 
-        const [balanceOf, userGaugeBalance, userGaugeEarned, userRKP3REarned, poolBalances, userPoolBalance, poolSymbol, virtualPrice, poolGaugeAllowance, coins0, coins1, gaugeVotes, userGaugeVotes] = await Promise.all([
+        const [balanceOf, userGaugeBalance, userGaugeEarned, userRKP3REarned, poolBalances, userPoolBalance, poolSymbol, virtualPrice, poolGaugeAllowance, coins0, coins1, gaugeVotes, userGaugeVotes, price] = await Promise.all([
           assetContract.methods.balanceOf(account.address).call(),
           gaugeContract.methods.balanceOf(account.address).call(),
           gaugeContract.methods.claimable_tokens(account.address).call(),
@@ -591,7 +611,8 @@ class Store {
           poolContract.methods.coins(0).call(),
           poolContract.methods.coins(1).call(),
           gaugeProxyContract.methods.weights(asset.gauge.poolAddress).call(),
-          gaugeProxyContract.methods.votes(account.address, asset.gauge.poolAddress).call()
+          gaugeProxyContract.methods.votes(account.address, asset.gauge.poolAddress).call(),
+          priceOracleContract.methods.getUnderlyingPrice(asset.oracleAddress).call()
         ]);
 
         // get coin asset info
@@ -648,6 +669,7 @@ class Store {
           gaugeVotes,
           userGaugeVotes,
           userRKP3REarned,
+          price,
         }
       }))
 
@@ -678,6 +700,8 @@ class Store {
         assets[i].gauge.votePercent = BigNumber(assetsBalances[i].gaugeVotes).times(100).div(totalGaugeVotes).toFixed(assets[i].decimals)
 
         assets[i].gauge.rKP3REarned = BigNumber(assetsBalances[i].userRKP3REarned).div(10**18).toFixed(18)
+        assets[i].price = BigNumber(assetsBalances[i].price).div(10 ** (36 - assets[i].decimals)).toFixed(18)
+
       }
 
       this.setStore({ assets })
