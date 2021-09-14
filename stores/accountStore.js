@@ -95,7 +95,7 @@ class Store {
           .activate()
           .then((a) => {
             this.setStore({
-              account: { address: /* a.account */ '0x2D407dDb06311396fE14D4b49da5F0471447d45C' },
+              account: { address: a.account },
               web3context: { library: { provider: a.provider } },
             });
             this.emitter.emit(ACCOUNT_CONFIGURED);
