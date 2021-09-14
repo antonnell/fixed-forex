@@ -38,9 +38,7 @@ export default function ffClaimAll() {
   const getClaimable = () => {
     const gauges = stores.fixedForexStore.getStore('assets')
     const rewards = stores.fixedForexStore.getStore('rewards')
-
-    console.log(gauges)
-    console.log(rewards)
+    const rKP3R = stores.fixedForexStore.getStore('rKP3R')
 
     const cl = []
 
@@ -58,6 +56,14 @@ export default function ffClaimAll() {
         description: 'Vesting Rewards',
         earned: rewards.feeDistribution.earned,
         symbol: 'kp3r'
+      })
+    }
+    if(rKP3R && BigNumber(rKP3R.balance).gt(0)) {
+      cl.push({
+        type: 'Fixed Forex',
+        description: 'Redeemable KP3R',
+        earned: rKP3R.balance,
+        symbol: 'rKP3R'
       })
     }
 

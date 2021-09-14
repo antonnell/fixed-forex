@@ -1993,6 +1993,10 @@ class Store {
         return gauge.type === 'Fixed Forex' && gauge.description === 'Vesting Rewards'
       })
 
+      const claimableRKP3RReward = claimable.filter((gauge) => {
+        return gauge.type === 'Fixed Forex' && gauge.description === 'Redeemable KP3R'
+      })
+
       const promises = []
 
       if(claimableGauges.length > 0) {
@@ -2023,6 +2027,16 @@ class Store {
           });
         });
         promises.push(ret)
+      }
+
+      if(claimableRKP3RReward.length > 0) {
+        const retu = new Promise((resolve, reject) => {
+          this._callClaimRKP3R(web3, account, gasSpeed, (err, res) => {
+            if (err) { reject(err) }
+            resolve(res);
+          });
+        });
+        promises.push(retu)
       }
 
       const result = await Promise.all(promises);
