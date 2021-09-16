@@ -1,24 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { lighten, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography, Button, CircularProgress } from '@material-ui/core';
+import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography, CircularProgress } from '@material-ui/core';
+import { useRouter } from "next/router";
 import BigNumber from 'bignumber.js';
-
-
-import stores from '../../stores'
-import {
-  FIXED_FOREX_CLAIM_CURVE_REWARDS,
-  FIXED_FOREX_CURVE_REWARD_CLAIMED,
-  ERROR,
-  FIXED_FOREX_CLAIM_DISTRIBUTION_REWARD,
-  FIXED_FOREX_DISTRIBUTION_REWARD_CLAIMED,
-  FIXED_FOREX_CLAIM_VESTING_REWARD,
-  FIXED_FOREX_VESTING_REWARD_CLAIMED,
-  FIXED_FOREX_CLAIM_RKP3R,
-  FIXED_FOREX_RKP3R_CLAIMED,
-} from '../../stores/constants';
 import { formatCurrency } from '../../utils';
+import stores from '../../stores'
+import { FIXED_FOREX_WITHDRAW_OLD, FIXED_FOREX_OLD_WITHDRAWN, ERROR } from '../../stores/constants';
 
 function descendingComparator(a, b, orderBy) {
   if (!a || !b) {
@@ -51,16 +40,16 @@ function stableSort(array, comparator) {
 const headCells = [
   { id: 'asset', numeric: false, disablePadding: false, label: 'Asset' },
   {
-    id: 'rewards',
+    id: 'balance',
     numeric: true,
     disablePadding: false,
-    label: 'Rewards Available',
+    label: 'Staked',
   },
   {
-    id: 'claim',
+    id: '',
     numeric: true,
     disablePadding: false,
-    label: '',
+    label: 'Actions',
   }
 ];
 
@@ -157,7 +146,7 @@ const useStyles = makeStyles((theme) => ({
     padding: '24px',
     width: '100%',
     flexWrap: 'wrap',
-    borderBottom: '1px solid rgba(128, 128, 128, 0.32)',
+    borderBottom: '1px solid rgba(104, 108, 122, 0.25)',
     background: 'radial-gradient(circle, rgba(63,94,251,0.7) 0%, rgba(47,128,237,0.7) 48%) rgba(63,94,251,0.7) 100%',
   },
   assetInfoError: {
@@ -168,7 +157,7 @@ const useStyles = makeStyles((theme) => ({
     padding: '24px',
     width: '100%',
     flexWrap: 'wrap',
-    borderBottom: '1px solid rgba(128, 128, 128, 0.32)',
+    borderBottom: '1px rgba(104, 108, 122, 0.25)',
     background: '#dc3545',
   },
   infoField: {
@@ -212,29 +201,23 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function EnhancedTable({ claimable, crv, ibEUR, rKP3R }) {
+export default function EnhancedTable({ assets }) {
   const classes = useStyles();
+  const router = useRouter();
 
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('balance');
-  const [claimLoading, setClaimLoading ] = React.useState(false)
+  const [withdrawLoading, setWithdrawLoading ] = React.useState(false)
 
   React.useEffect(() => {
     const rewardClaimed = () => {
-      setClaimLoading(false)
+      setWithdrawLoading(false)
     }
 
-    stores.emitter.on(FIXED_FOREX_CURVE_REWARD_CLAIMED, rewardClaimed);
-    stores.emitter.on(FIXED_FOREX_DISTRIBUTION_REWARD_CLAIMED, rewardClaimed);
-    stores.emitter.on(FIXED_FOREX_VESTING_REWARD_CLAIMED, rewardClaimed);
-    stores.emitter.on(FIXED_FOREX_RKP3R_CLAIMED, rewardClaimed);
-
+    stores.emitter.on(FIXED_FOREX_OLD_WITHDRAWN, rewardClaimed);
     stores.emitter.on(ERROR, rewardClaimed);
     return () => {
-      stores.emitter.removeListener(FIXED_FOREX_CURVE_REWARD_CLAIMED, rewardClaimed);
-      stores.emitter.removeListener(FIXED_FOREX_DISTRIBUTION_REWARD_CLAIMED, rewardClaimed);
-      stores.emitter.removeListener(FIXED_FOREX_VESTING_REWARD_CLAIMED, rewardClaimed);
-      stores.emitter.removeListener(FIXED_FOREX_RKP3R_CLAIMED, rewardClaimed);
+      stores.emitter.removeListener(FIXED_FOREX_OLD_WITHDRAWN, rewardClaimed);
       stores.emitter.removeListener(ERROR, rewardClaimed);
     };
   }, []);
@@ -245,24 +228,12 @@ export default function EnhancedTable({ claimable, crv, ibEUR, rKP3R }) {
     setOrderBy(property);
   };
 
-  const onClaim = (asset) => {
-    console.log(asset)
-    setClaimLoading(true)
-
-    if(asset.gauge) {
-      // this is a gauge
-      stores.dispatcher.dispatch({ type: FIXED_FOREX_CLAIM_CURVE_REWARDS, content: { asset: asset.gauge }})
-    } else if(asset.type === 'Fixed Forex' && asset.description === 'Fee Claim') {
-      stores.dispatcher.dispatch({ type: FIXED_FOREX_CLAIM_DISTRIBUTION_REWARD, content: {  }})
-    } else if(gauge.type === 'Fixed Forex' && gauge.description === 'Vesting Rewards') {
-      stores.dispatcher.dispatch({ type: FIXED_FOREX_CLAIM_VESTING_REWARD, content: {  }})
-    } else if(gauge.type === 'Fixed Forex' && gauge.description === 'Redeemable KP3R') {
-      stores.dispatcher.dispatch({ type: FIXED_FOREX_CLAIM_RKP3R, content: {  }})
-    }
-
+  const onWithdraw = (asset) => {
+    setWithdrawLoading(true)
+    stores.dispatcher.dispatch({ type: FIXED_FOREX_WITHDRAW_OLD, content: { asset }})
   }
 
-  if (!claimable) {
+  if (!assets) {
     return (
       <div className={classes.root}>
         <Skeleton variant="rect" width={'100%'} height={40} className={classes.skelly1} />
@@ -277,56 +248,37 @@ export default function EnhancedTable({ claimable, crv, ibEUR, rKP3R }) {
 
   return (
     <div className={classes.root}>
-      <TableContainer className={ classes.tableContainer }>
+      <TableContainer>
         <Table className={classes.table} aria-labelledby="tableTitle" size={'medium'} aria-label="enhanced table">
           <EnhancedTableHead classes={classes} order={order} orderBy={orderBy} onRequestSort={handleRequestSort} />
           <TableBody>
-            {stableSort(claimable, getComparator(order, orderBy)).map((row) => {
+            {stableSort(assets, getComparator(order, orderBy)).map((row, index) => {
               if (!row) {
                 return null;
               }
+              const labelId = `enhanced-table-checkbox-${index}`;
 
               return (
-                <TableRow key={row.type+'_'+row.description}>
+                <TableRow key={labelId}>
                   <TableCell className={classes.cell}>
                     <div className={ classes.inline }>
-                      {
-                        row?.type === 'Fixed Forex' && <img className={ classes.imgLogo } src={`/images/ff-icon.svg`} width='35' height='35' alt='' />}
-                      {
-                        row?.type !== 'Fixed Forex' && <img className={ classes.imgLogo } src={`https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/${row.address}/logo-128.png`} width='35' height='35' alt='' />
-                      }
+                      <img className={ classes.imgLogo } src={`https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/${row.imgAddress}/logo-128.png`} width='35' height='35' alt='' onError={(e)=>{e.target.onerror = null; e.target.src="/tokens/unknown-logo.png"}} />
                       <div>
                         <Typography variant="h2" className={classes.textSpaced}>
-                          { row?.type }
+                          { row.symbol }
                         </Typography>
                         <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
-                          { row?.description }
+                          { row.type }
                         </Typography>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell className={classes.cell} align="right">
                     <Typography variant="h2" className={classes.textSpaced}>
-                      { formatCurrency(row?.earned) } { row.symbol }
+                      { formatCurrency(row.balance) }
                     </Typography>
                     <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
-                      ${
-                        row.symbol === 'CRV' &&
-                        formatCurrency(BigNumber(row?.earned).times(crv?.price))
-                      }
-                      {
-                        row.symbol === 'ibEUR' &&
-                        formatCurrency(BigNumber(row?.earned).times(ibEUR?.price))
-                      }
-                      {
-                        (row.symbol === 'rKP3R' || row.symbol === 'kp3R') &&
-                        formatCurrency(BigNumber(row?.earned).times(rKP3R?.price))
-
-                      }
-                      {
-                        !['CRV', 'ibEUR', 'rKP3R', 'kp3R'].includes(row.symbol) &&
-                        formatCurrency(0)
-                      }
+                      { row.symbol }
                     </Typography>
                   </TableCell>
                   <TableCell className={classes.cell} align="right">
@@ -335,10 +287,10 @@ export default function EnhancedTable({ claimable, crv, ibEUR, rKP3R }) {
                       variant='contained'
                       size='large'
                       color='primary'
-                      disabled={ claimLoading }
-                      onClick={ () => { onClaim(row) } }>
-                      <Typography className={ classes.actionButtonText }>{ claimLoading ? `Claiming` : `Claim` }</Typography>
-                      { claimLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
+                      disabled={ withdrawLoading || BigNumber(row.balance).eq(0) }
+                      onClick={ () => { onWithdraw(row) } }>
+                      <Typography className={ classes.actionButtonText }>{ withdrawLoading ? `Withdrawing` : `Withdraw` }</Typography>
+                      { withdrawLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
                     </Button>
                   </TableCell>
                 </TableRow>

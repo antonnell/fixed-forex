@@ -18,6 +18,7 @@ import SpaceBarIcon from '@material-ui/icons/SpaceBar';
 import WarningIcon from '@material-ui/icons/Warning';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import TableChartIcon from '@material-ui/icons/TableChart';
+import BuildIcon from '@material-ui/icons/Build';
 
 import { SvgIcon } from "@material-ui/core";
 
@@ -159,6 +160,12 @@ function Navigation(props) {
           'rewards',
           <MonetizationOnIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
           <MonetizationOnIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
+        )}
+        {renderNav(
+          'Withdraw',
+          'withdraw',
+          <BuildIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
+          <BuildIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
         )}
       </React.Fragment>
     );
@@ -371,7 +378,7 @@ function Navigation(props) {
           <img src='/images/icon-warning.svg' className={ classes.warningIcon } onClick={ openWarning }/>
         </Tooltip>
       </div>
-      <Typography className={classes.smallVersion}>Version 0.4.0-beta</Typography>
+      <Typography className={classes.smallVersion}>Version 0.4.1-beta</Typography>
       { warningOpen &&
         <FFWarning close={ closeWarning } />
       }

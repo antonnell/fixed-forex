@@ -74,7 +74,7 @@ export default function ffClaimAll() {
       cl.push({
         type: 'Fixed Forex',
         description: 'Vesting Rewards',
-        earned: rewards.feeDistribution.earned,
+        earned: rewards.veIBFFDistribution.earned,
         symbol: 'kp3r'
       })
     }

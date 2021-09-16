@@ -10,24 +10,18 @@ import {
   IBEUR_ADDRESS,
   IBEUR_GAUGE_ADDRESS,
   IBEUR_POOL_ADDRESS,
-
   IBCHF_ADDRESS,
   IBCHF_GAUGE_ADDRESS,
   IBCHF_POOL_ADDRESS,
-
   IBAUD_ADDRESS,
   IBAUD_GAUGE_ADDRESS,
   IBAUD_POOL_ADDRESS,
-
   IBJPY_ADDRESS,
   IBJPY_GAUGE_ADDRESS,
   IBJPY_POOL_ADDRESS,
-
   IBGBP_ADDRESS,
   IBGBP_GAUGE_ADDRESS,
   IBGBP_POOL_ADDRESS,
-
-
   IBEUR_ETH_ADDRESS,
   IBFF_ADDRESS,
   VEIBFF_ADDRESS,
@@ -48,6 +42,10 @@ import {
   FF_OKP3R_ADDRESS,
   USDC_ADDRESS,
   CREAM_PRICE_ORACLE_ADDRESS,
+
+  IBEUR_ETH_ADDRESS_OLD,
+  IBEUR_GAUGE_ADDRESS_OLD,
+  IBKRW_GAUGE_ADDRESS_OLD,
 
   ERROR,
   TX_SUBMITTED,
@@ -109,6 +107,8 @@ import {
   FIXED_FOREX_OPTION_REDEEMED,
   FIXED_FOREX_APPROVE_REDEEM_OPTION,
   FIXED_FOREX_REDEEM_OPTION_APPROVED,
+  FIXED_FOREX_WITHDRAW_OLD,
+  FIXED_FOREX_OLD_WITHDRAWN,
 } from './constants';
 
 import * as moment from 'moment';
@@ -131,7 +131,8 @@ class Store {
       veIBFF: null,
       veEURETHSLP: null,
       rewards: null,
-      rKP3R: null
+      rKP3R: null,
+      oldAssets: [],
     };
 
     dispatcher.register(
@@ -228,7 +229,9 @@ class Store {
           case FIXED_FOREX_APPROVE_REDEEM_OPTION:
             this.approveRedeemOption(payload);
             break;
-
+          case FIXED_FOREX_WITHDRAW_OLD:
+            this.withdrawOld(payload);
+            break;
           default: {
           }
         }
@@ -484,7 +487,8 @@ class Store {
       this._setOKP3R(web3, account, systemAssets)
       this._getCRV(web3, account, systemAssets)
       this._getAssetInfo(web3, account, assets)
-      this._getRewardInfo(web3, account, assets)
+      this._getRewardInfo(web3, account)
+      this._getOldGaugeInfo(web3, account)
 
     } catch(ex) {
       console.log(ex)
@@ -564,7 +568,6 @@ class Store {
 
       const rKP3RContract = new web3.eth.Contract(abis.rKP3RABI, FF_RKP3R_ADDRESS)
       const price = await rKP3RContract.methods.twap().call()
-      console.log(price)
       rKP3R.price = BigNumber(price).div(10**6).toFixed(18)
 
       this.setStore({ rKP3R })
@@ -760,6 +763,40 @@ class Store {
     } catch(ex) {
       console.log(ex)
     }
+  }
+
+  _getOldGaugeInfo = async (web3, account) => {
+    const eurContract = new web3.eth.Contract(abis.gaugeABI, IBEUR_GAUGE_ADDRESS_OLD)
+    const krwContract = new web3.eth.Contract(abis.gaugeABI, IBKRW_GAUGE_ADDRESS_OLD)
+    const ibEURFaucetContract = new web3.eth.Contract(abis.gaugeABI, IBEUR_ETH_ADDRESS_OLD)
+
+    const [ eurBalance, krwBalance, ibEURBalance ] = await Promise.all([
+      eurContract.methods.balanceOf(account.address).call(),
+      krwContract.methods.balanceOf(account.address).call(),
+      ibEURFaucetContract.methods.balanceOf(account.address).call()
+    ]);
+
+    this.setStore({
+      oldAssets: [{
+        type: 'FF Gauge',
+        imgAddress: IBEUR_ADDRESS,
+        address: IBEUR_GAUGE_ADDRESS_OLD,
+        symbol: 'ibEUR+sEUR-f',
+        balance: BigNumber(eurBalance).div(10**18).toFixed(18)
+      },{
+        type: 'FF Gauge',
+        imgAddress: IBKRW_ADDRESS,
+        address: IBKRW_GAUGE_ADDRESS_OLD,
+        symbol: 'ibKRW+sKRW-f',
+        balance: BigNumber(krwBalance).div(10**18).toFixed(18)
+      },{
+        type: 'SLP Faucet',
+        imgAddress: IBEUR_ADDRESS,
+        address: IBEUR_ETH_ADDRESS_OLD,
+        symbol: 'ibEUR-ETH',
+        balance: BigNumber(ibEURBalance).div(10**18).toFixed(18)
+      }]
+    })
   }
 
   getFFBalances_old = async (payload) => {
@@ -1175,7 +1212,7 @@ class Store {
         return this.emitter.emit(ERROR, err);
       }
 
-      return this.emitter.emit(FIXED_FOREX_STAKING_REWARD_CLAIMED, res);
+      return this.emitter.emit(FIXED_FOREX_DISTRIBUTION_REWARD_CLAIMED, res);
     });
   }
 
@@ -1211,7 +1248,7 @@ class Store {
         return this.emitter.emit(ERROR, err);
       }
 
-      return this.emitter.emit(FIXED_FOREX_STAKING_REWARD_CLAIMED, res);
+      return this.emitter.emit(FIXED_FOREX_CURVE_REWARD_CLAIMED, res);
     });
   }
 
@@ -2223,6 +2260,52 @@ class Store {
     this._callContractWait(web3, usdcContract, 'approve', [FF_RKP3R_ADDRESS, MAX_UINT256], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
   };
 
+  withdrawOld = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { asset, gasSpeed } = payload.content;
+
+    if(asset.type === 'FF Gauge') {
+      this._callExitGauge(web3, account, asset, gasSpeed, (err, res) => {
+        if (err) {
+          return this.emitter.emit(ERROR, err);
+        }
+
+        return this.emitter.emit(FIXED_FOREX_OLD_WITHDRAWN, res);
+      });
+    } else {
+      this._callWithdrawFaucet(web3, account, asset.balance, gasSpeed, (err, res) => {
+        if (err) {
+          return this.emitter.emit(ERROR, err);
+        }
+
+        return this.emitter.emit(FIXED_FOREX_OLD_WITHDRAWN, res);
+      });
+    }
+  }
+
+  _callExitGauge = async (web3, account, asset, gasSpeed, callback) => {
+    try {
+      let gaugeContract = new web3.eth.Contract(abis.oldGaugeABI, asset.address);
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, gaugeContract, 'withdraw', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  };
+
   mintFUSD = async (payload) => {
     const account = stores.accountStore.getStore('account');
     if (!account) {
@@ -2314,37 +2397,45 @@ class Store {
   };
 
   _callContractWait = (web3, contract, method, params, account, gasPrice, dispatchEvent, callback) => {
-    const context = this;
-    contract.methods[method](...params)
-      .send({
-        from: account.address,
-        gasPrice: web3.utils.toWei(gasPrice, 'gwei'),
-      })
-      .on('transactionHash', function (hash) {
-        context.emitter.emit(TX_SUBMITTED, hash);
-      })
-      .on('receipt', function (receipt) {
-        callback(null, receipt.transactionHash);
-        if (dispatchEvent) {
-          context.dispatcher.dispatch({ type: dispatchEvent, content: {} });
-        }
-      })
-      .on('error', function (error) {
-        if (!error.toString().includes('-32601')) {
-          if (error.message) {
-            return callback(error.message);
+    //estimate gas
+    const gasCost = contract.methods[method](...params).estimateGas({ from: account.address })
+    .then((gasAmount) => {
+      const context = this;
+      contract.methods[method](...params)
+        .send({
+          from: account.address,
+          gasPrice: web3.utils.toWei(gasPrice, 'gwei'),
+        })
+        .on('transactionHash', function (hash) {
+          context.emitter.emit(TX_SUBMITTED, hash);
+        })
+        .on('receipt', function (receipt) {
+          callback(null, receipt.transactionHash);
+          if (dispatchEvent) {
+            context.dispatcher.dispatch({ type: dispatchEvent, content: {} });
           }
-          callback(error);
-        }
-      })
-      .catch((error) => {
-        if (!error.toString().includes('-32601')) {
-          if (error.message) {
-            return callback(error.message);
+        })
+        .on('error', function (error) {
+          if (!error.toString().includes('-32601')) {
+            if (error.message) {
+              return callback(error.message);
+            }
+            callback(error);
           }
-          callback(error);
-        }
-      });
+        })
+        .catch((error) => {
+          if (!error.toString().includes('-32601')) {
+            if (error.message) {
+              return callback(error.message);
+            }
+            callback(error);
+          }
+        });
+    })
+    .catch((ex) => {
+      console.log(ex)
+      callback(ex);
+    })
   };
 }
 
