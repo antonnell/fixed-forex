@@ -6,6 +6,7 @@ import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import TimerIcon from '@material-ui/icons/Timer';
 
+import BigNumber from 'bignumber.js';
 import { formatCurrency } from '../../utils';
 import classes from './ffStakeOverview.module.css';
 
@@ -14,18 +15,18 @@ import { FIXED_FOREX_UPDATED } from '../../stores/constants';
 
 export default function ffStakeOverview() {
 
-  const [ ibEURSLP, setIBEURSLP] = useState(null)
-  const [ rewards, setRewards] = useState(null)
+  const [ uniV3Positions, setUniV3Positions] = useState([])
+  const [ totalUniV3Positions, setTotalUniV3Positions] = useState(null)
+  const [ stakingV3Positions, setStakingV3Positions] = useState([])
+  const [ totalStakingV3Positions, setTotalStakingV3Positions] = useState(null)
+  const [ totalRewards, setTotalRewards ] = useState(null)
 
   useEffect(() => {
     const forexUpdated = () => {
-
-      setIBEURSLP(stores.fixedForexStore.getStore('veEURETHSLP'))
-      setRewards(stores.fixedForexStore.getStore('rewards'))
+      calcTotals()
     }
 
-    setIBEURSLP(stores.fixedForexStore.getStore('veEURETHSLP'))
-    setRewards(stores.fixedForexStore.getStore('rewards'))
+    calcTotals()
 
     stores.emitter.on(FIXED_FOREX_UPDATED, forexUpdated);
     return () => {
@@ -33,16 +34,31 @@ export default function ffStakeOverview() {
     };
   }, []);
 
+  const calcTotals = () => {
+    const uniPos = stores.fixedForexStore.getStore('uniV3Positions')
+    if(uniPos) {
+      setUniV3Positions(uniPos)
+      setTotalUniV3Positions(uniPos.reduce((curr, acc) => { return BigNumber(curr).plus(acc.balance).toFixed(18) }, 0))
+    }
+
+    const stakingPos = stores.fixedForexStore.getStore('stakingV3Positions')
+    if(stakingPos) {
+      setStakingV3Positions(stakingPos)
+      setTotalStakingV3Positions(stakingPos.reduce((curr, acc) => { return BigNumber(curr).plus(acc.balance).toFixed(18) }, 0))
+      setTotalRewards(stakingPos.reduce((curr, acc) => { return BigNumber(curr).plus(acc.reward).toFixed(18) }, 0))
+    }
+  }
+
   return (
     <div className={ classes.container }>
       <div className={ classes.fieldsContainer }>
         <div className={ classes.field }>
           <AccountBalanceWalletIcon className={ classes.balanceIcon } />
           <div>
-            <Typography className={ classes.title }>SLP Balance:</Typography>
+            <Typography className={ classes.title }>UNI-V3-POS Balance:</Typography>
             <div className={ classes.inline }>
-              <Typography className={ classes.value }>{ formatCurrency(ibEURSLP ? ibEURSLP.balance : 0) }</Typography>
-              <Typography className={ classes.valueSymbol }>{ ibEURSLP ? ibEURSLP.symbol : '' }</Typography>
+              <Typography className={ classes.value }>{ formatCurrency(totalUniV3Positions) }</Typography>
+              <Typography className={ classes.valueSymbol }>KP3R/ETH</Typography>
             </div>
           </div>
         </div>
@@ -51,8 +67,8 @@ export default function ffStakeOverview() {
           <div>
             <Typography className={ classes.title }>Staked Balance:</Typography>
             <div className={ classes.inline }>
-              <Typography className={ classes.value }>{ formatCurrency(ibEURSLP ? ibEURSLP.faucetBalance : 0) }</Typography>
-              <Typography className={ classes.valueSymbol }>{ ibEURSLP ? ibEURSLP.symbol : '' }</Typography>
+              <Typography className={ classes.value }>{ formatCurrency(totalStakingV3Positions) }</Typography>
+              <Typography className={ classes.valueSymbol }>KP3R/ETH</Typography>
             </div>
           </div>
         </div>
@@ -61,8 +77,8 @@ export default function ffStakeOverview() {
           <div>
             <Typography className={ classes.title }>Rewards Available:</Typography>
             <div className={ classes.inline }>
-              <Typography className={ classes.value }>{ formatCurrency(rewards ? rewards.feeDistribution.earned : 0) }</Typography>
-              <Typography className={ classes.valueSymbol }>ibff</Typography>
+              <Typography className={ classes.value }>{ formatCurrency(totalRewards) }</Typography>
+              <Typography className={ classes.valueSymbol }>rKP3R</Typography>
             </div>
           </div>
         </div>

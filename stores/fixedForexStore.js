@@ -42,6 +42,8 @@ import {
   FF_OKP3R_ADDRESS,
   USDC_ADDRESS,
   CREAM_PRICE_ORACLE_ADDRESS,
+  FF_STAKING_REWARDS_V3_ADDRESS,
+  FF_UNSIWAP_POSITIONS_MANAGER_ADDRESS,
 
   IBEUR_ETH_ADDRESS_OLD,
   IBEUR_GAUGE_ADDRESS_OLD,
@@ -109,7 +111,19 @@ import {
   FIXED_FOREX_REDEEM_OPTION_APPROVED,
   FIXED_FOREX_WITHDRAW_OLD,
   FIXED_FOREX_OLD_WITHDRAWN,
+  FIXED_FOREX_APPROVE_DEPOSIT_UNI,
+  FIXED_FOREX_DEPOSIT_UNI_APPROVED,
+  FIXED_FOREX_DEPOSIT_UNI,
+  FIXED_FOREX_UNI_DEPOSITED,
+  FIXED_FOREX_WITHDRAW_UNI,
+  FIXED_FOREX_UNI_WITHDRAWN,
+  FIXED_FOREX_GET_UNI_REWARDS,
+  FIXED_FOREX_UNI_REWARDS_RETURNED,
+  FIXED_FOREX_GET_ALL_UNI_REWARDS,
+  FIXED_FOREX_ALL_UNI_REWARDS_RETURNED
 } from './constants';
+import { Pool, tickToPrice } from "@uniswap/v3-sdk";
+import { Token } from "@uniswap/sdk-core";
 
 import * as moment from 'moment';
 
@@ -231,6 +245,23 @@ class Store {
             break;
           case FIXED_FOREX_WITHDRAW_OLD:
             this.withdrawOld(payload);
+            break;
+
+            // UNI STAKING
+          case FIXED_FOREX_APPROVE_DEPOSIT_UNI:
+            this.approveDepositUni(payload);
+            break;
+          case FIXED_FOREX_DEPOSIT_UNI:
+            this.depositUni(payload);
+            break;
+          case FIXED_FOREX_WITHDRAW_UNI:
+            this.withdrawUni(payload);
+            break;
+          case FIXED_FOREX_GET_UNI_REWARDS:
+            this.getUniRewards(payload);
+            break;
+          case FIXED_FOREX_GET_ALL_UNI_REWARDS:
+            this.getAllUniRewards(payload);
             break;
           default: {
           }
@@ -489,6 +520,8 @@ class Store {
       this._getAssetInfo(web3, account, assets)
       this._getRewardInfo(web3, account)
       this._getOldGaugeInfo(web3, account)
+      this._getUniV3Info(web3, account)
+      this._getStakingV3Rewards(web3, account)
 
     } catch(ex) {
       console.log(ex)
@@ -741,6 +774,7 @@ class Store {
     try {
       const ibEURClaimContract = new web3.eth.Contract(abis.curveFeeDistributionABI, FF_IBEUR_CLAIMABLE_ADDRESS)
       const kp3rClaimContract = new web3.eth.Contract(abis.curveFeeDistributionABI, FF_KP3R_CLAIMABLE_ADDRESS)
+      const stakingRewardsV3Contract = new web3.eth.Contract(abis.stakingRewardsV3ABI, FF_STAKING_REWARDS_V3_ADDRESS)
 
       const [ibEURClaimable, kp3rClaimable] = await Promise.all([
         ibEURClaimContract.methods.claimable(account.address).call(),
@@ -766,37 +800,171 @@ class Store {
   }
 
   _getOldGaugeInfo = async (web3, account) => {
-    const eurContract = new web3.eth.Contract(abis.gaugeABI, IBEUR_GAUGE_ADDRESS_OLD)
-    const krwContract = new web3.eth.Contract(abis.gaugeABI, IBKRW_GAUGE_ADDRESS_OLD)
-    const ibEURFaucetContract = new web3.eth.Contract(abis.gaugeABI, IBEUR_ETH_ADDRESS_OLD)
+    try {
+      const eurContract = new web3.eth.Contract(abis.gaugeABI, IBEUR_GAUGE_ADDRESS_OLD)
+      const krwContract = new web3.eth.Contract(abis.gaugeABI, IBKRW_GAUGE_ADDRESS_OLD)
+      const ibEURFaucetContract = new web3.eth.Contract(abis.gaugeABI, IBEUR_ETH_ADDRESS_OLD)
 
-    const [ eurBalance, krwBalance, ibEURBalance ] = await Promise.all([
-      eurContract.methods.balanceOf(account.address).call(),
-      krwContract.methods.balanceOf(account.address).call(),
-      ibEURFaucetContract.methods.balanceOf(account.address).call()
+      const [ eurBalance, krwBalance, ibEURBalance ] = await Promise.all([
+        eurContract.methods.balanceOf(account.address).call(),
+        krwContract.methods.balanceOf(account.address).call(),
+        ibEURFaucetContract.methods.balanceOf(account.address).call()
+      ]);
+
+      this.setStore({
+        oldAssets: [{
+          type: 'FF Gauge',
+          imgAddress: IBEUR_ADDRESS,
+          address: IBEUR_GAUGE_ADDRESS_OLD,
+          symbol: 'ibEUR+sEUR-f',
+          balance: BigNumber(eurBalance).div(10**18).toFixed(18)
+        },{
+          type: 'FF Gauge',
+          imgAddress: IBKRW_ADDRESS,
+          address: IBKRW_GAUGE_ADDRESS_OLD,
+          symbol: 'ibKRW+sKRW-f',
+          balance: BigNumber(krwBalance).div(10**18).toFixed(18)
+        },{
+          type: 'SLP Faucet',
+          imgAddress: IBEUR_ADDRESS,
+          address: IBEUR_ETH_ADDRESS_OLD,
+          symbol: 'ibEUR-ETH',
+          balance: BigNumber(ibEURBalance).div(10**18).toFixed(18)
+        }]
+      })
+      this.emitter.emit(FIXED_FOREX_UPDATED);
+
+    } catch(ex) {
+      console.log(ex)
+    }
+  }
+
+  _getUniV3Info = async (web3, account) => {
+    try {
+      const uniswapNFTPositionsManagerContract = new web3.eth.Contract(abis.uniswapNFTPositionsManagerABI, FF_UNSIWAP_POSITIONS_MANAGER_ADDRESS)
+      const balanceOf = await uniswapNFTPositionsManagerContract.methods.balanceOf(account.address).call()
+      const arr = [...Array(parseInt(balanceOf)).keys()]
+
+      const tokenIDs = await Promise.all(arr.map((idx) => {
+        return uniswapNFTPositionsManagerContract.methods.tokenOfOwnerByIndex(account.address, idx).call()
+      }));
+
+      const tokenPositions = await Promise.all(tokenIDs.map((idx) => {
+        return uniswapNFTPositionsManagerContract.methods.positions(idx).call()
+      }))
+
+      const validPositions = await Promise.all(tokenPositions.filter((pos) => {
+        return pos.token0 === '0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44' && pos.token1 === '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
+      }).map(async (pos, idx) => {
+        pos.tokenID = tokenIDs[idx]
+        pos.address = "0x11B7a6bc0259ed6Cf9DB8F499988F9eCc7167bf5";
+        pos.balance = BigNumber(pos.liquidity).div(10**18).toFixed(18)
+        pos.feePercent = BigNumber(pos.fee).div(10000).toFixed(4)
+
+        const approved = await uniswapNFTPositionsManagerContract.methods.getApproved(pos.tokenID).call()
+        if(approved.toLowerCase() === FF_STAKING_REWARDS_V3_ADDRESS.toLowerCase()) {
+          pos.stakingApproved = true
+        } else {
+          pos.stakingApproved = false
+        }
+
+        const prices = await this._getPoolPriceInfo(web3, account, pos)
+        pos.prices = prices
+
+        return pos
+      }))
+
+      this.setStore({
+        uniV3Positions: validPositions
+      })
+      this.emitter.emit(FIXED_FOREX_UPDATED);
+
+    } catch(ex) {
+      console.log(ex)
+    }
+  }
+
+  _getStakingV3Rewards = async(web3, account) => {
+    try {
+      const stakingRewardsAddress = new web3.eth.Contract(abis.stakingRewardsV3ABI, FF_STAKING_REWARDS_V3_ADDRESS)
+      const uniswapNFTPositionsManagerContract = new web3.eth.Contract(abis.uniswapNFTPositionsManagerABI, FF_UNSIWAP_POSITIONS_MANAGER_ADDRESS)
+
+      const tokenIDs = await stakingRewardsAddress.methods.getTokenIds(account.address).call()
+
+      const tokenPositions = await Promise.all(tokenIDs.map((idx) => {
+        return uniswapNFTPositionsManagerContract.methods.positions(idx).call()
+      }))
+
+      const rewards = await Promise.all(tokenIDs.map((idx) => {
+        return stakingRewardsAddress.methods.rewards(idx).call()
+      }))
+
+      const stakingV3Positions = await Promise.all(tokenPositions.map(async (pos, idx) => {
+        pos.tokenID = tokenIDs[idx]
+        pos.address = "0x11B7a6bc0259ed6Cf9DB8F499988F9eCc7167bf5";
+        pos.balance = BigNumber(pos.liquidity).div(10**18).toFixed(18)
+        pos.feePercent = BigNumber(pos.fee).div(10000).toFixed(4)
+        pos.reward = BigNumber(rewards[idx]).div(10**18).toFixed(18)
+
+        const prices = await this._getPoolPriceInfo(web3, account, pos)
+        pos.prices = prices
+        return pos
+      }))
+
+
+      this.setStore({
+        stakingV3Positions: stakingV3Positions
+      })
+
+      this.emitter.emit(FIXED_FOREX_UPDATED);
+
+    } catch(ex) {
+      console.log(ex)
+    }
+  }
+
+  _getPoolPriceInfo = async (web3, account, pos) => {
+    const poolContract = new web3.eth.Contract(abis.uniswapV3PoolABI, pos.address);
+
+    const [factory, token0, token1, fee, tickSpacing, maxLiquidityPerTick] =
+      await Promise.all([
+        poolContract.methods.factory().call(),
+        poolContract.methods.token0().call(),
+        poolContract.methods.token1().call(),
+        poolContract.methods.fee().call(),
+        poolContract.methods.tickSpacing().call(),
+        poolContract.methods.maxLiquidityPerTick().call(),
+      ]);
+
+    const [liquidity, slot] = await Promise.all([
+      poolContract.methods.liquidity().call(),
+      poolContract.methods.slot0().call(),
     ]);
 
-    this.setStore({
-      oldAssets: [{
-        type: 'FF Gauge',
-        imgAddress: IBEUR_ADDRESS,
-        address: IBEUR_GAUGE_ADDRESS_OLD,
-        symbol: 'ibEUR+sEUR-f',
-        balance: BigNumber(eurBalance).div(10**18).toFixed(18)
-      },{
-        type: 'FF Gauge',
-        imgAddress: IBKRW_ADDRESS,
-        address: IBKRW_GAUGE_ADDRESS_OLD,
-        symbol: 'ibKRW+sKRW-f',
-        balance: BigNumber(krwBalance).div(10**18).toFixed(18)
-      },{
-        type: 'SLP Faucet',
-        imgAddress: IBEUR_ADDRESS,
-        address: IBEUR_ETH_ADDRESS_OLD,
-        symbol: 'ibEUR-ETH',
-        balance: BigNumber(ibEURBalance).div(10**18).toFixed(18)
-      }]
-    })
+    const TokenA = new Token(3, token0, 18, "KP3R", "Keep3rV1");
+    const TokenB = new Token(3, token1, 18, "WETH", "Wrapped Ether");
+    const poolExample = new Pool(
+      TokenA,
+      TokenB,
+      parseInt(fee),
+      slot[0].toString(),
+      liquidity.toString(),
+      parseInt(slot[1])
+    );
+
+    const r = tickToPrice(TokenA, TokenB, poolExample.tickCurrent)
+    const l = tickToPrice(TokenA, TokenB, parseInt(pos.tickUpper))
+    const h = tickToPrice(TokenA, TokenB, parseInt(pos.tickLower))
+
+    const currentPrice = BigNumber(r.denominator).div(r.numerator).toFixed(18)
+    const lowPrice = BigNumber(l.denominator).div(l.numerator).toFixed(18)
+    const highPrice = BigNumber(h.denominator).div(h.numerator).toFixed(18)
+
+    return {
+      lowPrice,
+      highPrice,
+      currentPrice
+    }
   }
 
   getFFBalances_old = async (payload) => {
@@ -2300,6 +2468,186 @@ class Store {
       const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
 
       this._callContractWait(web3, gaugeContract, 'withdraw', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  };
+
+  approveDepositUni = async(payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { tokenID, gasSpeed } = payload.content;
+
+    this._callApproveDepositUni(web3, account, tokenID, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_UNI_DEPOSITED, res);
+    });
+  }
+
+  _callApproveDepositUni = async (web3, account, tokenID, gasSpeed, callback) => {
+    try {
+      let uniswapNFTPositionsManagerContract = new web3.eth.Contract(abis.uniswapNFTPositionsManagerABI, FF_UNSIWAP_POSITIONS_MANAGER_ADDRESS);
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, uniswapNFTPositionsManagerContract, 'approve', [FF_STAKING_REWARDS_V3_ADDRESS, tokenID], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  };
+
+  depositUni = async(payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { tokenID, gasSpeed } = payload.content;
+
+    this._callDepositUni(web3, account, tokenID, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_UNI_DEPOSITED, res);
+    });
+  }
+
+  _callDepositUni = async (web3, account, tokenID, gasSpeed, callback) => {
+    try {
+      let stakingContract = new web3.eth.Contract(abis.stakingRewardsV3ABI, FF_STAKING_REWARDS_V3_ADDRESS);
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, stakingContract, 'deposit', [tokenID], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  };
+
+  withdrawUni = async(payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { tokenID, gasSpeed } = payload.content;
+
+    this._callWithdrawUni(web3, account, tokenID, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_UNI_WITHDRAWN, res);
+    });
+  }
+
+  _callWithdrawUni = async (web3, account, tokenID, gasSpeed, callback) => {
+    try {
+      let stakingContract = new web3.eth.Contract(abis.stakingRewardsV3ABI, FF_STAKING_REWARDS_V3_ADDRESS);
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, stakingContract, 'withdraw', [tokenID], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  };
+
+  getUniRewards = async(payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { tokenID, gasSpeed } = payload.content;
+
+    this._callGetRewards(web3, account, tokenID, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_UNI_REWARDS_RETURNED, res);
+    });
+  }
+
+  _callGetRewards = async (web3, account, tokenID, gasSpeed, callback) => {
+    try {
+      let stakingContract = new web3.eth.Contract(abis.stakingRewardsV3ABI, FF_STAKING_REWARDS_V3_ADDRESS);
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, stakingContract, 'getReward', [tokenID], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  };
+
+  getAllUniRewards = async(payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { gasSpeed } = payload.content;
+
+    this._callGetAllRewards(web3, account, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_ALL_UNI_REWARDS_RETURNED, res);
+    });
+  }
+
+  _callGetAllRewards = async (web3, account, gasSpeed, callback) => {
+    try {
+      let stakingContract = new web3.eth.Contract(abis.stakingRewardsV3ABI, FF_STAKING_REWARDS_V3_ADDRESS);
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, stakingContract, 'getRewards', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
     } catch (ex) {
       console.log(ex);
       return this.emitter.emit(ERROR, ex);

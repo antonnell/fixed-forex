@@ -1,0 +1,79 @@
+.container {
+  width: calc(100% - 48px);
+  max-width: 1356px;
+  margin: 0 auto;
+  margin-bottom: 48px;
+  margin-top: 50px;
+  position: relative;
+}
+
+.title {
+  font-size: 20px !important;
+  margin-bottom: 24px !important;
+}
+
+.optionsContainer {
+  display: flex;
+  padding: 0 0 20px 0px;
+  border: 1px solid rgba(104, 108, 122, 0.25);
+  margin: auto;
+  min-height: 180px;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.actionButtons {
+  padding: 0px 24px;
+}
+
+.actionButton {
+  width: 200px;
+}
+
+.actionButtonText {
+  font-size: 12px !important;
+  text-transform: capitalize !important;
+}
+
+.loadingCircle {
+  margin-left: 6px !important;
+}
+
+.infoSection {
+  display: flex;
+  padding: 0px 24px;
+  padding-bottom: 24px;
+  align-items: center;
+}
+
+.helpText {
+  margin-left: 6px !important;
+  font-size: 20px !important;
+  color: #52af77 !important;
+}
+
+.errorText {
+  margin-left: 6px !important;
+  font-size: 20px !important;
+  color: #da0052 !important;
+}
+
+.buttonOverride {
+  background: #114DF0 !important;
+  color: #FFF !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+  width: 160px;
+}
+
+@media screen and (max-width: 1200px) {
+  .container {
+    top: 192px;
+  }
+}
+
+@media screen and (max-width: 960px) {
+  .container {
+    top: 340px;
+  }
+}

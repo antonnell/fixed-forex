@@ -18,6 +18,9 @@ import { rKP3RABI } from './rKP3RABI'
 import { oKP3RABI } from './oKP3RABI'
 import { creamPriceOracleABI } from './creamPriceOracleABI'
 import { oldGaugeABI } from './oldGaugeABI'
+import { stakingRewardsV3ABI } from './stakingRewardsV3ABI'
+import { uniswapNFTPositionsManagerABI } from './uniswapNFTPositionsManagerABI'
+import { uniswapV3PoolABI } from './uniswapV3PoolABI'
 
 export default {
   erc20ABI: erc20ABI,
@@ -39,5 +42,8 @@ export default {
   rKP3RABI: rKP3RABI,
   oKP3RABI: oKP3RABI,
   creamPriceOracleABI: creamPriceOracleABI,
-  oldGaugeABI: oldGaugeABI
+  oldGaugeABI: oldGaugeABI,
+  stakingRewardsV3ABI: stakingRewardsV3ABI,
+  uniswapNFTPositionsManagerABI: uniswapNFTPositionsManagerABI,
+  uniswapV3PoolABI: uniswapV3PoolABI
 };

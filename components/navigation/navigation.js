@@ -134,38 +134,44 @@ function Navigation(props) {
         {renderNav(
           'Assets',
           'home',
-          <SwapHorizIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
-          <SwapHorizIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
+          <SwapHorizIcon className={classes.icon} />,
+          <SwapHorizIcon className={classes.icon} />,
+        )}
+        {renderNav(
+          'Staking',
+          'staking',
+          <SpaceBarIcon className={classes.icon} />,
+          <SpaceBarIcon className={classes.icon} />,
         )}
         {renderNav(
           'Options',
           'options',
-          <TableChartIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
-          <TableChartIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
+          <TableChartIcon className={classes.icon} />,
+          <TableChartIcon className={classes.icon} />,
         )}
         {renderNav(
           'Vest',
           'vest',
-          <TimerIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
-          <TimerIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
+          <TimerIcon className={classes.icon} />,
+          <TimerIcon className={classes.icon} />,
         )}
         {renderNav(
           'Vote',
           'vote',
-          <HowToVoteIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
-          <HowToVoteIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
+          <HowToVoteIcon className={classes.icon} />,
+          <HowToVoteIcon className={classes.icon} />,
         )}
         {renderNav(
           'Rewards',
           'rewards',
-          <MonetizationOnIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
-          <MonetizationOnIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
+          <MonetizationOnIcon className={classes.icon} />,
+          <MonetizationOnIcon className={classes.icon} />,
         )}
         {renderNav(
           'Withdraw',
           'withdraw',
-          <BuildIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
-          <BuildIcon className={classes.icon} color={darkMode ? 'white' : 'rgb(33, 37, 41)'} altColor={darkMode ? 'rgb(33, 37, 41)' : 'white'} />,
+          <BuildIcon className={classes.icon} />,
+          <BuildIcon className={classes.icon} />,
         )}
       </React.Fragment>
     );
@@ -378,7 +384,7 @@ function Navigation(props) {
           <img src='/images/icon-warning.svg' className={ classes.warningIcon } onClick={ openWarning }/>
         </Tooltip>
       </div>
-      <Typography className={classes.smallVersion}>Version 0.4.1-beta</Typography>
+      <Typography className={classes.smallVersion}>Version 0.5.0-beta</Typography>
       { warningOpen &&
         <FFWarning close={ closeWarning } />
       }
