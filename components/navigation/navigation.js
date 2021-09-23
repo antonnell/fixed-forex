@@ -137,12 +137,12 @@ function Navigation(props) {
           <SwapHorizIcon className={classes.icon} />,
           <SwapHorizIcon className={classes.icon} />,
         )}
-        {renderNav(
+        { /* renderNav(
           'Staking',
           'staking',
           <SpaceBarIcon className={classes.icon} />,
           <SpaceBarIcon className={classes.icon} />,
-        )}
+        ) */}
         {renderNav(
           'Options',
           'options',

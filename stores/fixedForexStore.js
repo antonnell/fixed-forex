@@ -854,7 +854,7 @@ class Store {
       }))
 
       const validPositions = await Promise.all(tokenPositions.filter((pos) => {
-        return pos.token0 === '0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44' && pos.token1 === '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
+        return pos.token0 === '0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44' && pos.token1 === '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' && BigNumber(pos.liquidity).gt(0)
       }).map(async (pos, idx) => {
         pos.tokenID = tokenIDs[idx]
         pos.address = "0x11B7a6bc0259ed6Cf9DB8F499988F9eCc7167bf5";
