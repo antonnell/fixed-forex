@@ -21,6 +21,9 @@ import { oldGaugeABI } from './oldGaugeABI'
 import { stakingRewardsV3ABI } from './stakingRewardsV3ABI'
 import { uniswapNFTPositionsManagerABI } from './uniswapNFTPositionsManagerABI'
 import { uniswapV3PoolABI } from './uniswapV3PoolABI'
+import { comptrollerABI } from './comptrollerABI'
+import { cERC20DelegatorABI } from './cERC20DelegatorABI'
+import { ironBankRegistryAdapterABI } from './ironBankRegistryAdapterABI'
 
 export default {
   erc20ABI: erc20ABI,
@@ -45,5 +48,9 @@ export default {
   oldGaugeABI: oldGaugeABI,
   stakingRewardsV3ABI: stakingRewardsV3ABI,
   uniswapNFTPositionsManagerABI: uniswapNFTPositionsManagerABI,
-  uniswapV3PoolABI: uniswapV3PoolABI
+  uniswapV3PoolABI: uniswapV3PoolABI,
+  comptrollerABI: comptrollerABI,
+  cERC20DelegatorABI: cERC20DelegatorABI,
+  ironBankRegistryAdapterABI: ironBankRegistryAdapterABI,
+
 };

@@ -1,0 +1,225 @@
+.lendingRow {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.32);
+  flex: 1;
+  padding: 0px 24px;
+}
+
+.lendindAssetTableRow {
+  cursor: pointer;
+}
+
+.lendTitleCell {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 18px 6px;
+}
+
+.lendValueCell {
+  flex: 1;
+  padding: 12px 6px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.lendActionsCell {
+  flex: 2;
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 6px;
+}
+
+.lendBalanceCell {
+  flex: 1;
+  padding: 12px 6px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.logo {
+  width: 30px;
+  height: 30px;
+  margin-right: 12px;
+}
+
+.fontWeightBold {
+  font-weight: bold !important;
+}
+
+.balance {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.removePaper {
+  background-color: rgba(0, 0, 0, 0) !important;
+}
+
+.assetActions {
+  width: 100%;
+  border-top: 1px solid rgba(128, 128, 128, 0.32);
+  border-bottom: 1px solid rgba(128, 128, 128, 0.32);
+}
+
+.assetInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  padding: 36px;
+  width: 100%;
+  flex-wrap: wrap;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.32);
+  background-image: -webkit-gradient(linear ,left bottom, left top ,color-stop(0, #1c46f5),to(#0005d3));
+  background-image: -webkit-linear-gradient(bottom ,#1c46f5 0,#0005d3);
+  background-image: linear-gradient(0deg ,#1c46f5 0,#0005d3);
+  color: #fff !important;
+}
+
+.infoField {
+  flex: 1;
+}
+
+.flexy {
+  padding: 6px 0px;
+}
+
+.actionsContainer {
+  display: flex;
+  flex: 1;
+  justify-content: space-evenly;
+}
+
+.tradeContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 36px;
+  max-width: 500px;
+}
+
+.balances {
+  width: 100%;
+  text-align: right;
+  cursor: pointer;
+  padding-right: 12px;
+  padding-bottom: 6px;
+}
+
+.actionInput {
+  padding: 0px 0px 12px 0px;
+  font-size: 0.5rem;
+}
+
+.scaleContainer {
+  margin: 12px 0px 72px 0px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.scale {
+  width: 60px;
+  height: 30px;
+  border-radius: 10px !important;
+}
+
+.buttons {
+  display: flex;
+  width: 100%;
+}
+
+.emptyScale {
+  height: 30px;
+}
+
+.separator {
+  border-bottom: none;
+  width: 0px;
+  margin: 0px;
+}
+
+.inputTitleContainer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.inputTitle {
+  padding-bottom: 6px;
+  margin-left: 12px;
+}
+
+.gasSpeedContainer {
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.assetInfoError {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  padding: 36px;
+  width: 100%;
+  flex-wrap: wrap;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.32);
+  background: #dc3545;
+}
+
+.removePadding {
+  padding: 0px 24px !important;
+}
+
+@media screen and (max-width: 1000px) {
+  .lendingRow {
+    padding: 0px 6px;
+  }
+  .lendTitleCell {
+    flex: 1;
+    padding: 12px 0px;
+  }
+  .name {
+  }
+  .lendBalanceCell {
+    display: none;
+  }
+  .lendValueCell {
+    padding: 12px 0px;
+  }
+  .lendActionsCell {
+    display: none;
+  }
+  .actionsContainer {
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .tradeContainer {
+    padding: 12px;
+    width: 100%;
+  }
+  .separator {
+    border-bottom: 1px solid rgba(124, 124, 124, 0.32);
+    margin: 12px;
+    width: 100%;
+  }
+  .emptyScale {
+    height: 12px;
+  }
+  .assetInfo {
+    padding: 12px;
+  }
+  .assetInfoError {
+    padding: 12px;
+  }
+}

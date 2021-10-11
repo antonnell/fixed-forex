@@ -522,7 +522,6 @@ class Store {
       this._getOldGaugeInfo(web3, account)
       this._getUniV3Info(web3, account)
       this._getStakingV3Rewards(web3, account)
-
     } catch(ex) {
       console.log(ex)
       this.emitter.emit(ERROR, ex)
@@ -2648,96 +2647,6 @@ class Store {
       const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
 
       this._callContractWait(web3, stakingContract, 'getRewards', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
-    } catch (ex) {
-      console.log(ex);
-      return this.emitter.emit(ERROR, ex);
-    }
-  };
-
-  mintFUSD = async (payload) => {
-    const account = stores.accountStore.getStore('account');
-    if (!account) {
-      return false;
-      //maybe throw an error
-    }
-
-    const web3 = await stores.accountStore.getWeb3Provider();
-    if (!web3) {
-      return false;
-      //maybe throw an error
-    }
-
-    const { cdp, depositAmount, borrowAmount, gasSpeed } = payload.content;
-
-    this._callMintFUSD(web3, cdp, account, depositAmount, borrowAmount, gasSpeed, (err, depositResult) => {
-      if (err) {
-        return this.emitter.emit(ERROR, err);
-      }
-
-      return this.emitter.emit(FUSD_MINTED, depositResult);
-    });
-
-  };
-
-  _callMintFUSD = async (web3, asset, account, depositAmount, borrowAmount, gasSpeed, callback) => {
-    try {
-      let fusdContract = new web3.eth.Contract(FIXEDUSDABI, FUSD_ADDRESS);
-
-      const depositAmountToSend = BigNumber(depositAmount === '' ? 0 : depositAmount)
-        .times(10 ** 18)
-        .toFixed(0);
-
-      const borrowAmountToSend = BigNumber(borrowAmount === '' ? 0 : borrowAmount)
-        .times(10 ** 18)
-        .toFixed(0);
-
-      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
-
-      this._callContractWait(web3, fusdContract, 'mint', [asset.tokenMetadata.address, depositAmountToSend, borrowAmountToSend], account, gasPrice, GET_FUSD_BALANCES, callback);
-    } catch (ex) {
-      console.log(ex);
-      return this.emitter.emit(ERROR, ex);
-    }
-  };
-
-  burnFUSD = async (payload) => {
-    const account = stores.accountStore.getStore('account');
-    if (!account) {
-      return false;
-      //maybe throw an error
-    }
-
-    const web3 = await stores.accountStore.getWeb3Provider();
-    if (!web3) {
-      return false;
-      //maybe throw an error
-    }
-
-    const { cdp, repayAmount, withdrawAmount, gasSpeed } = payload.content;
-
-    this._callBurnFUSD(web3, cdp, account, repayAmount, withdrawAmount, gasSpeed, (err, depositResult) => {
-      if (err) {
-        return this.emitter.emit(ERROR, err);
-      }
-
-      return this.emitter.emit(FUSD_BURNT, depositResult);
-    });
-  };
-
-  _callBurnFUSD = async (web3, asset, account, repayAmount, withdrawAmount, gasSpeed, callback) => {
-    try {
-      let fusdContract = new web3.eth.Contract(FIXEDUSDABI, FUSD_ADDRESS);
-
-      const repayAmountToSend = BigNumber(repayAmount === '' ? 0 : repayAmount)
-        .times(10 ** 18)
-        .toFixed(0);
-      const withdrawAmountToSend = BigNumber(withdrawAmount === '' ? 0 : withdrawAmount)
-        .times(bnDec(asset.tokenMetadata.decimals))
-        .toFixed(0);
-
-      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
-
-      this._callContractWait(web3, fusdContract, 'burn', [asset.tokenMetadata.address, withdrawAmountToSend, repayAmountToSend], account, gasPrice, GET_FUSD_BALANCES, callback);
     } catch (ex) {
       console.log(ex);
       return this.emitter.emit(ERROR, ex);

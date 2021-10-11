@@ -132,47 +132,52 @@ function Navigation(props) {
     return (
       <React.Fragment>
         {renderNav(
-          'Assets',
-          'home',
-          <SwapHorizIcon className={classes.icon} />,
-          <SwapHorizIcon className={classes.icon} />,
+          'Mint Assets',
+          'mint',
         )}
-        { /* renderNav(
-          'Staking',
-          'staking',
-          <SpaceBarIcon className={classes.icon} />,
-          <SpaceBarIcon className={classes.icon} />,
-        ) */}
-        {renderNav(
-          'Options',
-          'options',
-          <TableChartIcon className={classes.icon} />,
-          <TableChartIcon className={classes.icon} />,
+        {renderSectionHeader(
+          'Liquidity Providing'
         )}
-        {renderNav(
-          'Vest',
-          'vest',
-          <TimerIcon className={classes.icon} />,
-          <TimerIcon className={classes.icon} />,
+        <div className={ classes.subAssets }>
+          {renderSubNav(
+            'CRV LP',
+            'home',
+          )}
+          {renderSubNav(
+            'Uniswap LP',
+            'staking',
+          )}
+          {renderSubNav(
+            'Withdraw Inactive',
+            'withdraw',
+          )}
+        </div>
+        {renderSectionHeader(
+          'Rewards'
         )}
-        {renderNav(
-          'Vote',
-          'vote',
-          <HowToVoteIcon className={classes.icon} />,
-          <HowToVoteIcon className={classes.icon} />,
+        <div className={ classes.subAssets }>
+          {renderSubNav(
+            'rKP3R Options',
+            'options',
+          )}
+          {renderSubNav(
+            'Claim',
+            'rewards',
+          )}
+        </div>
+        {renderSectionHeader(
+          'Governance'
         )}
-        {renderNav(
-          'Rewards',
-          'rewards',
-          <MonetizationOnIcon className={classes.icon} />,
-          <MonetizationOnIcon className={classes.icon} />,
-        )}
-        {renderNav(
-          'Withdraw',
-          'withdraw',
-          <BuildIcon className={classes.icon} />,
-          <BuildIcon className={classes.icon} />,
-        )}
+        <div className={ classes.subAssets }>
+          {renderSubNav(
+            'Vest',
+            'vest',
+          )}
+          {renderSubNav(
+            'Vote',
+            'vote',
+          )}
+        </div>
       </React.Fragment>
     );
   };
@@ -229,7 +234,18 @@ function Navigation(props) {
     setWarningOpen(false)
   }
 
-  const renderNav = (title, link, icon, iconSelected) => {
+  const renderSectionHeader = (title) => {
+    return (
+      <div
+        className={classes.navigationOptionContainer}
+      >
+        <div className={classes.navigationOptionNotSelected}></div>
+        <Typography variant="h2" className={ classes.sectionText}>{title}</Typography>
+      </div>
+    );
+  };
+
+  const renderNav = (title, link) => {
     return (
       <div
         className={classes.navigationOptionContainer}
@@ -242,13 +258,12 @@ function Navigation(props) {
         ) : (
           <div className={classes.navigationOptionNotSelected}></div>
         )}
-        {activePath.includes('/' + link) ? iconSelected : icon}
         <Typography variant="h2">{title}</Typography>
       </div>
     );
   };
 
-  const renderSubNav = (title, link, icon, iconSelected) => {
+  const renderSubNav = (title, link) => {
     return (
       <div
         className={classes.navigationSubOptionContainer}
@@ -261,7 +276,6 @@ function Navigation(props) {
         ) : (
           <div className={classes.navigationOptionNotSelected}></div>
         )}
-        {activePath.includes('/' + link) ? iconSelected : icon}
         <Typography variant="h2" className={ classes.subtitleText}>{title}</Typography>
       </div>
     );
@@ -384,7 +398,7 @@ function Navigation(props) {
           <img src='/images/icon-warning.svg' className={ classes.warningIcon } onClick={ openWarning }/>
         </Tooltip>
       </div>
-      <Typography className={classes.smallVersion}>Version 0.5.1-beta</Typography>
+      <Typography className={classes.smallVersion}>Version 0.6.0-beta</Typography>
       { warningOpen &&
         <FFWarning close={ closeWarning } />
       }

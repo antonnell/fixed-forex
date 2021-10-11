@@ -12,7 +12,7 @@ import Configure from './configure';
 
 import stores from '../stores/index.js';
 
-import { CONFIGURE, FIXED_FOREX_CONFIGURED, ACCOUNT_CONFIGURED } from '../stores/constants';
+import { CONFIGURE, CONFIGURE_LENDING, FIXED_FOREX_CONFIGURED, ACCOUNT_CONFIGURED } from '../stores/constants';
 
 export default function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -52,7 +52,8 @@ export default function MyApp({ Component, pageProps }) {
     stores.emitter.on(ACCOUNT_CONFIGURED, accountConfigureReturned);
 
     stores.dispatcher.dispatch({ type: CONFIGURE });
-
+    stores.dispatcher.dispatch({ type: CONFIGURE_LENDING });
+    
     return () => {
       stores.emitter.removeListener(FIXED_FOREX_CONFIGURED, fixedForexConfigureReturned);
       stores.emitter.removeListener(ACCOUNT_CONFIGURED, accountConfigureReturned);
