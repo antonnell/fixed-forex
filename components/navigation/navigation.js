@@ -143,10 +143,10 @@ function Navigation(props) {
             'CRV LP',
             'home',
           )}
-          {renderSubNav(
+          {/*renderSubNav(
             'Uniswap LP',
             'staking',
-          )}
+          )*/}
           {renderSubNav(
             'Withdraw Inactive',
             'withdraw',
