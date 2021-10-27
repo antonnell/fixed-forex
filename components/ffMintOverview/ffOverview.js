@@ -162,19 +162,18 @@ export default function ffOverview() {
                 <LendBorrowGraph assets={borrowAssets} />
               </Tooltip>
               <Grid container spacing={0} className={classes.valueItem}>
-
-              <Grid item xs={8}>
-                <Typography className={ classes.title }>Total Borrowed</Typography>
-                <Typography className={ classes.value }>
-                  {lendingBorrow === null ? (
-                    <Skeleton style={{ minWidth: '200px', backgroundColor: 'rgba(0,0,0,0.1)' }} />
-                  ) : (
-                    `$ ${formatCurrency(position && position.length >= 3 ? position[1] / 1000000 : 0)}`
-                  )}
-                </Typography>
-                <Tooltip title={renderBorrowTooltip()}>
-                  <Typography className={ classes.subValue }>{!lendingBorrowAPY ? <Skeleton style={{ minWidth: '200px', backgroundColor: 'rgba(0,0,0,0.1)' }} /> : `${formatCurrency(lendingBorrowAPY)} % Average APY`}</Typography>
-                </Tooltip>
+                <Grid item xs={12}>
+                  <Typography className={ classes.title }>Total Borrowed</Typography>
+                  <Typography className={ classes.value }>
+                    {lendingBorrow === null ? (
+                      <Skeleton style={{ minWidth: '200px', backgroundColor: 'rgba(0,0,0,0.1)' }} />
+                    ) : (
+                      `$ ${formatCurrency(position && position.length >= 3 ? position[1] / 1000000 : 0)}`
+                    )}
+                  </Typography>
+                  <Tooltip title={renderBorrowTooltip()}>
+                    <Typography className={ classes.subValue }>{!lendingBorrowAPY ? <Skeleton style={{ minWidth: '200px', backgroundColor: 'rgba(0,0,0,0.1)' }} /> : `${formatCurrency(lendingBorrowAPY)} % Average APY`}</Typography>
+                  </Tooltip>
                 </Grid>
               </Grid>
             </div>
@@ -182,12 +181,12 @@ export default function ffOverview() {
           <Grid item lg={4} md={4} sm={12} xs={12}>
             <div className={classes.overviewCard}>
             <Grid container spacing={0} className={classes.valueItem}>
-            <Grid item md={3} sm={2} xs={2}>
-            <div className={classes.iconWrap}>
-              <LimitIcon className={ classes.overviewIcon } />
-            </div>
-            </Grid>
-            <Grid item md={9} sm={10} xs={10}>
+              <Grid item md={3} sm={2} xs={2}>
+                <div className={classes.iconWrap}>
+                  <LimitIcon className={ classes.overviewIcon } />
+                </div>
+              </Grid>
+              <Grid item md={9} sm={10} xs={10}>
                 <Typography className={ classes.title }>Borrow Limit Used</Typography>
                 <Typography className={ classes.value }>
                   {lendingBorrowLimit === null ? (
