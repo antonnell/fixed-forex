@@ -74,7 +74,7 @@ export default function ffClaim() {
                 <div>
                   { BigNumber(rewards && rewards.veIBFFDistribution ? rewards.veIBFFDistribution.earned : 0).gt(0) &&
                     (
-                      loading ? <Typography>Claiming</Typography> : <Typography>Claim Now</Typography>
+                      loading ? <Typography className={classes.sub}>Claiming</Typography> : <Typography className={classes.sub}>Claim Now</Typography>
                     )
                   }
                   { !BigNumber(rewards && rewards.veIBFFDistribution ? rewards.veIBFFDistribution.earned : 0).gt(0) &&

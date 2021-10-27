@@ -73,7 +73,7 @@ export default function ffClaimDistirbution() {
             <div>
               { BigNumber(rewards && rewards.feeDistribution ? rewards.feeDistribution.earned : 0).gt(0) &&
                 (
-                  loading ? <Typography>Claiming</Typography> : <Typography>Claim Now</Typography>
+                  loading ? <Typography className={classes.sub}>Claiming</Typography> : <Typography className={classes.sub}>Claim Now</Typography>
                 )
               }
               { !BigNumber(rewards && rewards.feeDistribution ? rewards.feeDistribution.earned : 0).gt(0) &&
