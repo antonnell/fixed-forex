@@ -156,7 +156,6 @@ function Navigation(props) {
             'Uniswap LP',
             'staking',
           )*/}
-          )*/}
           {renderSubNav(
             'Withdraw Inactive',
             'withdraw',
