@@ -5,10 +5,10 @@ export default function noBalances({ ibff, veIBFF }) {
 
   return (
 
-    <Paper elevation={0} className={ classes.container }>
+    <Paper elevation={0} className={ classes.containerNone }>
 
       <div className={ classes.noBalancesContainer }>
-        <Grid container spacing={2}>
+        <Grid container spacing={6}>
         <Grid item lg={4} sm={12}>
           <div className={classes.contentBox}>
             <Typography className={ classes.title }>What is vesting kp3r?</Typography>

@@ -1,0 +1,64 @@
+.container {
+  width: calc(100% - 0px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  border: 1px solid rgba(104, 108, 122, 0.25);
+  margin: auto;
+  margin-bottom: 0px;
+  padding: 20px;
+  height: calc(100% - 81px);
+}
+
+
+.actionButtons {
+  padding: 0px;
+}
+
+.actionButton {
+  width: 200px;
+}
+
+.actionButtonText {
+  font-size: 14px !important;
+  text-transform: capitalize !important;
+  font-weight: 700 !important;
+}
+
+.loadingCircle {
+  margin-left: 6px !important;
+}
+
+.infoSection {
+  padding: 0px;
+  padding-bottom: 24px;
+}
+
+.helpText {
+  margin-left: 6px !important;
+  font-size: 20px !important;
+  color: #52af77 !important;
+}
+
+.errorText {
+  margin-left: 6px !important;
+  font-size: 20px !important;
+  color: #da0052 !important;
+}
+
+.buttonOverride {
+  background: MediumSeaGreen !important;
+  color: #FFF !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+  width: 240px;
+  margin-right: 0px !important;
+  margin-bottom: 10px !important;
+}
+
+@media screen and (max-width: 1200px) {
+}
+
+@media screen and (max-width: 960px) {
+}

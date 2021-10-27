@@ -5,10 +5,11 @@ import { withStyles } from '@material-ui/core/styles';
 
 const styles = () => ({
   alert: {
-    marginTop: '12px',
+    marginTop: '5px',
   },
   infoAlert: {
-    backgroundColor: '#dedede',
+    backgroundColor: 'Orange',
+    color: '#000',
   },
 });
 

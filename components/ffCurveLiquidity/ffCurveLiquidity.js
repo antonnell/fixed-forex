@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Grid, Typography, Button, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
+import { Paper, Grid, Typography, Button, TextField, InputAdornment, CircularProgress, Tooltip } from '@material-ui/core';
 import BigNumber from 'bignumber.js';
 import { formatCurrency } from '../../utils';
 import classes from './ffCurveLiquidity.module.css';
+
 import stores from '../../stores'
 import {
   ERROR,
@@ -164,27 +165,32 @@ export default function ffCurveLiquidity({ asset }) {
   }
 
   return (
+    <div className={classes.retain}>
+      <Typography variant="h5" className={ classes.title}>Deposit &amp; Withdraw</Typography>
+      <Tooltip placement="top-left" title="Earn Rewards. Providing liquidity to these LP’s allows you to hedge against USD risk, or simply have exposure in your own preferred currency, while earning LP incentives.">
+      <div className={classes.helpIcon}>?</div>
+      </Tooltip>
     <Paper elevation={0} className={ classes.container }>
       <Grid container spacing={0}>
-        <Grid item lg={2} md={3} xs={12}>
+        <Grid item lg={12} md={12} xs={12}>
           <div className={classes.toggleButtons}>
             <Grid container spacing={0}>
-              <Grid item lg={12} md={12} sm={6} xs={6}>
-                <Button className={ `${activeTab === 'deposit' ? classes.buttonActive : classes.button} ${ classes.topLeftButton }` } onClick={ toggleDeposit } disabled={ depositLoading || approvalLoading0 || approvalLoading1 }>
+              <Grid item lg={6} md={6} sm={6} xs={6}>
+                <Paper className={ `${activeTab === 'deposit' ? classes.buttonActive : classes.button} ${ classes.topLeftButton }` } onClick={ toggleDeposit } disabled={ depositLoading || approvalLoading0 || approvalLoading1 }>
                   <Typography variant='h5'>Deposit</Typography>
                   <div className={ `${activeTab === 'deposit' ? classes.activeIcon : ''}` }></div>
-                </Button>
+                </Paper>
               </Grid>
-              <Grid item lg={12} md={12} sm={6} xs={6}>
-                <Button className={ `${activeTab === 'withdraw' ? classes.buttonActive : classes.button}  ${ classes.bottomLeftButton }` } onClick={ toggleWithdraw } disabled={ depositLoading || approvalLoading0 || approvalLoading1 }>
+              <Grid item lg={6} md={6} sm={6} xs={6}>
+                <Paper className={ `${activeTab === 'withdraw' ? classes.buttonActive : classes.button}  ${ classes.bottomLeftButton }` } onClick={ toggleWithdraw } disabled={ depositLoading || approvalLoading0 || approvalLoading1 }>
                   <Typography variant='h5'>Withdraw</Typography>
                   <div className={ `${activeTab === 'withdraw' ? classes.activeIcon : ''}` }></div>
-                </Button>
+                </Paper>
               </Grid>
             </Grid>
           </div>
         </Grid>
-        <Grid item lg={10} md={9} sm={12}>
+        <Grid item lg={12} md={12} sm={12}>
           <div className={ classes.reAddPadding }>
             <Grid container spacing={0}>
               <Grid item lg={9} xs={12}>
@@ -193,7 +199,7 @@ export default function ffCurveLiquidity({ asset }) {
                     activeTab === 'deposit' &&
                     <>
                       <Grid container spacing={2}>
-                        <Grid item lg={6} xs={12}>
+                        <Grid item lg={12} xs={12}>
                           <div className={classes.textField}>
                             <div className={classes.inputTitleContainer}>
                               <div className={classes.inputTitle}>
@@ -202,6 +208,8 @@ export default function ffCurveLiquidity({ asset }) {
                                 </Typography>
                               </div>
                             </div>
+                            <Grid container spacing={2}>
+                            <Grid item lg={6} xs={12}>
                             <div className={ classes.extraTF }>
                               <div className={classes.balances}>
                                 <Typography
@@ -239,6 +247,8 @@ export default function ffCurveLiquidity({ asset }) {
                                 }}
                               />
                             </div>
+                            </Grid>
+                            <Grid item lg={6} xs={12}>
                             <div className={ classes.extraTF }>
                               <div className={classes.balances}>
                                 <Typography
@@ -276,9 +286,11 @@ export default function ffCurveLiquidity({ asset }) {
                                 }}
                               />
                             </div>
+                            </Grid>
+                            </Grid>
                           </div>
                         </Grid>
-                        <Grid item lg={6} xs={12}>
+                        <Grid item lg={12} xs={12}>
                           <div className={classes.textField}>
                             <SlippageInfo slippagePcent={slippageInfo} />
                           </div>
@@ -290,7 +302,7 @@ export default function ffCurveLiquidity({ asset }) {
                     activeTab === 'withdraw' &&
                     <>
                       <Grid container spacing={2}>
-                        <Grid item lg={6} xs={12}>
+                        <Grid item lg={12} xs={12}>
                           <div className={classes.textField}>
                             <div className={classes.inputTitleContainer}>
                               <div className={classes.inputTitle}>
@@ -345,7 +357,7 @@ export default function ffCurveLiquidity({ asset }) {
                             />
                           </div>
                         </Grid>
-                        <Grid item lg={6} xs={12}>
+                        <Grid item lg={12} xs={12}>
                           <div className={classes.textField}>
                             <div className={classes.inputTitleContainer}>
                               <div className={classes.inputTitle}>
@@ -354,90 +366,94 @@ export default function ffCurveLiquidity({ asset }) {
                                 </Typography>
                               </div>
                             </div>
-                            <div className={ classes.amountAndPercent }>
-                              <TextField
-                                variant="outlined"
-                                fullWidth
-                                placeholder="0.00"
-                                value={withdrawAmount0}
-                                error={withdrawAmount0Error}
-                                disabled={ true }
-                                onChange={(e) => {
-                                  setWithdrawAmount0(e.target.value);
-                                }}
-                                InputProps={{
-                                  startAdornment: (
-                                    <InputAdornment position="start">
-                                      <img src={ `/tokens/unknown-logo.png` } alt="" width={30} height={30} />
-                                    </InputAdornment>
-                                  ),
-                                  endAdornment: (
-                                    <InputAdornment position="end">
-                                      <Typography>{asset?.gauge?.coin0?.symbol}</Typography>
-                                    </InputAdornment>
-                                  ),
-                                }}
-                              />
-                              {/*<TextField
-                                variant="outlined"
-                                fullWidth
-                                placeholder="0.00"
-                                value={withdrawAmount0Percent}
-                                onChange={(e) => {
-                                  setAmountPercent('withdrawAmount0', e.target.value);
-                                }}
-                                InputProps={{
-                                  endAdornment: (
-                                    <InputAdornment position="end">
-                                      <Typography>%</Typography>
-                                    </InputAdornment>
-                                  ),
-                                }}
-                              />*/}
-                            </div>
-                            <div>
-                              <div className={ classes.amountAndPercent }>
-                                <TextField
-                                  variant="outlined"
-                                  fullWidth
-                                  placeholder="0.00"
-                                  disabled={ true }
-                                  value={withdrawAmount1}
-                                  error={withdrawAmount1Error}
-                                  onChange={(e) => {
-                                    setWithdrawAmount1(e.target.value);
-                                  }}
-                                  InputProps={{
-                                    startAdornment: (
-                                      <InputAdornment position="start">
-                                        <img src={ `/tokens/unknown-logo.png` } alt="" width={30} height={30} />
-                                      </InputAdornment>
-                                    ),
-                                    endAdornment: (
-                                      <InputAdornment position="end">
-                                        <Typography>{asset?.gauge?.coin1?.symbol}</Typography>
-                                      </InputAdornment>
-                                    ),
-                                  }}
-                                />
-                                {/*<TextField
-                                  variant="outlined"
-                                  fullWidth
-                                  placeholder="0.00"
-                                  value={withdrawAmount1Percent}
-                                  onChange={(e) => {
-                                    setAmountPercent('withdrawAmount1', e.target.value);
-                                  }}
-                                  InputProps={{
-                                    endAdornment: (
-                                      <InputAdornment position="end">
-                                        <Typography>%</Typography>
-                                      </InputAdornment>
-                                    ),
-                                  }}
-                                />*/}
-                              </div>
-                            </div>
+                            <Grid container spacing={2}>
+                              <Grid item lg={6} xs={12}>
+                                <div className={ classes.amountAndPercent }>
+                                  <TextField
+                                    variant="outlined"
+                                    fullWidth
+                                    placeholder="0.00"
+                                    value={withdrawAmount0}
+                                    error={withdrawAmount0Error}
+                                    disabled={ true }
+                                    onChange={(e) => {
+                                      setWithdrawAmount0(e.target.value);
+                                    }}
+                                    InputProps={{
+                                      startAdornment: (
+                                        <InputAdornment position="start">
+                                          <img src={ `/tokens/unknown-logo.png` } alt="" width={30} height={30} />
+                                        </InputAdornment>
+                                      ),
+                                      endAdornment: (
+                                        <InputAdornment position="end">
+                                          <Typography>{asset?.gauge?.coin0?.symbol}</Typography>
+                                        </InputAdornment>
+                                      ),
+                                    }}
+                                  />
+                                  {/*<TextField
+                                    variant="outlined"
+                                    fullWidth
+                                    placeholder="0.00"
+                                    value={withdrawAmount0Percent}
+                                    onChange={(e) => {
+                                      setAmountPercent('withdrawAmount0', e.target.value);
+                                    }}
+                                    InputProps={{
+                                      endAdornment: (
+                                        <InputAdornment position="end">
+                                          <Typography>%</Typography>
+                                        </InputAdornment>
+                                      ),
+                                    }}
+                                  />*/}
+                                </div>
+                              </Grid>
+                              <Grid item lg={6} xs={12}>
+                                <div className={ classes.amountAndPercent }>
+                                  <TextField
+                                    variant="outlined"
+                                    fullWidth
+                                    placeholder="0.00"
+                                    disabled={ true }
+                                    value={withdrawAmount1}
+                                    error={withdrawAmount1Error}
+                                    onChange={(e) => {
+                                      setWithdrawAmount1(e.target.value);
+                                    }}
+                                    InputProps={{
+                                      startAdornment: (
+                                        <InputAdornment position="start">
+                                          <img src={ `/tokens/unknown-logo.png` } alt="" width={30} height={30} />
+                                        </InputAdornment>
+                                      ),
+                                      endAdornment: (
+                                        <InputAdornment position="end">
+                                          <Typography>{asset?.gauge?.coin1?.symbol}</Typography>
+                                        </InputAdornment>
+                                      ),
+                                    }}
+                                  />
+                                  {/*<TextField
+                                    variant="outlined"
+                                    fullWidth
+                                    placeholder="0.00"
+                                    value={withdrawAmount1Percent}
+                                    onChange={(e) => {
+                                      setAmountPercent('withdrawAmount1', e.target.value);
+                                    }}
+                                    InputProps={{
+                                      endAdornment: (
+                                        <InputAdornment position="end">
+                                          <Typography>%</Typography>
+                                        </InputAdornment>
+                                      ),
+                                    }}
+                                  />*/}
+                                </div>
+                              </Grid>
+                            </Grid>
                           </div>
                         </Grid>
                       </Grid>
@@ -508,5 +524,6 @@ export default function ffCurveLiquidity({ asset }) {
         </Grid>
       </Grid>
     </Paper>
+    </div>
   );
 }

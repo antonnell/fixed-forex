@@ -9,16 +9,128 @@
   position: relative;
 }
 
+.notConnectedContent {
+  width: calc(100% - 180px) !important;
+  margin: 80px auto 0 auto;
+  text-align: center;
+  padding: 50px;
+  height: calc(100vh - 230px);
+  box-shadow: none !important;
+  border: 1px solid rgba(104,108,122, 0.2) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+
+.overviewIcon {
+  font-size: 100px !important;
+  margin-bottom: 30px;
+  margin-top: -80px;
+}
+
+.mainHeading {
+  margin: 50px auto 0px auto !important;
+  text-align: left !important;
+  font-size: 20px !important;
+  width: calc(100% - 180px) !important;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+
+.mainDesc {
+  margin: 20px auto 0px auto !important;
+  text-align: left !important;
+  color: rgb(104,108,122);
+  font-size: 18px !important;
+  font-family: 'Roboto', sans-serif !important;
+  font-weight: 300 !important;
+  width: calc(100% - 180px) !important;
+}
+
+.mainHeadingNC {
+  text-align: center !important;
+  font-size: 30px !important;
+}
+
+.mainDescNC {
+  margin: 30px auto !important;
+  text-align: center !important;
+  color: rgb(104,108,122);
+  font-size: 18px !important;
+  max-width: 800px;
+  line-height: 1.8rem !important;
+}
+
+.buttonConnect {
+  background: linear-gradient(-45deg, #23a6d5, #234ce7);
+	background-size: 200% 200%;
+	animation: gradient 35s ease infinite;
+  color: #FFF !important;
+  border-radius: 40px !important;
+  padding: 12px 24px !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
 @media screen and (max-width: 1600px) {
 
 }
 
 @media screen and (max-width: 1200px) {
+  .notConnectedContent {
+    width: calc(100% - 80px) !important;
+    margin: 100px auto 0 auto;
+    height: calc(100vh - 150px);
+  }
+
   .ffContainer {
     padding-top: 0px;
   }
+
+  .mainHeading {
+    margin-top: 280px !important;
+    width: calc(100% - 80px) !important;
+  }
+
+  .mainDesc {
+    margin: 20px auto 40px auto !important;
+    width: calc(100% - 80px) !important;
+  }
 }
 
-@media screen and (max-width: 1000px) {
+@media screen and (max-width: 960px) {
+  .mainHeading {
+    margin-top: 480px !important;
+    width: calc(100% - 80px) !important;
+  }
+}
 
+@media screen and (max-width: 600px) {
+  .mainHeadingNC {
+    text-align: center !important;
+    font-size: 24px !important;
+  }
+
+  .mainDescNC {
+    font-size: 15px !important;
+    line-height: 1.4rem !important;
+  }
+
+  .overviewIcon {
+    font-size: 80px !important;
+  }
 }

@@ -1,13 +1,17 @@
 .container {
-  width: calc(100% - 48px);
-  max-width: 1356px;
+  width: calc(100% - 180px);
+  /* max-width: 1356px; */
   display: flex;
-  padding: 0 0 20px 0px;
-  border: 1px solid rgba(104, 108, 122, 0.25);
-  margin: auto;
-  min-height: 180px;
   flex-direction: column;
   align-items: flex-end;
+  border: 1px solid rgba(104, 108, 122, 0.25);
+  margin: auto;
+  margin-bottom: 40px;
+  padding: 0 0 20px 0px;
+}
+
+.xxx {
+  background-color: blue !important;
 }
 
 .actionButtons {

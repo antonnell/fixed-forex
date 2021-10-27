@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Grid, Typography, Button, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
+import { Paper, Grid, Typography, Button, TextField, InputAdornment, CircularProgress, Tooltip } from '@material-ui/core';
 import BigNumber from 'bignumber.js';
 import { formatCurrency } from '../../utils';
 import classes from './ffCurveGauge.module.css';
@@ -100,28 +100,31 @@ export default function ffCurveGauge({ asset }) {
 
   return (
     <div className={ classes.container}>
-      <Typography variant="h5" className={ classes.title}>Stake in Gauge</Typography>
+      <Typography variant="h5" className={classes.title}>Stake in Gauge</Typography>
+      <Tooltip placement="top-left" title="Earn Rewards. Providing liquidity to these LP’s allows you to hedge against USD risk, or simply have exposure in your own preferred currency, while earning LP incentives.">
+      <div className={classes.helpIcon}>?</div>
+      </Tooltip>
       <Paper elevation={0} className={ classes.lpOptionsContainer }>
         <Grid container spacing={0}>
-          <Grid item lg={2} md={3} xs={12}>
+          <Grid item lg={2} md={12} xs={12}>
             <div className={classes.toggleButtons}>
               <Grid container spacing={0}>
-                <Grid item lg={12} md={12} sm={6} xs={6}>
-                  <Button className={ `${activeTab === 'deposit' ? classes.buttonActive : classes.button} ${ classes.topLeftButton }` } onClick={ toggleDeposit } disabled={ depositLoading || approvalLoading }>
+                <Grid item lg={12} md={6} sm={6} xs={6}>
+                  <Paper className={ `${activeTab === 'deposit' ? classes.buttonActive : classes.button} ${ classes.topLeftButton }` } onClick={ toggleDeposit } disabled={ depositLoading || approvalLoading }>
                     <Typography variant='h5'>Stake</Typography>
                     <div className={ `${activeTab === 'deposit' ? classes.activeIcon : ''}` }></div>
-                  </Button>
+                  </Paper>
                 </Grid>
-                <Grid item lg={12} md={12} sm={6} xs={6}>
-                  <Button className={ `${activeTab === 'withdraw' ? classes.buttonActive : classes.button}  ${ classes.bottomLeftButton }` } onClick={ toggleWithdraw } disabled={ depositLoading || approvalLoading }>
+                <Grid item lg={12} md={6} sm={6} xs={6}>
+                  <Paper className={ `${activeTab === 'withdraw' ? classes.buttonActive : classes.button}  ${ classes.bottomLeftButton }` } onClick={ toggleWithdraw } disabled={ depositLoading || approvalLoading }>
                     <Typography variant='h5'>Unstake</Typography>
                     <div className={ `${activeTab === 'withdraw' ? classes.activeIcon : ''}` }></div>
-                  </Button>
+                  </Paper>
                 </Grid>
               </Grid>
             </div>
           </Grid>
-          <Grid item lg={10} md={9} sm={12}>
+          <Grid item lg={10} md={12} sm={12}>
             <div className={ classes.reAddPadding }>
             <Grid container spacing={0}>
               <Grid item lg={9} xs={12}>
@@ -133,7 +136,7 @@ export default function ffCurveGauge({ asset }) {
                       <div className={classes.inputTitleContainer}>
                         <div className={classes.inputTitle}>
                           <Typography variant="h5" className={ classes.inputTitleText }>
-                            Stake Amounts:
+                            Stake Amount:
                           </Typography>
                         </div>
                         <div className={classes.balances}>

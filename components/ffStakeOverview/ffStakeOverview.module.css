@@ -1,18 +1,49 @@
 .container {
-  width: 100%;
-  background-image: linear-gradient(0deg ,#1c46f5 0,#0005d3);
-  margin-bottom: -77px;
-  padding: 0px 24px;
+  width: calc(100% - 180px);
+  margin: 40px auto;
+  border-radius: 20px;
+  background: linear-gradient(-45deg, #6e23d5, #ff007a);
+	background-size: 600% 600%;
+	animation: gradient 35s ease infinite;
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+.overviewIcon {
+  color: #fff;
+  font-size: 30px !important;
+}
+
+.iconWrap {
+  width: 80px;
+  height: 80px;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24px !important;
 }
 
 .fieldsContainer {
   max-width: 1356px;
   display: flex;
   margin: 0 auto;
-  padding: 48px 0px 140px 0px;
+  padding: 50px 40px;
   align-items: center;
   justify-content: space-between;
-  min-height: 270px;
+  min-height: 100px;
 }
 
 .field {
@@ -45,13 +76,4 @@
   color: #fff !important;
   margin-bottom: 4px !important;
   margin-left: 3px !important;
-}
-
-.balanceIcon {
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 50%;
-  padding: 16px;
-  font-size: 70px !important;
-  margin-right: 24px !important;
 }

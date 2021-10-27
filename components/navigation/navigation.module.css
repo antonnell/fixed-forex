@@ -1,6 +1,7 @@
 .navigationContainer {
   position: fixed;
-  min-height: 100vh;
+  top: 60px;
+  min-height: calc(100vh - 60px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -12,10 +13,18 @@
 
 a.linkz { cursor: pointer !important; }
 
+.icon {
+  width: 20px !important;
+  height: 20px !important;
+  margin: 5px 24px 5px 20px;
+  background: red;
+}
+
 .navigationHeading {
   display: flex;
   flex-direction: column;
   align-items: center;
+  display: none;
 }
 
 .navigationContent {
@@ -23,8 +32,9 @@ a.linkz { cursor: pointer !important; }
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: center;
+  justify-content: flex-start;
   width: 100%;
+  margin-top: 15px;
 }
 
 .ffTitle {
@@ -97,8 +107,6 @@ a.linkz { cursor: pointer !important; }
   max-width: 400px;
 }
 
-
-
 .headerThings {
   display: none;
 }
@@ -153,7 +161,7 @@ a.linkz { cursor: pointer !important; }
 .smallVersion {
   font-size: 10px !important;
   letter-spacing: 1px;
-  padding-top: 12px;
+  padding-top: 0px;
 }
 
 
@@ -162,7 +170,7 @@ a.linkz { cursor: pointer !important; }
   align-items: center;
   justify-content: flex-start;
   flex-wrap: wrap;
-  padding: 12px 0px;
+  padding: 0px 0px;
   width: 100%;
   cursor: pointer;
 }
@@ -174,38 +182,54 @@ a.linkz { cursor: pointer !important; }
 .navigationSubOptionContainer {
   display: flex;
   align-items: center;
-  padding-bottom: 12px;
+  padding-bottom: 6px;
   width: 100%;
   cursor: pointer;
+  /* background: blue; */
 }
 
 .subtitleText {
   padding-left: 12px;
+  font-size: 14px !important;
+  margin: 0 !important;
+}
+
+.sectionDivider {
+  width: calc(100% - 52px);
+  height: 1px;
+  background: rgba(104,108,122,0.15);
+  margin: 16px 0 15px 26px;
 }
 
 .sectionText {
-  color: rgba(128, 128, 128, 0.6);
+  color: rgba(104, 108, 128, 0.8);
+  /* color: #234ce7; */
+  font-size: 13px !important;
+  cursor: default;
+  margin: 0 0 0 11px !important;
+  padding: 0 !important;
 }
 
 .navigationOptionSelected {
-  border-left: 6px solid rgba(0, 0, 0, 1);
+  border-left: 3px solid rgba(0, 0, 0, 1);
   border-radius: 0px 8px 8px 0px;
   height: 32px;
-  margin-right: 12px;
+  margin-right: 13px;
+  color: red !important;
 }
 
 .navigationOptionSelectedWhite {
-  border-left: 6px solid rgba(256, 256, 256, 1);
+  border-left: 3px solid rgba(256, 256, 256, 1);
   border-radius: 0px 8px 8px 0px;
   height: 32px;
-  margin-right: 12px;
+  margin-right: 13px;
 }
 
 .navigationOptionNotSelected {
   border-left: 6px solid rgba(0, 0, 0, 0);
   border-radius: 0px 8px 8px 0px;
   height: 32px;
-  margin-right: 12px;
+  margin-right: 10px;
 }
 
 .navigationOptionIconContainer {
@@ -236,9 +260,9 @@ a.linkz { cursor: pointer !important; }
 }
 
 .icon {
-  width: 24px !important;
-  height: 24px !important;
-  margin: 12px 24px 12px 12px;
+  width: 0px !important;
+  height: 0px !important;
+  margin: 0;
 }
 
 .subIcon {
@@ -252,10 +276,12 @@ a.linkz { cursor: pointer !important; }
 }
 
 .yearnLogo {
-  width: 110px !important;
-  height: 50px !important;
-  left: -3px;
-  position: relative;
+  width: 130px !important;
+  height: 25px !important;
+  left: 20px;
+  top: 16px;
+  position: absolute;
+  cursor: pointer !important;
 }
 
 .iconHack {
@@ -265,19 +291,20 @@ a.linkz { cursor: pointer !important; }
 }
 
 .warningIcon {
-  width: 50px;
-  height: 43px;
+  width: 40px;
   cursor: pointer;
 }
 
 @media screen and (max-width: 1200px) {
   .navigationContainer {
-    position: relative;
-    min-height: 80px;
+    position: fixed;
+    min-height: 60px;
     display: flex;
+    top: 0;
     width: 100%;
     padding: 24px 12px;
     border-radius: 0px !important;
+    z-index: 10020;
   }
   .socials {
     display: none;
@@ -293,20 +320,23 @@ a.linkz { cursor: pointer !important; }
     flex-direction: column;
     justify-content: space-between;
     width: 100%;
-    padding: 40px;
+    padding: 20px;
     height: 100vh;
     z-index: 9;
     align-items: center;
     border-radius: 0 !important;
+    text-align: center !important;
   }
   .menuIcon {
     position: absolute;
-    top: 35px;
-    right: 30px;
+    top: 7px;
+    right: 10px;
     display: flex;
+    transform: scale(0.8);
   }
   .navigationHeading {
     width: 100%;
+    display: block;
   }
   .headerThings {
     width: 100%;
@@ -319,5 +349,51 @@ a.linkz { cursor: pointer !important; }
     top: 24px;
     left: 12px;
     display: flex;
+  }
+
+  .subtitleText {
+    padding-left: 0px;
+    font-size: 15px !important;
+    margin: 0 !important;
+    text-align: center !important;
+  }
+
+
+  .navigationOptionSelected,
+  .navigationOptionSelectedWhite {
+    display: none !important;
+  }
+
+  .navigationOptionActive {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0px;
+    margin: 0px auto !important;
+    width: 100%;
+    border-radius: 10px;
+    text-align: center !important;
+    cursor: pointer;
+    background: radial-gradient(circle, rgba(63,94,251,0.7) 0%, rgba(47,128,237,0.7) 48%) rgba(63,94,251,0.7) 100%;
+  }
+
+  .sectionText {
+    color: rgba(104, 108, 128, 0.8);
+    /* color: #234ce7; */
+    font-size: 13px !important;
+    cursor: default;
+    margin: 0px auto !important;
+    padding: 0 !important;
+    text-align: center !important;
+  }
+
+  .navigationOptionContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 0px 0px;
+    width: 100%;
+    cursor: pointer;
   }
 }

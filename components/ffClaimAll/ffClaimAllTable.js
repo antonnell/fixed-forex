@@ -74,7 +74,7 @@ function EnhancedTableHead(props) {
     <TableHead>
       <TableRow>
         {headCells.map((headCell) => (
-          <TableCell key={headCell.id} align={headCell.numeric ? 'right' : 'left'} padding={'normal'} sortDirection={orderBy === headCell.id ? order : false}>
+          <TableCell className={classes.overrideTableHead} key={headCell.id} align={headCell.numeric ? 'right' : 'left'} padding={'normal'} sortDirection={orderBy === headCell.id ? order : false}>
             <TableSortLabel active={orderBy === headCell.id} direction={orderBy === headCell.id ? order : 'asc'} onClick={createSortHandler(headCell.id)}>
               <Typography variant="h5">{headCell.label}</Typography>
               {orderBy === headCell.id ? <span className={classes.visuallyHidden}>{order === 'desc' ? 'sorted descending' : 'sorted ascending'}</span> : null}
@@ -199,17 +199,24 @@ const useStyles = makeStyles((theme) => ({
     overflowX: 'hidden'
   },
   buttonOverride: {
-    fontWeight: '700 !important',
     boxShadow: 'none !important',
-    width: '216px',
+    minWidth: '235px',
+    marginTop: '15px',
+    background: 'gold',
+    color: '#000',
   },
   actionButtonText: {
-    fontSize: '12px !important',
+    fontWeight: '700 !important',
+    fontSize: '13px !important',
     textTransform: 'capitalize !important'
   },
   loadingCircle: {
-    marginLeft: '6px !important'
-  }
+    marginLeft: '6px !important',
+    color: '#FFF !important',
+  },
+  overrideTableHead: {
+    borderBottom: '1px solid rgba(104,108,122,0.2) !important',
+  },
 }));
 
 export default function EnhancedTable({ claimable, crv, ibEUR, rKP3R }) {

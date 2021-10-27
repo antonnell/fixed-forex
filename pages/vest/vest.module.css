@@ -8,16 +8,130 @@
   position: relative;
 }
 
-@media screen and (max-width: 1600px) {
-
+.gridWrapper {
+  width: calc(100% - 180px) !important;
+  margin: auto;
+  padding: 0 !important;
 }
 
-@media screen and (max-width: 1200px) {
-  .ffContainer {
-    padding-top: 0px;
+.xxx {
+  padding-left: 40px !important;
+}
+
+.title {
+  font-size: 20px !important;
+  margin-bottom: 24px !important;
+}
+
+.notConnectedContent {
+  width: calc(100% - 180px) !important;
+  margin: 80px auto 0 auto;
+  text-align: center;
+  padding: 50px;
+  height: calc(100vh - 230px);
+  box-shadow: none !important;
+  border: 1px solid rgba(104,108,122, 0.2) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+
+.overviewIcon {
+  font-size: 100px !important;
+  margin-bottom: 30px;
+  margin-top: -80px;
+}
+
+.mainHeading {
+  margin: 50px auto 0px auto !important;
+  text-align: left !important;
+  font-size: 20px !important;
+  width: calc(100% - 180px) !important;
+}
+
+.mainDesc {
+  margin: 20px auto 0px auto !important;
+  text-align: left !important;
+  color: rgb(104,108,122);
+  font-size: 14px !important;
+  width: calc(100% - 180px) !important;
+}
+
+.mainHeadingNC {
+  text-align: center !important;
+  font-size: 30px !important;
+}
+
+.mainDescNC {
+  margin: 30px auto !important;
+  text-align: center !important;
+  color: rgb(104,108,122);
+  font-size: 18px !important;
+  max-width: 800px;
+  line-height: 1.8rem !important;
+}
+
+.buttonConnect {
+  background: linear-gradient(-45deg, #23a6d5, #234ce7);
+	background-size: 200% 200%;
+  color: #FFF !important;
+  border-radius: 40px !important;
+  padding: 12px 24px !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+}
+
+@media screen and (max-width: 1280px) {
+  .xxx {
+    padding-left: 0px !important;
   }
 }
 
-@media screen and (max-width: 1000px) {
+@media screen and (max-width: 1200px) {
 
+  .notConnectedContent {
+    width: calc(100% - 80px) !important;
+    margin: 100px auto 0 auto;
+    height: calc(100vh - 150px);
+  }
+
+  .ffContainer {
+    padding-top: 0px;
+  }
+
+  .gridWrapper {
+    width: calc(100% - 80px) !important;
+    margin: 290px auto 60px auto;
+    padding: 0 !important;
+  }
+
+  .xxx {
+    padding-left: 0px !important;
+  }
+
+}
+
+@media screen and (max-width: 960px) {
+  .gridWrapper {
+    margin: 490px auto 60px auto;
+  }
+}
+
+
+@media screen and (max-width: 600px) {
+  .mainHeadingNC {
+    text-align: center !important;
+    font-size: 24px !important;
+  }
+
+  .mainDescNC {
+    font-size: 15px !important;
+    line-height: 1.4rem !important;
+  }
+
+  .overviewIcon {
+    font-size: 80px !important;
+  }
 }

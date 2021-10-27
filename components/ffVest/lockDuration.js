@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Typography, Button, TextField, InputAdornment, CircularProgress, RadioGroup, Radio, FormControlLabel } from '@material-ui/core';
+import { Paper, Grid, Typography, Button, TextField, InputAdornment, CircularProgress, RadioGroup, Radio, FormControlLabel } from '@material-ui/core';
 import BigNumber from 'bignumber.js';
 import moment from 'moment';
 import { formatCurrency } from '../../utils';
@@ -81,48 +81,48 @@ export default function ffLockDuration({ ibff, veIBFF, veIBFFOld }) {
 
   return (
     <>
-      <div className={ classes.inputsContainer2 }>
-        <div className={classes.textField}>
-          <div className={classes.inputTitleContainer}>
-            <div className={classes.inputTitle}>
-              <Typography variant="h5" className={ classes.inputTitleText }>
-                Vest expires
-              </Typography>
+      <Grid container spacing={4}>
+        <Grid item lg={8}>
+          <div className={ classes.inputsContainer3 }>
+            <div className={classes.textField}>
+              <TextField
+                fullWidth
+                id="date"
+                type="date"
+                variant="outlined"
+                className={classes.textField}
+                onChange={handleDateChange}
+                value={selectedDate}
+                error={selectedDateError}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+              <RadioGroup className={classes.vestPeriodToggle} row aria-label="position" name="position" onChange={handleChange} value={selectedValue}>
+                <FormControlLabel value="week" control={<Radio color="primary" />} label="1 week" labelPlacement="left" />
+                <FormControlLabel value="month" control={<Radio color="primary" />} label="1 month" labelPlacement="left" />
+                <FormControlLabel value="year" control={<Radio color="primary" />} label="1 year" labelPlacement="left" />
+                <FormControlLabel value="years" control={<Radio color="primary" />} label="4 years" labelPlacement="left" />
+              </RadioGroup>
             </div>
           </div>
-          <RadioGroup row aria-label="position" name="position" onChange={handleChange} value={selectedValue}>
-            <FormControlLabel value="week" control={<Radio color="primary" />} label="1 week" labelPlacement="left" />
-            <FormControlLabel value="month" control={<Radio color="primary" />} label="1 month" labelPlacement="left" />
-            <FormControlLabel value="year" control={<Radio color="primary" />} label="1 year" labelPlacement="left" />
-            <FormControlLabel value="years" control={<Radio color="primary" />} label="4 years" labelPlacement="left" />
-          </RadioGroup>
-          <TextField
-            fullWidth
-            id="date"
-            type="date"
-            variant="outlined"
-            className={classes.textField}
-            onChange={handleDateChange}
-            value={selectedDate}
-            error={selectedDateError}
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-        </div>
-      </div>
-      <div className={ classes.actionsContainer }>
-        <Button
-          variant='contained'
-          size='large'
-          color='primary'
-          disabled={ lockLoading }
-          onClick={ onLock }
-          >
-          <Typography className={ classes.actionButtonText }>{ lockLoading ? `Increasing Lock` : `Increase Lock` }</Typography>
-          { lockLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
-        </Button>
-      </div>
+        </Grid>
+        <Grid item lg={4}>
+          <div className={ classes.actionsContainer3 }>
+            <Button
+              className={classes.actionBtn}
+              variant='contained'
+              size='large'
+              color='primary'
+              disabled={ lockLoading }
+              onClick={ onLock }
+              >
+              <Typography className={ classes.actionButtonText }>{ lockLoading ? `Increasing Lock` : `Increase Lock` }</Typography>
+              { lockLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
+            </Button>
+          </div>
+        </Grid>
+      </Grid>
     </>
   );
 }

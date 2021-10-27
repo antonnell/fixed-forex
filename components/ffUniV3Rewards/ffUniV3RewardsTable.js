@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { lighten, makeStyles } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography, Button, CircularProgress } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography, Button, CircularProgress, SvgIcon } from '@material-ui/core';
 import BigNumber from 'bignumber.js';
 
 import stores from '../../stores'
@@ -14,6 +14,15 @@ import {
   FIXED_FOREX_UNI_REWARDS_RETURNED
 } from '../../stores/constants';
 import { formatCurrency } from '../../utils';
+
+function NoneIcon(props) {
+  const { color, className } = props;
+  return (
+    <SvgIcon viewBox="0 0 64 64" stroke-width="1" className={className}>
+    <g stroke-width="2" transform="translate(0, 0)"><path d="M15.029,48.971A24,24,0,0,1,48.971,15.029" fill="none" stroke="#686c7a" stroke-miterlimit="10" stroke-width="2" data-cap="butt" stroke-linecap="butt" stroke-linejoin="miter"></path><path d="M52.789,20A24.006,24.006,0,0,1,20,52.789" fill="none" stroke="#686c7a" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2" stroke-linejoin="miter"></path><line x1="60" y1="4" x2="4" y2="60" fill="none" stroke="#686c7a" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2" data-color="color-2" stroke-linejoin="miter"></line></g>
+    </SvgIcon>
+  );
+}
 
 function descendingComparator(a, b, orderBy) {
   if (!a || !b) {
@@ -75,7 +84,7 @@ function EnhancedTableHead(props) {
     <TableHead>
       <TableRow>
         {headCells.map((headCell) => (
-          <TableCell key={headCell.id} align={headCell.numeric ? 'right' : 'left'} padding={'normal'} sortDirection={orderBy === headCell.id ? order : false}>
+          <TableCell className={classes.overrideTableHead} key={headCell.id} align={headCell.numeric ? 'right' : 'left'} padding={'normal'} sortDirection={orderBy === headCell.id ? order : false}>
             <TableSortLabel active={orderBy === headCell.id} direction={orderBy === headCell.id ? order : 'asc'} onClick={createSortHandler(headCell.id)}>
               <Typography variant="h5">{headCell.label}</Typography>
               {orderBy === headCell.id ? <span className={classes.visuallyHidden}>{order === 'desc' ? 'sorted descending' : 'sorted ascending'}</span> : null}
@@ -252,7 +261,39 @@ const useStyles = makeStyles((theme) => ({
     position: 'absolute',
     right: '0px',
     top: '24px'
-  }
+  },
+  nothingTitle: {
+    fontSize: '1.2rem',
+    marginBottom: '10px',
+  },
+  nothingDesc: {
+    fontSize: '1rem',
+    color: 'rgba(104,108,122,1)',
+  },
+  nothingWrap: {
+    background: '',
+    textAlign: 'center',
+    padding: '60px 40px',
+  },
+  noneIcon: {
+    fontSize: '70px',
+    marginBottom: '20px',
+    opacity: '0.2',
+  },
+  overrideTableHead: {
+    borderBottom: '1px solid rgba(104,108,122,0.2) !important',
+  },
+  dontUnderline: {
+    textDecoration: 'none !important',
+    background: 'linear-gradient(-45deg, #6e23d5, #ff007a)',
+    backgroundSize: '200% 200%',
+    padding: '5px 11px 4px 10px',
+    textTransform: 'uppercase',
+    fontWeight: '700',
+    color: '#FFF',
+    fontSize: '80%',
+    borderRadius: '30px',
+  },
 }));
 
 export default function EnhancedTable({ tokens, rKP3R }) {
@@ -317,9 +358,10 @@ export default function EnhancedTable({ tokens, rKP3R }) {
           <TableBody>
             { tokens.length === 0 &&
               <TableRow key={'nothing'}>
-                <TableCell className={classes.cell} colspan={5}>
-                  <Typography variant='h2'>No positions available</Typography>
-                  <Typography >Create your Uniswap position <a className={ classes.dontUnderline } target='_blank' href='https://app.uniswap.org/#/add/ETH/0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44/10000'>here</a> and stake them above to start earning.</Typography>
+                <TableCell className={classes.cell} colspan={5} className={classes.nothingWrap}>
+                  <NoneIcon className={ classes.noneIcon } />
+                  <Typography className={classes.nothingTitle} variant='h2'>No positions available</Typography>
+                  <Typography className={classes.nothingDesc}>Create your Uniswap position <a className={ classes.dontUnderline } target='_blank' href='https://app.uniswap.org/#/add/ETH/0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44/10000'>here</a> and stake them above to start earning.</Typography>
                 </TableCell>
               </TableRow>
             }

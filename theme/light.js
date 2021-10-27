@@ -22,7 +22,7 @@ const theme = createTheme({
         padding: "0px",
         minWidth: "auto",
         "@media (min-width: 960px)": {
-          minWidth: "500px"
+          minWidth: "400px"
         }
       },
       message: {

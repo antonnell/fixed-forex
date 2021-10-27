@@ -1,28 +1,19 @@
 .container {
-  width: calc(100% - 48px);
-  max-width: 1356px;
+  width: calc(100% - 180px);
   display: flex;
-  padding: 24px 0px;
   border: 1px solid rgba(104, 108, 122, 0.25);
-  position: absolute;
-  top: 240px;
-  left: 0;
-  right: 0;
   margin: auto;
-  min-height: 180px;
+  margin-bottom: 60px;
+  padding: 20px 0px;
 }
 
 .container2 {
-  width: calc(100% - 48px);
-  max-width: 1356px;
-  display: flex;
+  width: calc(100%);
   border: 1px solid rgba(104, 108, 122, 0.25);
-  position: absolute;
-  top: 240px;
   left: 0;
   right: 0;
   margin: auto;
-  min-height: 180px;
+  padding: 45px;
 }
 
 .contentBox {
@@ -34,9 +25,9 @@
 .inputsContainer {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-gap: 24px 48px;
-  padding: 0px 24px;
-  flex: 1;
+  grid-gap: 24px 35px;
+  padding: 0px;
+  align-items: flex-start;
 }
 
 .inputContainer {
@@ -48,6 +39,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  margin-top: 0px;
 }
 
 .inputTitleContainer {
@@ -58,8 +50,17 @@
 }
 
 .inputTitle {
-  padding-bottom: 6px;
-  margin-left: 12px;
+  padding-bottom: 15px;
+  position: relative;
+  width: 100%;
+}
+
+.vestPeriodToggle {
+  background: none;
+  font-size: 12px !important;
+  margin-top: 10px;
+  transform: scale(0.84);
+  opacity: 0.6;
 }
 
 .balances {
@@ -71,11 +72,12 @@
 
 .value {
   cursor: pointer;
-  font-size: 12px !important;
+  font-size: 15px !important;
+  margin-bottom: 7px !important;
 }
 
 .inputTitleText {
-  font-size: 20px !important;
+  font-size: 18px !important;
 }
 
 .infoContainer {
@@ -103,18 +105,26 @@
   font-size: 14px !important;
 }
 
+.helpText {
+  color: rgba(104, 108, 122, 1);
+  font-size: 16px !important;
+  margin-top: 20px !important;
+}
+
 .actionsContainer {
-  display: grid;
-  grid-gap: 12px;
-  grid-template-columns: 1fr;
-  border-left: 1px solid rgba(104, 108, 122, 0.25);
-  padding: 0px 24px;
-  width: 240px;
+  width: 100%;
+  margin-top: 10px;
+
 }
 
 .actionButtonText {
   font-size: 12px !important;
   text-transform: capitalize !important;
+}
+
+.buttonStretch {
+  width: 100%;
+  margin-top: 20px !important;
 }
 
 .autocompleteContainer {
@@ -129,7 +139,8 @@
 }
 
 .noBalancesContainer {
-  padding: 0px 24px;
+  width: calc(100% - 180px);
+  position: absolute;
   /* display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-column-gap: 24px; */
@@ -141,6 +152,12 @@
   border-bottom: 1px solid rgba(104,108,122,0.2);
   margin-bottom: 20px !important;
 }
+
+.title2 {
+  font-size: 20px !important;
+  margin-bottom: 24px !important;
+}
+
 .subTitle {
   font-size: 16px !important;
   font-weight: bold !important;
@@ -152,16 +169,26 @@
   opacity: 0.8;
 }
 
-
-
-
-
 .inputsContainer2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-gap: 24px 48px;
   padding: 0px 24px;
   flex: 1;
+}
+
+.inputsContainer3 {
+  width: 100%;
+}
+
+.actionsContainer3 {
+  width: 100%;
+  margin-top: 0px;
+}
+
+.actionBtn {
+  width: 100%;
+  margin-bottom: 10px !important;
 }
 
 .toggleButtons {
@@ -208,6 +235,21 @@
   position: absolute;
   right: 12px;
   top: 12px;
+}
+
+.helpSmallIcon {
+  width: 24px;
+  height: 24px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 30px;
+  font-size: 11px !important;
+  border: 1px solid rgba(104,108,122,0.2);
+  position: absolute;
+  top: -2px;
+  right: 3px;
 }
 
 .loadingSkeleton {

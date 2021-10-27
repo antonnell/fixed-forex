@@ -1,8 +1,8 @@
 .container {
-  width: calc(100% - 48px);
-  max-width: 1356px;
+  width: calc(100% - 180px);
   margin: 0 auto;
   margin-bottom: 48px;
+  position: relative;
 }
 
 .title {

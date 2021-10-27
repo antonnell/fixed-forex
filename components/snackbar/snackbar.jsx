@@ -4,8 +4,8 @@ import { Snackbar, IconButton, Button, Typography, SvgIcon } from '@material-ui/
 import { colors } from '../../theme/coreTheme';
 
 const iconStyle = {
-  fontSize: '22px',
-  marginRight: '10px',
+  fontSize: '32px',
+  marginRight: '20px',
   verticalAlign: 'middle',
 };
 
@@ -139,17 +139,18 @@ class MySnackbar extends Component {
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'left',
+          horizontal: 'center',
         }}
         open={this.state.open}
-        autoHideDuration={6000}
+        autoHideDuration={16000}
         onClose={this.handleClose}
+        style={{ borderRadius: '18px', backgroundColor: color, padding: '5px', }}
         message={
           <div
             style={{
-              padding: '12px',
-              borderLeft: '5px solid ' + color,
-              borderRadius: '4px',
+              padding: '18px',
+              border: '0px solid ' + color,
+              backgroundColor: 'none',
             }}
           >
             {icon}
@@ -158,13 +159,13 @@ class MySnackbar extends Component {
                 display: 'inline-block',
                 verticalAlign: 'middle',
                 maxWidth: '400px',
-                overflowX: 'hidden'
+                overflowX: 'hidden',
               }}
             >
-              <Typography variant="body1" style={{ fontSize: '12px', color: color }}>
+              <Typography variant="body1" style={{ fontSize: '14px', marginBottom: '6px', fontWeight: '700', color: color }}>
                 {messageType}
               </Typography>
-              <Typography variant="body1" style={{ fontSize: '10px' }}>
+              <Typography variant="body1" style={{ fontSize: '12px' }}>
                 {message}
               </Typography>
             </div>

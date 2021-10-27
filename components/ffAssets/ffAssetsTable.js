@@ -73,7 +73,7 @@ function EnhancedTableHead(props) {
     <TableHead>
       <TableRow>
         {headCells.map((headCell) => (
-          <TableCell key={headCell.id} align={headCell.numeric ? 'right' : 'left'} padding={'normal'} sortDirection={orderBy === headCell.id ? order : false}>
+          <TableCell className={classes.overrideTableHead} key={headCell.id} align={headCell.numeric ? 'right' : 'left'} padding={'normal'} sortDirection={orderBy === headCell.id ? order : false}>
             <TableSortLabel active={orderBy === headCell.id} direction={orderBy === headCell.id ? order : 'asc'} onClick={createSortHandler(headCell.id)}>
               <Typography variant="h5">{headCell.label}</Typography>
               {orderBy === headCell.id ? <span className={classes.visuallyHidden}>{order === 'desc' ? 'sorted descending' : 'sorted ascending'}</span> : null}
@@ -95,6 +95,11 @@ EnhancedTableHead.propTypes = {
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
+  },
+  assetTableRow: {
+    '&:hover': {
+      background: 'rgba(104,108,122,0.05)',
+    }
   },
   paper: {
     width: '100%',
@@ -193,7 +198,10 @@ const useStyles = makeStyles((theme) => ({
   },
   imgLogo: {
     marginRight: '12px'
-  }
+  },
+  overrideTableHead: {
+    borderBottom: '1px solid rgba(104,108,122,0.2) !important',
+  },
 }));
 
 export default function EnhancedTable({ assets }) {
@@ -239,7 +247,7 @@ export default function EnhancedTable({ assets }) {
               const labelId = `enhanced-table-checkbox-${index}`;
 
               return (
-                <TableRow key={labelId}>
+                <TableRow key={labelId} className={classes.assetTableRow} onClick={ () => { onView(row) } }>
                   <TableCell className={classes.cell}>
                     <div className={ classes.inline }>
                       <img className={ classes.imgLogo } src={`https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/${row.address}/logo-128.png`} width='35' height='35' alt='' onError={(e)=>{e.target.onerror = null; e.target.src="/tokens/unknown-logo.png"}} />

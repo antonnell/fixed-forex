@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
 
-import { Typography, Paper, Tooltip, TextField, InputAdornment, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel } from '@material-ui/core';
+import { Typography, Button, Paper, Tooltip, TextField, InputAdornment, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, SvgIcon } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import Skeleton from '@material-ui/lab/Skeleton';
 import BigNumber from 'bignumber.js';
 
 import { useRouter } from 'next/router';
 
+import Unlock from '../../components/unlock';
+
 import Layout from '../../components/layout/layout.js';
-import classes from './lend.module.css';
+import classes from './mint.module.css';
 
 import stores from '../../stores/index.js';
-import { LEND_UPDATED } from '../../stores/constants';
+import { CONNECT_WALLET, ACCOUNT_CONFIGURED, LEND_UPDATED } from '../../stores/constants';
 import { formatCurrency } from '../../utils';
 
 import Overview from '../../components/ffMintOverview';
@@ -20,7 +22,47 @@ import LendSupplyAssetRow from '../../components/lendSupplyAssetRow';
 import LendBorrowAssetRow from '../../components/lendBorrowAssetRow';
 import LendAllAssetRow from '../../components/lendAllAssetRow';
 
+function BalanceIcon(props) {
+  const { color, className } = props;
+  return (
+    <SvgIcon viewBox="0 0 64 64" stroke-width="1" className={className}>
+    <g stroke-width="1" transform="translate(0, 0)"><polyline points="32 35 32 44 45 57" fill="none" stroke="#778899" stroke-linecap="square" stroke-miterlimit="10" stroke-width="1" stroke-linejoin="miter"></polyline><polyline points="5 34 5 21 21 5 29 5" fill="none" stroke="#778899" stroke-linecap="square" stroke-miterlimit="10" stroke-width="1" stroke-linejoin="miter"></polyline><polyline points="22.879 16.121 12 27 12 41 5 41" fill="none" stroke="#778899" stroke-linecap="square" stroke-miterlimit="10" stroke-width="1" stroke-linejoin="miter"></polyline><circle cx="51" cy="13" r="3" fill="none" stroke="#778899" stroke-linecap="square" stroke-miterlimit="10" stroke-width="1" data-color="color-2" stroke-linejoin="miter"></circle><circle cx="32" cy="32" r="3" fill="none" stroke="#778899" stroke-linecap="square" stroke-miterlimit="10" stroke-width="1" stroke-linejoin="miter"></circle><circle cx="25" cy="14" r="3" fill="none" stroke="#778899" stroke-linecap="square" stroke-miterlimit="10" stroke-width="1" stroke-linejoin="miter"></circle><circle cx="52" cy="50" r="3" fill="none" stroke="#778899" stroke-linecap="square" stroke-miterlimit="10" stroke-width="1" stroke-linejoin="miter"></circle><polyline points="59 30 59 43 54.121 47.879" fill="none" stroke="#778899" stroke-linecap="square" stroke-miterlimit="10" stroke-width="1" stroke-linejoin="miter"></polyline><polyline points="52 39 52 23 59 23" fill="none" stroke="#778899" stroke-linecap="square" stroke-miterlimit="10" stroke-width="1" stroke-linejoin="miter"></polyline><polyline points="48.879 10.879 43 5 35 5 35 13 45 23 45 37 40 42" fill="none" stroke="#778899" stroke-linecap="square" stroke-miterlimit="10" stroke-width="1" data-color="color-2" stroke-linejoin="miter"></polyline><polyline points="15.107 53.134 21 59 37 59 19 41 19 31 27 23 35 23" fill="none" stroke="#778899" stroke-linecap="square" stroke-miterlimit="10" stroke-width="1" data-color="color-2" stroke-linejoin="miter"></polyline><circle cx="13" cy="51" r="3" fill="none" stroke="#778899" stroke-linecap="square" stroke-miterlimit="10" stroke-width="1" data-color="color-2" stroke-linejoin="miter"></circle></g>
+    </SvgIcon>
+  );
+}
+
 function Lend({ changeTheme }) {
+
+  const accountStore = stores.accountStore.getStore('account');
+  const [account, setAccount] = useState(accountStore);
+  const [unlockOpen, setUnlockOpen] = useState(false);
+
+  useEffect(() => {
+    const accountConfigure = () => {
+      const accountStore = stores.accountStore.getStore('account');
+      setAccount(accountStore);
+      closeUnlock();
+    };
+    const connectWallet = () => {
+      onAddressClicked();
+    };
+
+    stores.emitter.on(ACCOUNT_CONFIGURED, accountConfigure);
+    stores.emitter.on(CONNECT_WALLET, connectWallet);
+    return () => {
+      stores.emitter.removeListener(ACCOUNT_CONFIGURED, accountConfigure);
+      stores.emitter.removeListener(CONNECT_WALLET, connectWallet);
+    };
+  }, []);
+
+  const onAddressClicked = () => {
+    setUnlockOpen(true);
+  };
+
+  const closeUnlock = () => {
+    setUnlockOpen(false);
+  };
+
   const router = useRouter();
   const { address } = router.query;
   const [, updateState] = React.useState();
@@ -305,85 +347,116 @@ function Lend({ changeTheme }) {
   return (
     <Layout changeTheme={changeTheme}>
       <div className={classes.ffContainer}>
-        <Overview />
 
-        {supplyAssets.length > 0 && (
-          <div className={ classes.firstContainer }>
-            <Paper elevation={0} className={classes.lendingTable}>
-              {renderSupplyHeaders()}
-              {supplyAssets.map((asset) => {
-                return (
-                  <LendSupplyAssetRow
-                    key={asset.address}
-                    lendingAsset={asset}
-                    lendingBorrow={lendingBorrow}
-                    lendingBorrowLimit={lendingBorrowLimit}
-                  />
-                );
-              })}
-            </Paper>
-          </div>
-        )}
-        {borrowAssets.length > 0 && (
-          <div className={ supplyAssets.length === 0 ? classes.firstContainer : classes.container }>
-            <Paper elevation={0} className={classes.lendingTable}>
-              {renderBorrowHeaders()}
-              {borrowAssets.map((asset) => {
-                return (
-                  <LendBorrowAssetRow
-                    key={asset.address}
-                    lendingAsset={asset}
-                    lendingBorrow={lendingBorrow}
-                    lendingBorrowLimit={lendingBorrowLimit}
-                  />
-                );
-              })}
-            </Paper>
-          </div>
-        )}
-        <div className={ (supplyAssets.length === 0 && borrowAssets.length === 0) ? classes.firstContainer : classes.container }>
+        {account && account.address ?
+          <div className={classes.connected}>
+          <Typography className={classes.mainHeading} variant='h1'>Mint Assets</Typography>
+          <Typography className={classes.mainDesc} variant='body2'>
+            Supply Collateral to Borrow Iron Bank Assets. Fixed Forex provides an alternative to USD denominated stable coins. It allows liquidity providers exposure to currencies such as EUR, KRW, GBP, CHF, AUD, and JPY.
+          </Typography>
+
           <Paper className={classes.lendingFilters}>
             <TextField
               className={classes.searchContainer}
-              variant="outlined"
               fullWidth
               placeholder="Yearn 3CRV, DefiDollar, ..."
               value={search}
               onChange={onSearchChanged}
+
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
                     <SearchIcon />
                   </InputAdornment>
                 ),
+                disableUnderline: true
               }}
             />
           </Paper>
-          <Paper elevation={0} className={classes.lendingTable}>
-            <TableContainer>
-              <Table className={classes.investTable} aria-labelledby="tableTitle" size="medium" aria-label="enhanced table">
-                {renderAllHeaders({
-                  order: order,
-                  orderBy: orderBy,
-                  onRequestSort: handleRequestSort,
-                })}
-                <TableBody>
-                  {filteredLendingAssets &&
-                    filteredLendingAssets.map((asset) => {
-                      return (
-                        <LendAllAssetRow
-                          key={asset.address}
-                          lendingAsset={asset}
-                          lendingBorrow={lendingBorrow}
-                          lendingBorrowLimit={lendingBorrowLimit}
-                        />
-                      );
+
+            <Overview />
+
+            {supplyAssets.length > 0 && (
+              <div className={ classes.firstContainer }>
+                <Paper elevation={0} className={classes.lendingTable}>
+                  {renderSupplyHeaders()}
+                  {supplyAssets.map((asset) => {
+                    return (
+                      <LendSupplyAssetRow
+                        key={asset.address}
+                        lendingAsset={asset}
+                        lendingBorrow={lendingBorrow}
+                        lendingBorrowLimit={lendingBorrowLimit}
+                      />
+                    );
+                  })}
+                </Paper>
+              </div>
+            )}
+            {borrowAssets.length > 0 && (
+              <div className={ supplyAssets.length === 0 ? classes.firstContainer : classes.container }>
+                <Paper elevation={0} className={classes.lendingTable}>
+                  {renderBorrowHeaders()}
+                  {borrowAssets.map((asset) => {
+                    return (
+                      <LendBorrowAssetRow
+                        key={asset.address}
+                        lendingAsset={asset}
+                        lendingBorrow={lendingBorrow}
+                        lendingBorrowLimit={lendingBorrowLimit}
+                      />
+                    );
+                  })}
+                </Paper>
+              </div>
+            )}
+            <div className={ (supplyAssets.length === 0 && borrowAssets.length === 0) ? classes.firstContainer : classes.container }>
+
+              <Paper elevation={0} className={classes.lendingTable}>
+                <TableContainer>
+                  <Table className={classes.investTable} aria-labelledby="tableTitle" size="medium" aria-label="enhanced table">
+                    {renderAllHeaders({
+                      order: order,
+                      orderBy: orderBy,
+                      onRequestSort: handleRequestSort,
                     })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-        </div>
+                    <TableBody>
+                      {filteredLendingAssets &&
+                        filteredLendingAssets.map((asset) => {
+                          return (
+                            <LendAllAssetRow
+                              key={asset.address}
+                              lendingAsset={asset}
+                              lendingBorrow={lendingBorrow}
+                              lendingBorrowLimit={lendingBorrowLimit}
+                            />
+                          );
+                        })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Paper>
+            </div>
+          </div>
+           :
+           <Paper className={classes.notConnectedContent}>
+           <BalanceIcon className={ classes.overviewIcon } />
+           <Typography className={classes.mainHeadingNC} variant='h1'>Mint Assets</Typography>
+           <Typography className={classes.mainDescNC} variant='body2'>
+             Supply Collateral to Borrow Iron Bank Assets.<br />Fixed Forex provides an alternative to USD denominated stable coins. It allows liquidity providers exposure to currencies such as EUR, KRW, GBP, CHF, AUD, and JPY.
+           </Typography>
+           <Button
+             disableElevation
+             className={classes.buttonConnect}
+             variant="contained"
+             onClick={onAddressClicked}>
+             {account && account.address && <div className={`${classes.accountIcon} ${classes.metamask}`}></div>}
+             <Typography>Connect Wallet to Mint Assets</Typography>
+           </Button>
+           </Paper>
+         }
+         {unlockOpen && <Unlock modalOpen={unlockOpen} closeModal={closeUnlock} />}
+
       </div>
     </Layout>
   );

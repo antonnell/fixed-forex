@@ -1,0 +1,212 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300&family=Roboto:wght@300&display=swap');
+
+.ffContainer {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 0px;
+  padding-top: 60px;
+  position: relative;
+}
+
+.viewCollateral,
+.viewVesting,
+.viewVoting,
+.viewRewards {
+  float: left;
+  margin: 39px 0 20px 15px !important;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 11px 4px 11px;
+  border-radius: 20px;
+  border: 1px solid rgba(104,108,122,0.2);
+  cursor: pointer;
+}
+
+.connected {
+  background: none;
+  width: calc(100% - 180px);
+  margin: 0 auto;
+  padding-top: 20px;
+  margin-bottom: 100px;
+}
+
+.notConnectedContent {
+  width: calc(100% - 180px) !important;
+  margin: 80px auto 0 auto;
+  text-align: center;
+  padding: 50px;
+  height: calc(100vh - 230px);
+  box-shadow: none !important;
+  border: 1px solid rgba(104,108,122, 0.2) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+
+.contentGrid {
+  background: none !important;
+  margin-top: 0px !important;
+}
+
+.accountWrap {
+  background: none;
+  width: calc(100% - 180px);
+  margin: 20px auto;
+}
+
+.accountInfo {
+  border-bottom: 1px solid rgba(104,108,122, 0.2) !important;
+  padding: 0px;
+  border-radius: 0 !important;
+}
+
+.avatarWrap {
+  background: red;
+}
+
+.walletAvatar {
+  float: left;
+  margin-right: 15px;
+  color: #FFF !important;
+  height: 32px !important;
+  width: 32px !important;
+  font-size: 0.9em !important;
+  font-weight: 700 !important;
+  background: linear-gradient(-45deg, #23a6d5, #234ce7);
+	background-size: 200% 200%;
+	animation: gradient 10s ease infinite;
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+.walletAddress {
+  background: none !important;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  float: left;
+  font-family: 'Roboto Mono', monospace !important;
+  font-weight: 300 !important;
+  /* opacity: 0.6; */
+}
+
+.dashTitle {
+  background: none !important;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  float: left;
+  font-weight: 700 !important;
+  font-size: 1.2em !important;
+}
+
+.overviewIcon {
+  font-size: 100px !important;
+  margin-bottom: 30px;
+  margin-top: -80px;
+}
+
+.mainHeading {
+  margin: 40px 0 20px 0 !important;
+  text-align: left !important;
+  font-size: 20px !important;
+  float: left;
+  /* width: calc(100% - 180px) !important; */
+}
+
+.mainDesc {
+  margin: 20px auto 0px auto !important;
+  text-align: left !important;
+  color: rgb(104,108,122);
+  font-size: 18px !important;
+  font-family: 'Roboto', sans-serif !important;
+  font-weight: 300 !important;
+  width: calc(100% - 180px) !important;
+  display: none;
+}
+
+.mainHeadingNC {
+  text-align: center !important;
+  font-size: 30px !important;
+}
+
+.mainDescNC {
+  margin: 30px auto !important;
+  text-align: center !important;
+  color: rgb(104,108,122);
+  font-size: 18px !important;
+  max-width: 800px;
+  line-height: 1.8rem !important;
+  display: none;
+}
+
+.buttonConnect {
+  background: linear-gradient(-45deg, #23a6d5, #234ce7);
+	background-size: 200% 200%;
+	animation: gradient 35s ease infinite;
+  color: #FFF !important;
+  border-radius: 40px !important;
+  padding: 12px 24px !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+  margin: 30px auto 0 auto !important;
+}
+
+@media screen and (max-width: 1600px) {
+
+}
+
+@media screen and (max-width: 1200px) {
+
+  .notConnectedContent {
+    width: calc(100% - 80px) !important;
+    margin: 100px auto 0 auto;
+    height: calc(100vh - 150px);
+  }
+
+  .ffContainer {
+    padding-top: 0px;
+  }
+
+  .mainHeading {
+    margin: 30px auto 40px auto !important;
+    width: calc(100% - 80px) !important;
+  }
+}
+
+@media screen and (max-width: 960px) {
+  .mainHeading {
+    margin: 30px auto 40px auto !important;
+    width: calc(100% - 80px) !important;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .mainHeadingNC {
+    text-align: center !important;
+    font-size: 24px !important;
+  }
+
+  .mainDescNC {
+    font-size: 15px !important;
+    line-height: 1.4rem !important;
+  }
+
+  .overviewIcon {
+    font-size: 80px !important;
+  }
+}

@@ -1,4 +1,4 @@
-import Home from "./home";
+import Home from "./welcome";
 
 import { useRouter } from "next/router";
 

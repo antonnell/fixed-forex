@@ -15,7 +15,7 @@
 @font-face {
   font-family: "Inter Light";
   src: url("/fonts/Inter/Inter-Light.ttf");
-  font-style: medium;
-  font-weight: 700;
+  font-style: thin;
+  font-weight: 100;
   font-display: swap;
 }
