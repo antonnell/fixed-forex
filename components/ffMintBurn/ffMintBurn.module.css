@@ -1,4 +1,4 @@
-.container {
+/* .container {
   width: calc(100% - 48px);
   max-width: 1356px;
   display: flex;
@@ -9,6 +9,19 @@
   right: 24px;
   margin: auto;
   border-radius: 30px;
+} */
+
+.container {
+  width: calc(100% - 180px);
+  /* max-width: 1356px; */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  border: 1px solid rgba(104, 108, 122, 0.25);
+  position: relative;
+  margin: auto;
+  top: 80px;
+  padding: 0 0 20px 0px;
 }
 
 .buttonWrap {

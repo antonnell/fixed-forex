@@ -34,11 +34,10 @@ export default function ffClaimCurveGauge({ asset }) {
 
   return (
     <div className={ classes.container}>
-      <Typography variant="h5" className={ classes.title}>Claimable Rewards</Typography>
       <Paper elevation={0} className={ classes.lpOptionsContainer }>
         <div className={ classes.lpOption } onClick={ () => { claim() } }>
         <Grid container spacing={2}>
-          <Grid item lg={4} md={4} xs={12}>
+          <Grid item lg={12} md={12} xs={12}>
             <div className={ classes.lpOptionTitle }>
               <img className={ classes.lpOptionIcon } src='/images/Curve.png' alt='FF Logo' width={ 60 } height={ 60 } />
               <div>
@@ -47,18 +46,26 @@ export default function ffClaimCurveGauge({ asset }) {
               </div>
             </div>
           </Grid>
-          <Grid item lg={4} md={4} xs={12}>
+          <Grid item lg={12} md={12} xs={12}>
             <div>
               <Typography className={ classes.amountText }>{ formatCurrency(asset && asset.gauge ? asset.gauge.earned : 0) } CRV</Typography>
+              { BigNumber(asset && asset.gauge ? asset.gauge.earned : 0).gt(0) &&
+                <div>
+                  <Typography className={classes.dollarValue}>
+                  ${ formatCurrency(asset && asset.gauge ? asset.gauge.earned : 0) }
+                  &nbsp;(Pull Dollar value here)
+                  </Typography>
+                </div>
+              }
             </div>
           </Grid>
-          <Grid item lg={4} md={4} xs={12}>
+          <Grid item lg={12} md={12} xs={12}>
             <div className={ classes.center}>
               { BigNumber(asset && asset.gauge ? asset.gauge.earned : 0).gt(0) &&
-                <Typography>Claim Now</Typography>
+                <Typography className={classes.iHazRewardz}>Claim Now</Typography>
               }
               { !BigNumber(asset && asset.gauge ? asset.gauge.earned : 0).gt(0) &&
-                <Typography>Stake in gauge to earn rewards</Typography>
+                <Typography className={classes.iHazNoRewardz}>Stake in gauge to earn rewards</Typography>
               }
             </div>
           </Grid>
@@ -67,7 +74,7 @@ export default function ffClaimCurveGauge({ asset }) {
           <div className={ classes.activeIcon }></div>
         }
       </div>
-    </Paper>
-  </div>
+      </Paper>
+    </div>
   );
 }

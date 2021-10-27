@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Grid, Typography, Button, TextField, InputAdornment, CircularProgress, Tooltip } from '@material-ui/core';
+import { Paper, Grid, Typography, Button, TextField, InputAdornment, CircularProgress, Tooltip, SvgIcon } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
 import BigNumber from 'bignumber.js';
 
@@ -11,6 +11,24 @@ import classes from './ffOverview.module.css';
 
 import stores from '../../stores'
 import { LEND_UPDATED } from '../../stores/constants';
+
+function BorrowedIcon(props) {
+  const { color, className } = props;
+  return (
+    <SvgIcon viewBox="0 0 48 48" stroke-width="1" className={className}>
+    <g stroke-width="3" transform="translate(0.5, 0.5)"><path d="M37,30l4.365-2.5a3.054,3.054,0,0,1,4.157,1.119l.036.062a3.135,3.135,0,0,1-.7,4l-8.117,6.7a3.966,3.966,0,0,1-1.675.817l-15.4,3.422a4,4,0,0,1-3.086-.577L7.008,36.672A4,4,0,0,0,4.789,36H2V24l7.1-.789a7.99,7.99,0,0,1,3.692.461l5.465,2.049a7.936,7.936,0,0,0,1.528.406l10.224,1.659A3.223,3.223,0,0,1,33,31h0a3.223,3.223,0,0,1-2.992,3.214L19,35" fill="none" stroke="#FFFFFF" stroke-linecap="square" stroke-miterlimit="10" stroke-width="3" stroke-linejoin="miter"></path><circle cx="29" cy="12" r="9" fill="none" stroke="#FFFFFF" stroke-linecap="square" stroke-miterlimit="10" stroke-width="3" data-color="color-2" stroke-linejoin="miter"></circle><rect x="26.172" y="9.172" width="5.657" height="5.657" stroke-width="3" fill="none" stroke="#FFFFFF" stroke-linecap="square" stroke-miterlimit="10" transform="translate(0.009 24.021) rotate(-45)" data-color="color-2" stroke-linejoin="miter"></rect></g>
+    </SvgIcon>
+  );
+}
+
+function LimitIcon(props) {
+  const { color, className } = props;
+  return (
+    <SvgIcon viewBox="0 0 48 48" stroke-width="1" className={className}>
+    <g stroke-width="3" transform="translate(0.5, 0.5)"><polyline points="18 2 13 2 13 31 5 31 17 45 29 31 21 31 21 27" fill="none" stroke="#FFFFFF" stroke-linecap="square" stroke-miterlimit="10" stroke-width="3" stroke-linejoin="miter"></polyline><circle cx="28" cy="6" r="4" fill="none" stroke="#FFFFFF" stroke-linecap="square" stroke-miterlimit="10" stroke-width="3" data-color="color-2" stroke-linejoin="miter"></circle><circle cx="42" cy="20" r="4" fill="none" stroke="#FFFFFF" stroke-linecap="square" stroke-miterlimit="10" stroke-width="3" data-color="color-2" stroke-linejoin="miter"></circle><line x1="27" y1="23" x2="43" y2="3" fill="none" stroke="#FFFFFF" stroke-linecap="square" stroke-miterlimit="10" stroke-width="3" data-color="color-2" stroke-linejoin="miter"></line></g>
+    </SvgIcon>
+  );
+}
 
 export default function ffOverview() {
 
@@ -120,56 +138,66 @@ export default function ffOverview() {
     <div className={ classes.container }>
       <div className={ classes.fieldsContainer }>
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={4}>
+          <Grid item lg={4} md={4} sm={12} xs={12}>
             <div className={classes.overviewCard}>
               <LendSupplyGraph assets={supplyAssets} />
               <div>
                 <Typography className={ classes.title }>Total Supplied</Typography>
                 <Typography className={ classes.value }>
                   {lendingSupply === null ? (
-                    <Skeleton style={{ minWidth: '200px ' }} />
+                    <Skeleton style={{ minWidth: '200px', backgroundColor: 'rgba(0,0,0,0.1)' }} />
                   ) : (
-                    `$ ${formatCurrency(position && position.length >= 3 ? position[0] / 1000000 : 0)}`
+                    `$${formatCurrency(position && position.length >= 3 ? position[0] / 1000000 : 0)}`
                   )}
                 </Typography>
                 <Tooltip title={renderSupplyTootip()}>
-                  <Typography className={ classes.subValue }>{!lendingSupplyAPY ? <Skeleton style={{ minWidth: '200px ' }} /> : `${formatCurrency(lendingSupplyAPY)} % Average APY`}</Typography>
+                  <Typography className={ classes.subValue }>{!lendingSupplyAPY ? <Skeleton style={{ minWidth: '200px', backgroundColor: 'rgba(0,0,0,0.1)' }} /> : `${formatCurrency(lendingSupplyAPY)} % Average APY`}</Typography>
                 </Tooltip>
               </div>
             </div>
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item lg={4} md={4} sm={12} xs={12}>
             <div className={classes.overviewCard}>
               <Tooltip title="View transaction">
                 <LendBorrowGraph assets={borrowAssets} />
               </Tooltip>
-              <div>
+              <Grid container spacing={0} className={classes.valueItem}>
+
+              <Grid item xs={8}>
                 <Typography className={ classes.title }>Total Borrowed</Typography>
                 <Typography className={ classes.value }>
                   {lendingBorrow === null ? (
-                    <Skeleton style={{ minWidth: '200px ' }} />
+                    <Skeleton style={{ minWidth: '200px', backgroundColor: 'rgba(0,0,0,0.1)' }} />
                   ) : (
                     `$ ${formatCurrency(position && position.length >= 3 ? position[1] / 1000000 : 0)}`
                   )}
                 </Typography>
                 <Tooltip title={renderBorrowTooltip()}>
-                  <Typography className={ classes.subValue }>{!lendingBorrowAPY ? <Skeleton style={{ minWidth: '200px ' }} /> : `${formatCurrency(lendingBorrowAPY)} % Average APY`}</Typography>
+                  <Typography className={ classes.subValue }>{!lendingBorrowAPY ? <Skeleton style={{ minWidth: '200px', backgroundColor: 'rgba(0,0,0,0.1)' }} /> : `${formatCurrency(lendingBorrowAPY)} % Average APY`}</Typography>
                 </Tooltip>
-              </div>
+                </Grid>
+              </Grid>
             </div>
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item lg={4} md={4} sm={12} xs={12}>
             <div className={classes.overviewCard}>
-              <div>
+            <Grid container spacing={0} className={classes.valueItem}>
+            <Grid item md={3} sm={2} xs={2}>
+            <div className={classes.iconWrap}>
+              <LimitIcon className={ classes.overviewIcon } />
+            </div>
+            </Grid>
+            <Grid item md={9} sm={10} xs={10}>
                 <Typography className={ classes.title }>Borrow Limit Used</Typography>
                 <Typography className={ classes.value }>
                   {lendingBorrowLimit === null ? (
-                    <Skeleton style={{ minWidth: '200px ' }} />
+                    <Skeleton style={{ minWidth: '200px', backgroundColor: 'rgba(0,0,0,0.1)' }} />
                   ) : (
                     `${formatCurrency(position && position.length >= 3 ? position[3] / 100 : 0)} %`
                   )}
                 </Typography>
-              </div>
+                </Grid>
+              </Grid>
             </div>
           </Grid>
         </Grid>

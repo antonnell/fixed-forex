@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
+import { Paper, Grid, Typography, Tooltip } from '@material-ui/core';
+
+import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
 
 import Head from 'next/head';
 import Layout from '../../../../components/layout/layout.js';
@@ -54,11 +57,32 @@ function Asset({ changeTheme }) {
         <title>Fixed Forex</title>
       </Head>
       <div className={classes.container}>
+
+        <div className={classes.backBtn} onClick={() => router.push('/home')}>
+        <Tooltip placement="top" title="Back">
+        <KeyboardBackspaceIcon />
+        </Tooltip>
+        </div>
+
         <FfAssetOverview asset={ asset } />
-        <FFCurveLiquidity asset={ asset } />
-        <FFCurveGauge asset={ asset } />
-        <FFClaimCurveGauge asset={ asset } />
-        <FFClaimCurveRKP3RGauge asset={ asset } />
+
+
+        <Grid container className={classes.xxxContainer} spacing={0}>
+          <Grid className={classes.xxx} item lg={8} md={12} sm={12} xs={12}>
+            <FFCurveLiquidity asset={ asset } />
+            <FFCurveGauge asset={ asset } />
+          </Grid>
+          <Grid className={classes.columnRight} item lg={4} md={12} sm={12} xs={12}>
+          <Typography variant="h5" className={ classes.title}>Claimable Rewards</Typography>
+          <div className={classes.rewardsWrap}>
+          <FFClaimCurveGauge asset={ asset } />
+          <FFClaimCurveRKP3RGauge asset={ asset } />
+          </div>
+          </Grid>
+        </Grid>
+
+
+
       </div>
     </Layout>
   );

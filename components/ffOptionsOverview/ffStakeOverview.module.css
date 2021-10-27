@@ -1,18 +1,32 @@
 .container {
-  width: 100%;
-  background-image: linear-gradient(0deg ,#1c46f5 0,#0005d3);
-  margin-bottom: 140px;
-  padding: 0px 24px;
+  width: calc(100% - 180px);
+  margin: 40px auto;
+  border-radius: 20px;
+  background: linear-gradient(-45deg, #23a6d5, #234ce7);
+	background-size: 600% 600%;
+	animation: gradient 35s ease infinite;
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
 }
 
 .fieldsContainer {
   max-width: 1356px;
   display: flex;
   margin: 0 auto;
-  padding: 48px 0px 140px 0px;
+  padding: 50px 40px;
   align-items: center;
   justify-content: space-between;
-  min-height: 270px;
+  min-height: 100px;
 }
 
 .field {
@@ -25,9 +39,9 @@
 }
 
 .title {
-  background: rgba(256, 256, 256, 0.2);
+  /* background: rgba(256, 256, 256, 0.2); */
   border-radius: 30px;
-  padding: 4px 20px;
+  padding: 4px 0px;
   width: fit-content;
   color: #fff !important;
   font-size: 14px !important;
@@ -52,6 +66,23 @@
   margin-left: 3px !important;
 }
 
+.overviewIcon {
+  color: #fff;
+  font-size: 30px !important;
+}
+
+.iconWrap {
+  width: 80px;
+  height: 80px;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24px !important;
+}
+
 .balanceIcon {
   color: #fff;
   border: 1px solid rgba(255,255,255,0.2);
@@ -63,10 +94,28 @@
 
 .claimButton {
   margin-left: 24px !important;
-  background: rgb(88 190 185) !important;
-  color: rgba(0, 0, 0, 0.87)  !important;
+  background: #FFF!important;
+  color: #000  !important;
   font-weight: 700 !important;
   box-shadow: none !important;
   width: 126px;
   height: 50px;
+}
+
+
+@media screen and (max-width: 1200px) {
+  .container {
+    position: absolute;
+    top: 60px;
+    width: calc(100%);
+    margin: 0 auto;
+    border-radius: 0px;
+    background: linear-gradient(-45deg, #23a6d5, #234ce7);
+  	background-size: 600% 600%;
+  	animation: gradient 35s ease infinite;
+  }
+}
+
+@media screen and (max-width: 960px) {
+
 }

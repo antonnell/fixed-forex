@@ -1,0 +1,136 @@
+.container {
+  width: calc(100% - 0px);
+  margin-bottom: 0px;
+}
+
+.valueItem {
+  width: 100%;
+  background: none;
+  text-align: left !important;
+}
+
+.title {
+  border-radius: 30px;
+  padding-bottom: 5px;
+  width: 100%;
+  font-size: 14px !important;
+  text-align: left !important;
+  opacity: 0.6;
+}
+
+.value {
+  font-size: 30px !important;
+  font-weight: bold !important;
+}
+
+.subValue {
+  font-size: 13px !important;
+  margin-top: 5px !important;
+  cursor: help !important;
+}
+
+.inline {
+  display: flex;
+  align-items: flex-end;
+}
+
+.valueSymbol {
+  font-size: 20px !important;
+  font-weight: bold !important;
+  margin-bottom: 4px !important;
+  margin-left: 3px !important;
+}
+
+.balanceIcon {
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50%;
+  padding: 16px;
+  font-size: 70px !important;
+  margin: auto !important;
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+.tooltipContainer {
+  min-width: 200px;
+}
+
+.tooltipValue {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.val {
+  flex: 1;
+}
+
+.valBold {
+  flex: 1;
+  font-weight: bold !important;
+}
+
+.overviewIcon {
+  color: #fff;
+  font-size: 26px !important;
+}
+
+.itemWrapGrid {
+  border-radius: 12px;
+  overflow: hidden;
+  min-height: 110px;
+  border: 1px solid rgba(104,108,122, 0.2) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.itemContent {
+  background: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+  padding-left: 30px;
+  text-align: left !important;
+}
+
+.iconWrap {
+  width: 100%;
+  min-height: 120px;
+  border-radius: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(-45deg, SlateGrey, LightSlateGray);
+	background-size: 200% 200%;
+	animation: gradient 35s ease infinite;
+}
+
+@media screen and (max-width: 1200px) {
+}
+
+@media screen and (max-width: 1440px) {
+  .value {
+    font-size: 32px !important;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .container {
+    top: 115px;
+  }
+}

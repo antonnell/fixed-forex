@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Typography, CircularProgress } from '@material-ui/core';
+import { Paper, Typography, CircularProgress, Grid } from '@material-ui/core';
 import BigNumber from 'bignumber.js';
 
 import { formatCurrency } from '../../utils';
@@ -43,38 +43,48 @@ export default function ffClaim() {
   }
 
   return (
-    <div className={ classes.container}>
-      <Typography variant="h5" className={ classes.title}>Claimable Rewards</Typography>
+    <div className={classes.container}>
+      <Typography variant="h5" className={classes.title}>Claimable Rewards:</Typography>
       <Paper elevation={0} className={ classes.lpOptionsContainer }>
         <div className={ classes.lpOption } onClick={ () => { claim() } }>
-          <div className={ classes.lpOptionTitle }>
-            <img className={ classes.lpOptionIcon } src='/images/ff-icon.svg' alt='FF Logo' width={ 60 } height={ 60 } />
-            <div>
-              <Typography className={ classes.lpOptionName }>Fixed Forex</Typography>
-              <Typography className={ classes.lpOptionDescription }>Vesting Rewards</Typography>
-            </div>
-          </div>
-          <div>
-            {
-              BigNumber(veIBFF && veIBFF.vestingInfo && veIBFF.vestingInfo.lockValue ? veIBFF.vestingInfo.lockValue : 0).gt(0) &&
-              <Typography className={ classes.amountText }>{ formatCurrency(rewards && rewards.veIBFFDistribution ? rewards.veIBFFDistribution.earned : 0) } kp3r</Typography>
-            }
-            { !BigNumber(veIBFF && veIBFF.vestingInfo && veIBFF.vestingInfo.lockValue ? veIBFF.vestingInfo.lockValue : 0).gt(0) &&
-              <Typography className={ classes.vestText }>Vest kp3r to earn rewards</Typography>
-            }
-          </div>
-          { BigNumber(veIBFF && veIBFF.vestingInfo && veIBFF.vestingInfo.lockValue ? veIBFF.vestingInfo.lockValue : 0).gt(0) &&
-            <div>
-              { BigNumber(rewards && rewards.veIBFFDistribution ? rewards.veIBFFDistribution.earned : 0).gt(0) &&
-                (
-                  loading ? <Typography>Claiming</Typography> : <Typography>Claim Now</Typography>
-                )
+          <Grid container spacing={2}>
+            <Grid item lg={12} md={12} xs={12}>
+              <div className={ classes.lpOptionTitle }>
+                <img className={ classes.lpOptionIcon } src='/images/ff-icon.svg' alt='FF Logo' width={ 60 } height={ 60 } />
+                <div>
+                  <Typography className={ classes.lpOptionName }>Fixed Forex</Typography>
+                  <Typography className={ classes.lpOptionDescription }>Vesting Rewards</Typography>
+                </div>
+              </div>
+            </Grid>
+            <Grid item lg={12} md={12} xs={12}>
+              <div>
+                {
+                  BigNumber(veIBFF && veIBFF.vestingInfo && veIBFF.vestingInfo.lockValue ? veIBFF.vestingInfo.lockValue : 0).gt(0) &&
+                  <Typography className={ classes.amountText }>{ formatCurrency(rewards && rewards.veIBFFDistribution ? rewards.veIBFFDistribution.earned : 0) } kp3r</Typography>
+                }
+                { !BigNumber(veIBFF && veIBFF.vestingInfo && veIBFF.vestingInfo.lockValue ? veIBFF.vestingInfo.lockValue : 0).gt(0) &&
+                  <Typography className={ classes.vestText }>Vest kp3r to earn rewards</Typography>
+                }
+              </div>
+            </Grid>
+            <Grid item lg={12} md={12} xs={12}>
+              <div className={ classes.center}>
+              { BigNumber(veIBFF && veIBFF.vestingInfo && veIBFF.vestingInfo.lockValue ? veIBFF.vestingInfo.lockValue : 0).gt(0) &&
+                <div>
+                  { BigNumber(rewards && rewards.veIBFFDistribution ? rewards.veIBFFDistribution.earned : 0).gt(0) &&
+                    (
+                      loading ? <Typography>Claiming</Typography> : <Typography>Claim Now</Typography>
+                    )
+                  }
+                  { !BigNumber(rewards && rewards.veIBFFDistribution ? rewards.veIBFFDistribution.earned : 0).gt(0) &&
+                    <Typography className={classes.sub}>Nothing to Claim</Typography>
+                  }
+                </div>
               }
-              { !BigNumber(rewards && rewards.veIBFFDistribution ? rewards.veIBFFDistribution.earned : 0).gt(0) &&
-                <Typography>Nothing to Claim</Typography>
-              }
-            </div>
-          }
+              </div>
+            </Grid>
+          </Grid>
           { BigNumber(rewards && rewards.veIBFFDistribution ? rewards.veIBFFDistribution.earned : 0).gt(0) &&
             <div className={ classes.activeIcon }></div>
           }

@@ -6,26 +6,84 @@
   margin-top: 0px;
   padding-top: 60px;
   position: relative;
-  position: relative;
+}
+
+.notConnectedContent {
+  width: calc(100% - 180px) !important;
+  margin: 80px auto 0 auto;
+  text-align: center;
+  padding: 50px;
+  height: calc(100vh - 230px);
+  box-shadow: none !important;
+  border: 1px solid rgba(104,108,122, 0.2) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+
+.overviewIcon {
+  font-size: 100px !important;
+  margin-bottom: 30px;
+  margin-top: -80px;
+}
+
+.mainHeading {
+  margin: 110px auto 0px auto !important;
+  text-align: left !important;
+  font-size: 20px !important;
+  width: calc(100% - 180px) !important;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+
+.mainDesc {
+  margin: 20px auto 0px auto !important;
+  text-align: left !important;
+  color: rgb(104,108,122);
+  font-size: 18px !important;
+  font-family: 'Roboto', sans-serif !important;
+  font-weight: 300 !important;
+  width: calc(100% - 180px) !important;
+}
+
+.mainHeadingNC {
+  text-align: center !important;
+  font-size: 30px !important;
+}
+
+.mainDescNC {
+  margin: 30px auto !important;
+  text-align: center !important;
+  color: rgb(104,108,122);
+  font-size: 18px !important;
+  max-width: 800px;
+  line-height: 1.8rem !important;
+}
+
+.buttonConnect {
+  background: linear-gradient(-45deg, SlateGrey, LightSlateGray);
+	background-size: 200% 200%;
+	animation: gradient 35s ease infinite;
+  color: #000 !important;
+  border-radius: 40px !important;
+  padding: 12px 24px !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
 }
 
 .firstContainer {
-  width: calc(100% - 48px);
-  max-width: 1356px;
-  left: 24px;
-  right: 24px;
+  width: calc(100% - 180px);
   margin: auto;
-  padding: 0 0 48px 0px;
-  margin-top: -90px;
+  padding: 0px;
+  margin-bottom: 40px;
 }
 
 .container {
-  width: calc(100% - 48px);
-  max-width: 1356px;
-  left: 24px;
-  right: 24px;
+  width: calc(100% - 180px);
   margin: auto;
-  padding: 0 0 48px 0px;
+  padding: 0;
 }
 
 .lendingContainer {
@@ -39,25 +97,27 @@
 }
 
 .lendingFilters {
-  width: 100%;
+  width: calc(100% - 210px);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  margin: 0px 0px 48px 0px;
-  position: sticky;
-  top: 80px;
-  border-radius: 12px !important;
+  margin: 0px;
+  position: fixed;
+  top: 60px;
+  left: 210px;
+  border-radius: 0px !important;
   box-shadow: none !important;
   z-index: 8;
 }
 
 .searchContainer {
-  border-radius: 12px !important;
-}
-
-.MuiInputBase-input {
-  border: 2px solid red !important;
+  border-radius: 0px !important;
+  border-top: 0 !important;
+  border-bottom: 1px solid rgba(104,108,122,0.2) !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  padding: 13px 15px !important;
 }
 
 .lendingTable {
@@ -67,6 +127,7 @@
   border: 1px solid rgba(108,108,123, 0.25);
   border-radius: 10px;
   width: 100%;
+  margin-bottom: 60px;
 }
 
 .lendingRow {
@@ -127,21 +188,7 @@
   border-radius: 10px;
 }
 
-.overviewContainer2 {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  position: relative;
-  width: 100%;
-  padding: 25px 70px 33px 10px;
-  padding-left: 70px;
-  z-index: 9;
-  top: 60px;
-  border-bottom: 1px solid rgba(108,108,123, 0.2);
-  border-radius: 0px !important;
-  margin-bottom: 60px;
-}
+
 
 .separator {
   border-right: 1px solid rgba(108,108,123, 0.25);
@@ -216,13 +263,57 @@
 }
 
 @media screen and (max-width: 1200px) {
-  .overviewContainer2 {
-    top: 0px;
-    margin-bottom: 0px;
+
+  .notConnectedContent {
+    width: calc(100% - 80px) !important;
+    margin: -120px auto 0 auto;
+    height: calc(100vh - 140px);
   }
 
   .lendingFilters {
-    top: 20px;
+    width: calc(100%);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0px;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    border-radius: 0px !important;
+    box-shadow: none !important;
+    z-index: 8;
+  }
+
+  .searchContainer {
+    border-top: 1px solid rgba(104,108,122,0.2) !important;
+    border-bottom: 1px solid rgba(104,108,122,0.2) !important;
+  }
+
+  .ffContainer {
+    padding-top: 220px;
+  }
+
+  .mainDesc {
+    margin: 20px auto 40px auto !important;
+  }
+
+  .firstContainer {
+    width: calc(100% - 80px);
+    margin: auto;
+    padding: 0px;
+    margin-bottom: 40px;
+  }
+
+  .container {
+    width: calc(100% - 80px);
+    margin: auto;
+    padding: 0;
+  }
+
+  .mainHeading,
+  .mainDesc {
+    width: calc(100% - 80px) !important;
   }
 }
 
@@ -270,5 +361,52 @@
 @media screen and (max-width: 960px) {
   .lendingContainer {
     padding: 20px;
+  }
+
+  .mainHeading {
+    margin: 300px auto 0px auto !important;
+    text-align: left !important;
+    font-size: 20px !important;
+    width: calc(100% - 80px) !important;
+  }
+
+  .mainDesc {
+    width: calc(100% - 80px) !important;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .ffContainer {
+    padding-top: 420px;
+  }
+
+  .notConnectedContent {
+    margin: -320px auto 0 auto;
+  }
+
+  .mainHeading {
+    margin: 90px auto 0px auto !important;
+    text-align: left !important;
+    font-size: 20px !important;
+    width: calc(100% - 80px) !important;
+  }
+
+  .mainDesc {
+    margin: 20px auto 30px auto !important;
+    width: calc(100% - 80px) !important;
+  }
+
+  .mainHeadingNC {
+    text-align: center !important;
+    font-size: 24px !important;
+  }
+
+  .mainDescNC {
+    font-size: 15px !important;
+    line-height: 1.4rem !important;
+  }
+
+  .overviewIcon {
+    font-size: 80px !important;
   }
 }

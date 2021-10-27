@@ -114,6 +114,10 @@ class Unlock extends Component {
   };
 
   connectionDisconnected = () => {
+    stores.dispatcher.dispatch({
+      type: CONFIGURE_FIXED_FOREX,
+      content: { connected: false}
+    });
     if (this.props.closeModal != null) {
       this.props.closeModal();
     }

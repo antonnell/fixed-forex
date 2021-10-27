@@ -1,8 +1,6 @@
 .container {
-  width: calc(100% - 48px);
-  max-width: 1356px;
+  width: calc(100%);
   margin: 0 auto;
-  margin-bottom: 48px;
 }
 
 .title {
@@ -10,9 +8,16 @@
   margin-bottom: 24px !important;
 }
 
+.sub {
+  color: rgba(104,108,122,1);
+  margin-left: 30px !important;
+  margin-bottom: 30px !important;
+}
+
 .lpOptionsContainer {
   border: 1px solid rgba(104, 108, 122, 0.25);
   margin: 0 auto;
+  margin-top: 30px;
   display: flex;
   align-items: center;
   justify-content: space-evenly;
@@ -30,26 +35,35 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 48px;
+  padding: 0px;
   transition: background 0.5s ease;
 }
 
 .lpOptionTitle {
   display: flex;
   align-items: center;
+  background: none;
+  border-bottom: 1px solid rgba(104,108,122,0.2);
+  padding: 17px 30px 20px 30px;
+  border-radius: 10px 10px 0px 0px;
 }
 
 .lpOptionName {
-  font-size: 30px !important;
+  font-size: 20px !important;
+  margin: 0 !important;
+  font-weight: 700 !important;
 }
 
 .lpOptionDescription {
-  font-size: 20px !important;
+  font-size: 15px !important;
   opacity: 0.7;
+  margin-top: 5px !important;
 }
 
 .lpOptionIcon {
-  margin-right: 24px;
+  margin-right: 15px;
+  margin-left: -5px;
+  transform: scale(.6);
 }
 
 .activeIcon {
@@ -70,11 +84,12 @@
 }
 
 .amountText {
-  font-size: 60px !important;
+  font-size: 26px !important;
   font-weight: bold !important;
+  padding: 10px 30px 0px 30px;
 }
 
-
 .vestText {
-  font-size: 30px !important;
+  font-size: 24px !important;
+  margin: 13px 30px !important;
 }
