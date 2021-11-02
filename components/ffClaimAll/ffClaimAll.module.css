@@ -9,6 +9,22 @@
   padding: 0 0 10px 0px;
 }
 
+.hasRewards {
+  width: 100% !important;
+}
+
+.noRewards {
+  width: 100% !important;
+  text-align: center;
+  margin: 60px auto;
+}
+
+.overviewIcon {
+  font-size: 60px !important;
+  margin-bottom: 20px;
+  opacity: 0.4;
+}
+
 .actionButtons {
   padding: 0px 24px;
 }
@@ -18,8 +34,9 @@
 }
 
 .actionButtonText {
-  font-size: 12px !important;
+  font-size: 13px !important;
   text-transform: capitalize !important;
+  font-weight: 700 !important;
 }
 
 .loadingCircle {
@@ -46,11 +63,13 @@
 }
 
 .buttonOverride {
-  background: #114DF0 !important;
+  background:  MediumSeaGreen !important;
   color: #FFF !important;
   font-weight: 700 !important;
   box-shadow: none !important;
-  width: 216px;
+  width: 235px;
+  float: right;
+  margin-bottom: 20px !important;
 }
 
 @media screen and (max-width: 1200px) {

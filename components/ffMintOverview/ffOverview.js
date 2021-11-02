@@ -181,12 +181,12 @@ export default function ffOverview() {
           <Grid item lg={4} md={4} sm={12} xs={12}>
             <div className={classes.overviewCard}>
             <Grid container spacing={0} className={classes.valueItem}>
-              <Grid item md={3} sm={2} xs={2}>
+              <Grid item md={3} sm={3} xs={3}>
                 <div className={classes.iconWrap}>
                   <LimitIcon className={ classes.overviewIcon } />
                 </div>
               </Grid>
-              <Grid item md={9} sm={10} xs={10}>
+              <Grid item md={9} sm={9} xs={9}>
                 <Typography className={ classes.title }>Borrow Limit Used</Typography>
                 <Typography className={ classes.value }>
                   {lendingBorrowLimit === null ? (

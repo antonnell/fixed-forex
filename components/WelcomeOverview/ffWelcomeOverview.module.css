@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300&display=swap');
+
 .container {
   width: 100%;
   /* height: calc(100vh - 80px); */
@@ -134,4 +136,44 @@
   padding: 16px;
   font-size: 70px !important;
   margin-right: 24px !important;
+}
+
+.headBtnTxt {
+  font-family: 'Roboto Mono', monospace !important;
+  font-weight: 300 !important;
+}
+
+@media screen and (max-width: 600px) {
+  .welcomeTitle {
+    font: normal normal normal 36px/40px Inter Light !important;
+    margin: 100px 0 20px 0 !important;
+  }
+
+  .welcomeSubtitle {
+    font: normal normal normal 15px/22px Inter Light !important;
+    margin: auto !important;
+    margin-bottom: 40px !important;
+    max-width: 1080px;
+    opacity: 0.6 !important;
+  }
+
+  .headBtnTxt {
+    font-size: 16px !important;
+    font-family: 'Roboto Mono', monospace !important;
+    font-weight: 300 !important;
+  }
+
+  .connectBtn {
+    width: 100%;
+    border: 0px solid #234ce7 !important;
+    padding: 20px 30px !important;
+    margin-bottom: 20px !important;
+  }
+
+  .continueBtn {
+    width: 100%;
+    padding: 15px 30px !important;
+    margin-left: 0px !important;
+    text-transform: none !important;
+  }
 }

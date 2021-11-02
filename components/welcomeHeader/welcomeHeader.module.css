@@ -26,6 +26,19 @@
   background: blue;
 }
 
+.switchNetworkBtn {
+  margin-top: 30px !important;
+  text-transform: capitalize !important;
+  border-radius: 40px !important;
+  background: linear-gradient(-45deg, #23a6d5, #234ce7);
+	background-size: 200% 200%;
+	animation: gradient 35s ease infinite;
+  color: #FFF !important;
+  padding: 10px 25px !important;
+  font-weight: 700 !important;
+  font-size: 16px !important;
+}
+
 .yearnLogo {
   width: 150px !important;
   height: 40px !important;

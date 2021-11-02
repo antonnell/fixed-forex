@@ -295,7 +295,7 @@ function Navigation(props) {
   return (
     <Paper elevation={0} className={classes.navigationContainer}>
       <div className={classes.navigationHeading}>
-        <a onClick={() => router.push('/')} className={classes.linkz}>
+        <a onClick={() => router.push('/dashboard')} className={classes.linkz}>
           <SvgIcon
             viewBox="0 0 149 26"
             fill="none"

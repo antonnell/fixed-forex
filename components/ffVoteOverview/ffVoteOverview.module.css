@@ -23,7 +23,7 @@
   max-width: 1356px;
   display: flex;
   margin: 0 auto;
-  padding: 60px 40px;
+  padding: 40px 30px;
   align-items: center;
   justify-content: space-between;
   min-height: 100px;
@@ -100,9 +100,6 @@
     width: calc(100%);
     margin: 60px auto 40px auto;
     border-radius: 0px;
-    background: linear-gradient(-45deg, #23a6d5, #234ce7);
-  	background-size: 600% 600%;
-  	animation: gradient 35s ease infinite;
   }
 }
 
@@ -113,6 +110,30 @@
   }
 
   .container {
-    min-height: 400px;
+    min-height: 355px;
+    overflow: hidden;
+  }
+
+  .value {
+    font-size: 26px !important;
+    font-weight: bold !important;
+    color: #fff !important;
+  }
+
+  .overviewIcon {
+    color: #fff;
+    font-size: 24px !important;
+  }
+
+  .iconWrap {
+    min-width: 60px !important;
+    min-height: 60px !important;
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 24px !important;
   }
 }

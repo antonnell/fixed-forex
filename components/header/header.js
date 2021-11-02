@@ -12,7 +12,7 @@ import Brightness2Icon from '@material-ui/icons/Brightness2';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 
-import { CONNECT_WALLET, ACCOUNT_CONFIGURED, ACCOUNT_CHANGED, FIXED_FOREX_BALANCES_RETURNED, FIXED_FOREX_CLAIM_VECLAIM, FIXED_FOREX_VECLAIM_CLAIMED, FIXED_FOREX_UPDATED, ERROR } from '../../stores/constants';
+import { CONNECT_WALLET,CONNECTION_DISCONNECTED, ACCOUNT_CONFIGURED, ACCOUNT_CHANGED, FIXED_FOREX_BALANCES_RETURNED, FIXED_FOREX_CLAIM_VECLAIM, FIXED_FOREX_VECLAIM_CLAIMED, FIXED_FOREX_UPDATED, ERROR } from '../../stores/constants';
 
 import Unlock from '../unlock';
 
@@ -171,6 +171,17 @@ function Header(props) {
     stores.dispatcher.dispatch({ type: FIXED_FOREX_CLAIM_VECLAIM, content: {} })
   }
 
+  const switchChain =async()=>{
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId:'0x1' }],
+      });
+    } catch (switchError) {
+      console.log("switch error",switchError)
+    }
+  }
+
   return (
     <div>
       <Paper elevation={0} className={classes.headerContainer}>
@@ -277,6 +288,7 @@ function Header(props) {
           <Typography className={classes.ErrorTxt}>
             The chain you're connected to isn't supported. Please check that your wallet is connected to Ethereum Mainnet.
           </Typography>
+          <Button className={classes.switchNetworkBtn} variant="contained" onClick={()=>switchChain()} >Switch to Ethereum Mainnet</Button>
         </div>
       </div>
     ) : null}

@@ -1,10 +1,10 @@
 import Head from 'next/head';
 import { Typography, Button, Paper, SvgIcon, Grid, Avatar } from "@material-ui/core";
 import Layout from '../../components/layout/layout.js';
-import ClaimAll from '../../components/ffDashboardClaimAll';
+import MintOverview from '../../components/ffDashboardMintOverview';
 import Overview from '../../components/ffDashboardOverview';
 import VoteOverview from '../../components/ffDashboardVoteOverview';
-import MintOverview from '../../components/ffDashboardMintOverview';
+import ClaimAll from '../../components/ffDashboardClaimAll';
 
 import classes from './dashboard.module.css';
 
@@ -97,7 +97,7 @@ function Rewards({ changeTheme }) {
               <Grid item lg={9} md={12} sm={12} xs={12}>
                 <Grid container spacing={0}>
                   <Grid item lg={12} md={12} sm={12} xs={12}>
-                    <Typography className={classes.mainHeading} variant='h1'>Collateral</Typography>
+                    <Typography className={classes.mainHeadingTop} variant='h1'>Collateral</Typography>
                     <Paper elevation={0} onClick={() => router.push('/mint')} className={classes.viewCollateral}>View</Paper>
                     <MintOverview />
                   </Grid>
@@ -117,7 +117,7 @@ function Rewards({ changeTheme }) {
               </Grid>
 
               <Grid item lg={3} md={12} sm={12} xs={12}>
-              <Typography className={classes.mainHeading} variant='h1'>Rewards</Typography>
+              <Typography className={classes.mainHeadingRewards} variant='h1'>Rewards</Typography>
               <ClaimAll />
               </Grid>
 
