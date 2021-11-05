@@ -1,11 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Typography, Button, CircularProgress } from '@material-ui/core';
+import { Paper, Typography, Button, CircularProgress, SvgIcon, Grid } from '@material-ui/core';
 import BigNumber from 'bignumber.js';
 import classes from './ffDashboardClaimAll.module.css';
 import RewardsTable from './ffDashboardClaimAllTable.js'
 
 import stores from '../../stores'
 import { FIXED_FOREX_UPDATED, FIXED_FOREX_CLAIM_ALL, FIXED_FOREX_ALL_CLAIMED, ERROR, IBEUR_ADDRESS } from '../../stores/constants';
+
+function NoRewardsIcon(props) {
+  const { color, className } = props;
+  return (
+    <SvgIcon viewBox="0 0 64 64" stroke-width="1" className={className}>
+    <g stroke-width="2" transform="translate(0, 0)"><path d="M15.029,48.971A24,24,0,0,1,48.971,15.029" fill="none" stroke="#686c7a" stroke-miterlimit="10" stroke-width="2" data-cap="butt" stroke-linecap="butt" stroke-linejoin="miter"></path><path d="M52.789,20A24.006,24.006,0,0,1,20,52.789" fill="none" stroke="#686c7a" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2" stroke-linejoin="miter"></path><line x1="60" y1="4" x2="4" y2="60" fill="none" stroke="#686c7a" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2" data-color="color-2" stroke-linejoin="miter"></line></g>
+    </SvgIcon>
+  );
+}
 
 export default function ffClaimAll() {
 
@@ -109,23 +118,45 @@ export default function ffClaimAll() {
   }
 
   return (
-    <Paper elevation={0} className={ classes.container }>
-      <RewardsTable claimable={ claimable } crv={ crv } ibEUR={ ibEUR } rKP3R={ rKP3R } />
-      <div className={ classes.infoSection }>
-      </div>
-      <div className={ classes.actionButtons }>
-        <Button
-          className={ classes.buttonOverride }
-          variant='contained'
-          size='large'
-          color='primary'
-          disabled={ claimLoading }
-          onClick={ onClaim }
-          >
-          <Typography className={ classes.actionButtonText }>{ claimLoading ? `Claiming` : `Claim all` }</Typography>
-          { claimLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
-        </Button>
-      </div>
+    <Paper elevation={0} className={classes.container}>
+
+      {claimable.length>0 ?
+
+        <div className={classes.hasRewards}>
+          <RewardsTable claimable={ claimable } crv={ crv } ibEUR={ ibEUR } rKP3R={ rKP3R } />
+          <div className={ classes.actionButtons }>
+            <Button
+              className={ classes.buttonOverride }
+              variant='contained'
+              size='large'
+              color='primary'
+              disabled={ claimLoading }
+              onClick={ onClaim }
+              >
+              <Typography className={ classes.actionButtonText }>{ claimLoading ? `Claiming` : `Claim all` }</Typography>
+              { claimLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
+            </Button>
+          </div>
+        </div>
+
+        :
+
+        <div className={classes.noRewards}>
+          <Grid container spacing={0} className={classes.centerGridRows}>
+            <Grid item lg={12} md={12} sm={12} xs={12}>
+              <NoRewardsIcon className={ classes.overviewIcon } />
+            </Grid>
+            <Grid item lg={12} md={12} sm={12} xs={12}>
+              <Typography variant="h5">You have no rewards</Typography>
+            </Grid>
+          </Grid>
+        </div>
+      }
+
+
+
+
+
     </Paper>
   );
 }

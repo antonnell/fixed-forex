@@ -358,6 +358,9 @@ a.linkz { cursor: pointer !important; }
     text-align: center !important;
   }
 
+  .navigationOptionNotSelected {
+    margin-right: 0px;
+  }
 
   .navigationOptionSelected,
   .navigationOptionSelectedWhite {
@@ -382,7 +385,7 @@ a.linkz { cursor: pointer !important; }
     /* color: #234ce7; */
     font-size: 13px !important;
     cursor: default;
-    margin: 0px auto !important;
+    margin: 10px 0 10px 0px !important;
     padding: 0 !important;
     text-align: center !important;
   }
@@ -395,5 +398,33 @@ a.linkz { cursor: pointer !important; }
     padding: 0px 0px;
     width: 100%;
     cursor: pointer;
+  }
+
+  .navigationSubOptionContainer {
+    text-align: center !important;
+    justify-content: center;
+    padding: 0 !important;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .navigationOptionNotSelected {
+    margin-right: 0px;
+  }
+
+  .smallVersion,
+  .sectionDivider {
+    display: none;
+  }
+
+  .navigationSubOptionContainer {
+    text-align: center !important;
+    justify-content: center;
+    padding: 0 !important;
+  }
+
+  .sectionText {
+    margin: 10px 0 10px 0px !important;
+    padding: 0 !important;
   }
 }
