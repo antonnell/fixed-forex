@@ -38,7 +38,7 @@ export default function ffAssetOverview({ asset }) {
       <Grid container spacing={3} className={ classes.assetTitleContainer }>
         <Grid item lg={4} md={4} sm={12} xs={12}>
         <div className={ classes.assetTitle }>
-          <img className={ classes.assetIcon } src={ asset ? `https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/${asset.address}/logo-128.png` : '/unknown-logo.png'} alt='' height='60px' width='60px' />
+          <img className={ classes.assetIcon } src={ asset ? `https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/${asset.address}/logo-128.png` : '/unknown-logo.png'} alt='' height='60px' width='60px' />
           <div>
             <Typography className={ classes.assetName }>{ asset ? asset.name : '' }</Typography>
             <Typography className={ classes.assetPrice }>${ formatCurrency(asset ? asset.price : 0) }</Typography>

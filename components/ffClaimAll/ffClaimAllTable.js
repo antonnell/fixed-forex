@@ -300,7 +300,7 @@ export default function EnhancedTable({ claimable, crv, ibEUR, rKP3R }) {
                       {
                         row?.type === 'Fixed Forex' && <img className={ classes.imgLogo } src={`/images/ff-icon.svg`} width='35' height='35' alt='' />}
                       {
-                        row?.type !== 'Fixed Forex' && <img className={ classes.imgLogo } src={`https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/${row.address}/logo-128.png`} width='35' height='35' alt='' />
+                        row?.type !== 'Fixed Forex' && <img className={ classes.imgLogo } src={`https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/${row.address}/logo-128.png`} width='35' height='35' alt='' />
                       }
                       <div>
                         <Typography variant="h2" className={classes.textSpaced}>

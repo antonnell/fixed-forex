@@ -199,38 +199,38 @@ function Navigation(props) {
     {renderSubNav(
       'ibAUD',
       'asset/0x3F1B0278A9ee595635B61817630cC19DE792f506/curve',
-      <img className={classes.subIcon}  src="https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/0x3F1B0278A9ee595635B61817630cC19DE792f506/logo-128.png" alt="" height="30px" width="30px" />,
-      <img className={classes.subIcon}  src="https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/0x3F1B0278A9ee595635B61817630cC19DE792f506/logo-128.png" alt="" height="30px" width="30px" />,
+      <img className={classes.subIcon}  src="https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/0x3F1B0278A9ee595635B61817630cC19DE792f506/logo-128.png" alt="" height="30px" width="30px" />,
+      <img className={classes.subIcon}  src="https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/0x3F1B0278A9ee595635B61817630cC19DE792f506/logo-128.png" alt="" height="30px" width="30px" />,
     )}
     {renderSubNav(
       'ibCHF',
       'asset/0x9c2C8910F113181783c249d8F6Aa41b51Cde0f0c/curve',
-      <img className={classes.subIcon}  src="https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/0x9c2C8910F113181783c249d8F6Aa41b51Cde0f0c/logo-128.png" alt="" height="30px" width="30px" />,
-      <img className={classes.subIcon}  src="https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/0x9c2C8910F113181783c249d8F6Aa41b51Cde0f0c/logo-128.png" alt="" height="30px" width="30px" />,
+      <img className={classes.subIcon}  src="https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/0x9c2C8910F113181783c249d8F6Aa41b51Cde0f0c/logo-128.png" alt="" height="30px" width="30px" />,
+      <img className={classes.subIcon}  src="https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/0x9c2C8910F113181783c249d8F6Aa41b51Cde0f0c/logo-128.png" alt="" height="30px" width="30px" />,
     )}
     {renderSubNav(
       'ibEUR',
       'asset/0x96E61422b6A9bA0e068B6c5ADd4fFaBC6a4aae27/curve',
-      <img className={classes.subIcon} src="https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/0x96E61422b6A9bA0e068B6c5ADd4fFaBC6a4aae27/logo-128.png" alt="" height="30px" width="30px" />,
-      <img className={classes.subIcon} src="https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/0x96E61422b6A9bA0e068B6c5ADd4fFaBC6a4aae27/logo-128.png" alt="" height="30px" width="30px" />,
+      <img className={classes.subIcon} src="https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/0x96E61422b6A9bA0e068B6c5ADd4fFaBC6a4aae27/logo-128.png" alt="" height="30px" width="30px" />,
+      <img className={classes.subIcon} src="https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/0x96E61422b6A9bA0e068B6c5ADd4fFaBC6a4aae27/logo-128.png" alt="" height="30px" width="30px" />,
     )}
     {renderSubNav(
       'ibGBP',
       'asset/0xD6Ac1CB9019137a896343Da59dDE6d097F710538/curve',
-      <img className={classes.subIcon}  src="https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/0xD6Ac1CB9019137a896343Da59dDE6d097F710538/logo-128.png" alt="" height="30px" width="30px" />,
-      <img className={classes.subIcon}  src="https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/0xD6Ac1CB9019137a896343Da59dDE6d097F710538/logo-128.png" alt="" height="30px" width="30px" />,
+      <img className={classes.subIcon}  src="https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/0xD6Ac1CB9019137a896343Da59dDE6d097F710538/logo-128.png" alt="" height="30px" width="30px" />,
+      <img className={classes.subIcon}  src="https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/0xD6Ac1CB9019137a896343Da59dDE6d097F710538/logo-128.png" alt="" height="30px" width="30px" />,
     )}
     {renderSubNav(
       'ibJPY',
       'asset/0x8818a9bb44Fbf33502bE7c15c500d0C783B73067/curve',
-      <img className={classes.subIcon}  src="https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/0x8818a9bb44Fbf33502bE7c15c500d0C783B73067/logo-128.png" alt="" height="30px" width="30px" />,
-      <img className={classes.subIcon}  src="https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/0x8818a9bb44Fbf33502bE7c15c500d0C783B73067/logo-128.png" alt="" height="30px" width="30px" />,
+      <img className={classes.subIcon}  src="https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/0x8818a9bb44Fbf33502bE7c15c500d0C783B73067/logo-128.png" alt="" height="30px" width="30px" />,
+      <img className={classes.subIcon}  src="https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/0x8818a9bb44Fbf33502bE7c15c500d0C783B73067/logo-128.png" alt="" height="30px" width="30px" />,
     )}
     {renderSubNav(
       'ibKRW',
       'asset/0x95dFDC8161832e4fF7816aC4B6367CE201538253/curve',
-      <img className={classes.subIcon}  src="https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/0x95dFDC8161832e4fF7816aC4B6367CE201538253/logo-128.png" alt="" height="30px" width="30px" />,
-      <img className={classes.subIcon}  src="https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/0x95dFDC8161832e4fF7816aC4B6367CE201538253/logo-128.png" alt="" height="30px" width="30px" />,
+      <img className={classes.subIcon}  src="https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/0x95dFDC8161832e4fF7816aC4B6367CE201538253/logo-128.png" alt="" height="30px" width="30px" />,
+      <img className={classes.subIcon}  src="https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/0x95dFDC8161832e4fF7816aC4B6367CE201538253/logo-128.png" alt="" height="30px" width="30px" />,
     )}
   </div>
 
@@ -463,7 +463,7 @@ function Navigation(props) {
           <Grid item xs={6}>
             <a
               className={`${classes.socialButton}`}
-              href="https://discord.com/invite/GwkRN5YZ"
+              href="https://discord.gg/FSNfbEKDWV"
               target="_blank"
               rel="noopener noreferrer"
             >

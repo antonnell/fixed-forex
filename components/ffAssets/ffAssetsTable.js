@@ -250,7 +250,7 @@ export default function EnhancedTable({ assets }) {
                 <TableRow key={labelId} className={classes.assetTableRow} onClick={ () => { onView(row) } }>
                   <TableCell className={classes.cell}>
                     <div className={ classes.inline }>
-                      <img className={ classes.imgLogo } src={`https://raw.githubusercontent.com/iearn-finance/yearn-assets/master/icons/tokens/${row.address}/logo-128.png`} width='35' height='35' alt='' onError={(e)=>{e.target.onerror = null; e.target.src="/tokens/unknown-logo.png"}} />
+                      <img className={ classes.imgLogo } src={`https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/${row.address}/logo-128.png`} width='35' height='35' alt='' onError={(e)=>{e.target.onerror = null; e.target.src="/tokens/unknown-logo.png"}} />
                       <div>
                         <Typography variant="h2" className={classes.textSpaced}>
                           { row.symbol }
