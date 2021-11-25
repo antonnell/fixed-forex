@@ -892,6 +892,19 @@ class Store {
       const stakingRewardsAddress = new web3.eth.Contract(abis.stakingRewardsV3ABI, FF_STAKING_REWARDS_V3_ADDRESS)
       const uniswapNFTPositionsManagerContract = new web3.eth.Contract(abis.uniswapNFTPositionsManagerABI, FF_UNSIWAP_POSITIONS_MANAGER_ADDRESS)
 
+      // const [ rewardPerLiquidity, getRewardForDuration, totalLiquidity ] = await Promise.all([
+      //   stakingRewardsAddress.methods.rewardPerLiquidity().call(),
+      //   stakingRewardsAddress.methods.getRewardForDuration().call(),
+      //   stakingRewardsAddress.methods.totalLiquidity().call(),
+      // ]);
+      // const duration = 604800
+      // const yearDuration = 31536000
+      //
+      // const totalRewardedAtCurrentRate = BigNumber(getRewardForDuration).div(duration).times(yearDuration)
+      // const apr = BigNumber(totalRewardedAtCurrentRate).div(totalLiquidity).div(yearDuration).times(36500).toFixed(18)
+      //
+      // console.log(apr)
+
       const tokenIDs = await stakingRewardsAddress.methods.getTokenIds(account.address).call()
 
       const tokenPositions = await Promise.all(tokenIDs.map((idx) => {
