@@ -61,7 +61,7 @@ export default function ffClaim() {
               <div>
                 {
                   BigNumber(veIBFF && veIBFF.vestingInfo && veIBFF.vestingInfo.lockValue ? veIBFF.vestingInfo.lockValue : 0).gt(0) &&
-                  <Typography className={ classes.amountText }>{ formatCurrency(rewards && rewards.veIBFFDistribution ? rewards.veIBFFDistribution.earned : 0) } kp3r</Typography>
+                  <Typography className={ classes.amountText }>{ formatCurrency(rewards && rewards.veIBFFDistribution ? rewards.veIBFFDistribution.earned : 0) } rKP3R</Typography>
                 }
                 { !BigNumber(veIBFF && veIBFF.vestingInfo && veIBFF.vestingInfo.lockValue ? veIBFF.vestingInfo.lockValue : 0).gt(0) &&
                   <Typography className={ classes.vestText }>Vest kp3r to earn rewards</Typography>
