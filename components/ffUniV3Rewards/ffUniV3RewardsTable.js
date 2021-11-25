@@ -406,10 +406,10 @@ export default function EnhancedTable({ tokens, rKP3R }) {
                   </TableCell>
                   <TableCell className={classes.cell} align="right">
                     <Typography variant="h2" className={classes.textSpaced}>
-                      { formatCurrency(row.reward) } rKP3R
+                      { formatCurrency(row.earned) } rKP3R
                     </Typography>
                     <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
-                      $ { formatCurrency(BigNumber(row.reward).times(rKP3R?.price)) }
+                      $ { formatCurrency(BigNumber(row.earned).times(rKP3R?.price)) }
                     </Typography>
                   </TableCell>
                   <TableCell className={classes.cell} align="right">

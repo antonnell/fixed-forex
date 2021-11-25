@@ -899,8 +899,8 @@ class Store {
         return uniswapNFTPositionsManagerContract.methods.positions(idx).call()
       }))
 
-      const rewards = await Promise.all(tokenIDs.map((idx) => {
-        return stakingRewardsAddress.methods.rewards(idx).call()
+      const earneds = await Promise.all(tokenIDs.map((idx) => {
+        return stakingRewardsAddress.methods.earned(idx).call()
       }))
 
       const stakingV3Positions = await Promise.all(tokenPositions.map(async (pos, idx) => {
@@ -908,7 +908,7 @@ class Store {
         pos.address = "0x11B7a6bc0259ed6Cf9DB8F499988F9eCc7167bf5";
         pos.balance = BigNumber(pos.liquidity).div(10**18).toFixed(18)
         pos.feePercent = BigNumber(pos.fee).div(10000).toFixed(4)
-        pos.reward = BigNumber(rewards[idx]).div(10**18).toFixed(18)
+        pos.earned = BigNumber(earneds[idx].claimable).div(10**18).toFixed(18)
 
         const prices = await this._getPoolPriceInfo(web3, account, pos)
         pos.prices = prices
