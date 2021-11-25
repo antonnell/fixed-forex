@@ -253,7 +253,6 @@ export default function EnhancedTable({ claimable, crv, ibEUR, rKP3R }) {
   };
 
   const onClaim = (asset) => {
-    console.log(asset)
     setClaimLoading(true)
 
     if(asset.gauge) {
@@ -261,9 +260,9 @@ export default function EnhancedTable({ claimable, crv, ibEUR, rKP3R }) {
       stores.dispatcher.dispatch({ type: FIXED_FOREX_CLAIM_CURVE_REWARDS, content: { asset: asset.gauge }})
     } else if(asset.type === 'Fixed Forex' && asset.description === 'Fee Claim') {
       stores.dispatcher.dispatch({ type: FIXED_FOREX_CLAIM_DISTRIBUTION_REWARD, content: {  }})
-    } else if(gauge.type === 'Fixed Forex' && gauge.description === 'Vesting Rewards') {
+    } else if(asset.type === 'Fixed Forex' && asset.description === 'Vesting Rewards') {
       stores.dispatcher.dispatch({ type: FIXED_FOREX_CLAIM_VESTING_REWARD, content: {  }})
-    } else if(gauge.type === 'Fixed Forex' && gauge.description === 'Redeemable KP3R') {
+    } else if(asset.type === 'Fixed Forex' && asset.description === 'Redeemable KP3R') {
       stores.dispatcher.dispatch({ type: FIXED_FOREX_CLAIM_RKP3R, content: {  }})
     }
 

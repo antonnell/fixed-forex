@@ -132,7 +132,7 @@ function Navigation(props) {
     return (
       <React.Fragment>
         {renderNav(
-          'Your Dashboard',
+          'Dashboard',
           'dashboard',
         )}
         {renderNav(

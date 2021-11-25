@@ -72,7 +72,7 @@ export default function ffStakeOverview() {
     if(stakingPos) {
       setStakingV3Positions(stakingPos)
       setTotalStakingV3Positions(stakingPos.reduce((curr, acc) => { return BigNumber(curr).plus(acc.balance).toFixed(18) }, 0))
-      setTotalRewards(stakingPos.reduce((curr, acc) => { return BigNumber(curr).plus(acc.reward).toFixed(18) }, 0))
+      setTotalRewards(stakingPos.reduce((curr, acc) => { return BigNumber(curr).plus(acc.earned).toFixed(18) }, 0))
     }
   }
 

@@ -865,7 +865,6 @@ class Store {
         pos.feePercent = BigNumber(pos.fee).div(10000).toFixed(4)
 
         const approved = await uniswapNFTPositionsManagerContract.methods.getApproved(pos.tokenID).call()
-        console.log(approved)
         if(approved.toLowerCase() === FF_STAKING_REWARDS_V3_ADDRESS.toLowerCase()) {
           pos.stakingApproved = true
         } else {

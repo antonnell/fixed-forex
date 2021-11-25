@@ -82,7 +82,7 @@ export default function ffClaimAll() {
         type: 'Fixed Forex',
         description: 'Vesting Rewards',
         earned: rewards.veIBFFDistribution.earned,
-        symbol: 'kp3r'
+        symbol: 'rKP3R'
       })
     }
     if(rKP3R && BigNumber(rKP3R.balance).gt(0)) {
