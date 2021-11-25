@@ -2370,7 +2370,7 @@ class Store {
       const claimContract = new web3.eth.Contract(abis.rKP3RABI, FF_RKP3R_ADDRESS)
       const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
 
-      this._callContractWait(web3, claimContract, 'claim', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+      this._callContractWait(web3, claimContract, 'claim', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback, true);
     } catch (ex) {
       console.log(ex);
       return this.emitter.emit(ERROR, ex);
@@ -2670,16 +2670,22 @@ class Store {
     }
   };
 
-  _callContractWait = (web3, contract, method, params, account, gasPrice, dispatchEvent, callback) => {
+  _callContractWait = (web3, contract, method, params, account, gasPrice, dispatchEvent, callback, paddGasCost) => {
     //estimate gas
     const gasCost = contract.methods[method](...params).estimateGas({ from: account.address })
     .then((gasAmount) => {
       const context = this;
+
+      let sendGasAmount = gasAmount
+      if(paddGasCost) {
+        sendGasAmount = BigNumber(sendGasAmount).times(1.15).toFixed(0)
+      }
+
       contract.methods[method](...params)
         .send({
           from: account.address,
           // gasPrice: web3.utils.toWei(gasPrice, 'gwei'),
-          gas: gasAmount,
+          gas: sendGasAmount,
           maxFeePerGas: web3.utils.toWei(gasPrice, 'gwei'),
           maxPriorityFeePerGas: web3.utils.toWei('2', 'gwei')
         })
