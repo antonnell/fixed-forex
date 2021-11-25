@@ -4,8 +4,9 @@ import Layout from '../../components/layout/layout.js';
 import OptionsOverview from '../../components/ffOptionsOverview';
 import FFOptions from '../../components/ffOptions';
 
+import BigNumber from 'bignumber.js';
 import React, { useState, useEffect } from 'react';
-import { CONNECT_WALLET, ACCOUNT_CONFIGURED } from '../../stores/constants';
+import { CONNECT_WALLET, ACCOUNT_CONFIGURED, FIXED_FOREX_UPDATED } from '../../stores/constants';
 import stores from '../../stores';
 import { useRouter } from "next/router";
 import Unlock from '../../components/unlock';
@@ -27,6 +28,7 @@ function Options({ changeTheme }) {
   const router = useRouter();
   const [account, setAccount] = useState(accountStore);
   const [unlockOpen, setUnlockOpen] = useState(false);
+  const [rKP3R, setRKP3R] = useState(null)
 
   useEffect(() => {
     const accountConfigure = () => {
@@ -37,12 +39,18 @@ function Options({ changeTheme }) {
     const connectWallet = () => {
       onAddressClicked();
     };
+    const ffUpdated = () => {
+      setRKP3R(stores.fixedForexStore.getStore('rKP3R'))
+    }
 
     stores.emitter.on(ACCOUNT_CONFIGURED, accountConfigure);
     stores.emitter.on(CONNECT_WALLET, connectWallet);
+    stores.emitter.on(FIXED_FOREX_UPDATED, ffUpdated);
+
     return () => {
       stores.emitter.removeListener(ACCOUNT_CONFIGURED, accountConfigure);
       stores.emitter.removeListener(CONNECT_WALLET, connectWallet);
+      stores.emitter.removeListener(FIXED_FOREX_UPDATED, ffUpdated);
     };
   }, []);
 
@@ -66,26 +74,26 @@ function Options({ changeTheme }) {
         <div className={classes.connected}>
           <Typography className={classes.mainHeading} variant='h1'>rKP3R Options</Typography>
           <Typography className={classes.mainDesc} variant='body2'>
-            You can redeem rKP3R for the KP3R CALL option at 50% discount at any time, once created, you have 24 hours to exercise the CALL.
+          You can redeem rKP3R for the KP3R CALL option at { rKP3R && rKP3R.discount ? (BigNumber(100).minus(rKP3R.discount).toFixed(0) + '%') : ('a slight') } discount at any time. Once the option is created, you have 24 hours to exercise the CALL.
           </Typography>
           <OptionsOverview />
           <FFOptions />
         </div>
          :
          <Paper className={classes.notConnectedContent}>
-         <BalanceIcon className={ classes.overviewIcon } />
-         <Typography className={classes.mainHeadingNC} variant='h1'>rKP3R Options</Typography>
-         <Typography className={classes.mainDescNC} variant='body2'>
-           You can redeem rKP3R for the KP3R CALL option at 50% discount at any time, once created, you have 24 hours to exercise the CALL.
-         </Typography>
-         <Button
-           disableElevation
-           className={classes.buttonConnect}
-           variant="contained"
-           onClick={onAddressClicked}>
-           {account && account.address && <div className={`${classes.accountIcon} ${classes.metamask}`}></div>}
-           <Typography>Connect Wallet to Continue</Typography>
-         </Button>
+           <BalanceIcon className={ classes.overviewIcon } />
+           <Typography className={classes.mainHeadingNC} variant='h1'>rKP3R Options</Typography>
+           <Typography className={classes.mainDescNC} variant='body2'>
+             You can redeem rKP3R for the KP3R CALL option at { rKP3R && rKP3R.discount ? (BigNumber(100).minus(rKP3R.discount).toFixed(0) + '%') : ('a slight') } discount at any time. Once the option is created, you have 24 hours to exercise the CALL.
+           </Typography>
+           <Button
+             disableElevation
+             className={classes.buttonConnect}
+             variant="contained"
+             onClick={onAddressClicked}>
+             {account && account.address && <div className={`${classes.accountIcon} ${classes.metamask}`}></div>}
+             <Typography>Connect Wallet to Continue</Typography>
+           </Button>
          </Paper>
        }
        {unlockOpen && <Unlock modalOpen={unlockOpen} closeModal={closeUnlock} />}

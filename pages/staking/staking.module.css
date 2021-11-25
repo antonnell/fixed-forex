@@ -45,7 +45,9 @@
   margin: 20px auto 0px auto !important;
   text-align: left !important;
   color: rgb(104,108,122);
-  font-size: 14px !important;
+  font-size: 18px !important;
+  font-family: 'Roboto', sans-serif !important;
+  font-weight: 300 !important;
   width: calc(100% - 180px) !important;
 }
 

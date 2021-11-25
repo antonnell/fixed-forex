@@ -134,7 +134,7 @@ export default function ffLockAmount({ ibff, veIBFF }) {
             disabled={ lockLoading }
             onClick={ onLock }
             >
-            <Typography className={ classes.actionButtonText }>{ lockLoading ? `Increasing Lock` : `Increase Lock` }</Typography>
+            <Typography className={ classes.actionButtonText }>{ lockLoading ? `Increasing Amount` : `Increase Amount` }</Typography>
             { lockLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
           </Button>
         </div>

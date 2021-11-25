@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { lighten, makeStyles } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography, Button, CircularProgress, SvgIcon } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography, Button, CircularProgress, SvgIcon, Tooltip } from '@material-ui/core';
 import BigNumber from 'bignumber.js';
 
 import stores from '../../stores'
@@ -247,11 +247,11 @@ const useStyles = makeStyles((theme) => ({
     right: '0px',
     top: '24px'
   },
-  orangeDot: {
+  redDot: {
     borderRadius: '10px',
     width: '10px',
     height: '10px',
-    background: 'orange',
+    background: 'red',
     position: 'absolute',
     right: '0px',
     top: '24px'
@@ -386,7 +386,7 @@ export default function EnhancedTable({ tokens, rKP3R }) {
                   <TableCell className={classes.cell} align="right">
                     {
                       (row && row.prices) ? (
-                        BigNumber(row.prices.currentPrice).gt(row.prices.lowPrice) && BigNumber(row.prices.currentPrice).lt(row.prices.highPrice) ? <div className={ classes.greenDot }></div> : <div className={ classes.orangeDot }></div>
+                        BigNumber(row.prices.currentPrice).gt(row.prices.lowPrice) && BigNumber(row.prices.currentPrice).lt(row.prices.highPrice) ? <Tooltip title='In range'><div className={ classes.greenDot }></div></Tooltip> : <Tooltip title='Out of range'><div className={ classes.redDot }></div></Tooltip>
                       ) : 'Fetching'
                     }
                     <Typography variant="h2" className={classes.textSpaced}>
@@ -398,28 +398,42 @@ export default function EnhancedTable({ tokens, rKP3R }) {
                       Min: { formatCurrency(row?.prices?.lowPrice) } -  Max: { formatCurrency(row?.prices?.highPrice) }
                     </Typography>
                   </TableCell>
-                  <TableCell className={classes.cell} align="right">
-                    <Button
-                      className={ classes.buttonOverride }
-                      variant='contained'
-                      size='large'
-                      color='primary'
-                      disabled={ approveLoading || row.stakingApproved }
-                      onClick={ () => { onApprove(row) } }>
-                      <Typography className={ classes.actionButtonText }>{ approveLoading ? `Approving` : `Approve` }</Typography>
-                      { approveLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
-                    </Button>
-                    <Button
-                      className={ classes.buttonOverride }
-                      variant='contained'
-                      size='large'
-                      color='primary'
-                      disabled={ stakeLoading || !row.stakingApproved }
-                      onClick={ () => { onStake(row) } }>
-                      <Typography className={ classes.actionButtonText }>{ stakeLoading ? `Staking` : `Stake` }</Typography>
-                      { stakeLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
-                    </Button>
-                  </TableCell>
+                  { !(BigNumber(row.prices.currentPrice).gt(row.prices.lowPrice) && BigNumber(row.prices.currentPrice).lt(row.prices.highPrice)) &&
+                    <TableCell className={classes.cell} align="right">
+                      <Button
+                        disabled
+                        className={ classes.buttonOverride }
+                        variant='contained'
+                        size='large'
+                        color='primary'>
+                        <Typography className={ classes.actionButtonText }>Position out of range</Typography>
+                      </Button>
+                    </TableCell>
+                  }
+                  { BigNumber(row.prices.currentPrice).gt(row.prices.lowPrice) && BigNumber(row.prices.currentPrice).lt(row.prices.highPrice) &&
+                    <TableCell className={classes.cell} align="right">
+                      <Button
+                        className={ classes.buttonOverride }
+                        variant='contained'
+                        size='large'
+                        color='primary'
+                        disabled={ approveLoading || row.stakingApproved }
+                        onClick={ () => { onApprove(row) } }>
+                        <Typography className={ classes.actionButtonText }>{ approveLoading ? `Approving` : `Approve` }</Typography>
+                        { approveLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
+                      </Button>
+                      <Button
+                        className={ classes.buttonOverride }
+                        variant='contained'
+                        size='large'
+                        color='primary'
+                        disabled={ stakeLoading || !row.stakingApproved }
+                        onClick={ () => { onStake(row) } }>
+                        <Typography className={ classes.actionButtonText }>{ stakeLoading ? `Staking` : `Stake` }</Typography>
+                        { stakeLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
+                      </Button>
+                    </TableCell>
+                  }
                 </TableRow>
               );
             })}

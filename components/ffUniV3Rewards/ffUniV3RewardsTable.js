@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { lighten, makeStyles } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography, Button, CircularProgress, SvgIcon } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography, Button, CircularProgress, SvgIcon, Tooltip } from '@material-ui/core';
 import BigNumber from 'bignumber.js';
 
 import stores from '../../stores'
@@ -392,7 +392,7 @@ export default function EnhancedTable({ tokens, rKP3R }) {
                   <TableCell className={classes.cell} align="right">
                     {
                       (row && row.prices) ? (
-                        BigNumber(row.prices.currentPrice).gt(row.prices.lowPrice) && BigNumber(row.prices.currentPrice).lt(row.prices.highPrice) ? <div className={ classes.greenDot }></div> : <div className={ classes.orangeDot }></div>
+                        BigNumber(row.prices.currentPrice).gt(row.prices.lowPrice) && BigNumber(row.prices.currentPrice).lt(row.prices.highPrice) ? <Tooltip title='In range - Currently earning fees'><div className={ classes.greenDot }></div></Tooltip> : <Tooltip title='Out of range - No longer earning fees'><div className={ classes.orangeDot }></div></Tooltip>
                       ) : 'Fetching'
                     }
                     <Typography variant="h2" className={classes.textSpaced}>

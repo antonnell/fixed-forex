@@ -132,8 +132,13 @@ function Navigation(props) {
     return (
       <React.Fragment>
         {renderNav(
-          'Dashboard',
+          'Your Dashboard',
           'dashboard',
+        )}
+        {renderNav(
+          'Stats',
+          'ffDashboard',
+          'https://fixedforex.live/'
         )}
         <div className={classes.sectionDivider}></div>
         {renderSectionHeader(
@@ -152,10 +157,10 @@ function Navigation(props) {
             'CRV LP',
             'home',
           )}
-          {/*renderSubNav(
+          {renderSubNav(
             'Uniswap LP',
             'staking',
-          )*/}
+          )}
           {renderSubNav(
             'Withdraw Inactive',
             'withdraw',
@@ -256,12 +261,18 @@ function Navigation(props) {
     );
   };
 
-  const renderNav = (title, link) => {
+  const renderNav = (title, link, anotherLink) => {
     return (
       <div
         className={classes.navigationOptionContainer}
         onClick={() => {
-          handleNavigate('/' + link);
+
+          if(anotherLink) {
+            window.open(anotherLink, '_blank')
+          } else {
+            handleNavigate('/' + link);
+          }
+
         }}
       >
         {activePath.includes('/' + link) ? (
@@ -270,6 +281,7 @@ function Navigation(props) {
           <div className={classes.navigationOptionNotSelected}></div>
         )}
         <Typography variant="h2" className={ classes.subtitleText}>{title}</Typography>
+        { anotherLink && '↗'}
       </div>
     );
   };
@@ -492,7 +504,7 @@ function Navigation(props) {
           </Grid>
         </Grid>
       </div>
-      <Typography className={classes.smallVersion}>Version 0.6.1</Typography>
+      <Typography className={classes.smallVersion}>Version 0.6.2</Typography>
       { warningOpen &&
         <FFWarning close={ closeWarning } />
       }

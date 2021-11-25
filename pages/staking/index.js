@@ -103,29 +103,29 @@ function Staking({ changeTheme }) {
       <div className={classes.ffContainer}>
         {account && account.address ?
           <div className={classes.connected}>
-          <Typography className={classes.mainHeading} variant='h1'>Uniswap Liquidity Pool</Typography>
-          <Typography className={classes.mainDesc} variant='body2'>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
-          </Typography>
+            <Typography className={classes.mainHeading} variant='h1'>Uniswap Liquidity Pool</Typography>
+            <Typography className={classes.mainDesc} variant='body2'>
+              Stake your KP3R + ETH Uniswap position to earn KP3R rewards on top of your current Uniswap fees.
+            </Typography>
             <Overview />
             <Tokens />
             <Rewards />
           </div>
            :
            <Paper className={classes.notConnectedContent}>
-           <UniswapIcon className={ classes.overviewIcon } />
-           <Typography className={classes.mainHeadingNC} variant='h1'>Uniswap Liquidity Pool</Typography>
-           <Typography className={classes.mainDescNC} variant='body2'>
-             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
-           </Typography>
-           <Button
-             disableElevation
-             className={classes.buttonConnect}
-             variant="contained"
-             onClick={onAddressClicked}>
-             {account && account.address && <div className={`${classes.accountIcon} ${classes.metamask}`}></div>}
-             <Typography>Connect Wallet to Continue</Typography>
-           </Button>
+             <UniswapIcon className={ classes.overviewIcon } />
+             <Typography className={classes.mainHeadingNC} variant='h1'>Uniswap Liquidity Pool</Typography>
+             <Typography className={classes.mainDescNC} variant='body2'>
+               Stake your KP3R + ETH Uniswap position to earn KP3R rewards on top of your current Uniswap fees.
+             </Typography>
+             <Button
+               disableElevation
+               className={classes.buttonConnect}
+               variant="contained"
+               onClick={onAddressClicked}>
+               {account && account.address && <div className={`${classes.accountIcon} ${classes.metamask}`}></div>}
+               <Typography>Connect Wallet to Continue</Typography>
+             </Button>
            </Paper>
          }
          {unlockOpen && <Unlock modalOpen={unlockOpen} closeModal={closeUnlock} />}

@@ -601,6 +601,8 @@ class Store {
       const rKP3RContract = new web3.eth.Contract(abis.rKP3RABI, FF_RKP3R_ADDRESS)
       const price = await rKP3RContract.methods.twap().call()
       rKP3R.price = BigNumber(price).div(10**6).toFixed(18)
+      const discount = await rKP3RContract.methods.discount().call()
+      rKP3R.discount = discount
 
       this.setStore({ rKP3R })
       this.emitter.emit(FIXED_FOREX_UPDATED);
@@ -852,8 +854,10 @@ class Store {
         return uniswapNFTPositionsManagerContract.methods.positions(idx).call()
       }))
 
-      const validPositions = await Promise.all(tokenPositions.filter((pos) => {
-        return pos.token0 === '0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44' && pos.token1 === '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' && BigNumber(pos.liquidity).gt(0)
+      const validPositions = await Promise.all(tokenPositions.filter((pos, idx) => {
+        const isActive = pos.token0 === '0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44' && pos.token1 === '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' && BigNumber(pos.liquidity).gt(0)
+        tokenIDs.splice(idx, 1)
+        return isActive
       }).map(async (pos, idx) => {
         pos.tokenID = tokenIDs[idx]
         pos.address = "0x11B7a6bc0259ed6Cf9DB8F499988F9eCc7167bf5";
@@ -861,6 +865,7 @@ class Store {
         pos.feePercent = BigNumber(pos.fee).div(10000).toFixed(4)
 
         const approved = await uniswapNFTPositionsManagerContract.methods.getApproved(pos.tokenID).call()
+        console.log(approved)
         if(approved.toLowerCase() === FF_STAKING_REWARDS_V3_ADDRESS.toLowerCase()) {
           pos.stakingApproved = true
         } else {
