@@ -195,6 +195,9 @@ export default function ffOverview() {
                     `${formatCurrency(position && position.length >= 3 ? position[3] / 100 : 0)} %`
                   )}
                 </Typography>
+                { BigNumber(position && position.length >= 3 ? position[3] / 100 : 0).lt(50) && <Typography className={ `${classes.subValue} ${classes.greenText}` }>Safe</Typography> }
+                { BigNumber(position && position.length >= 3 ? position[3] / 100 : 0).gt(80) && <Typography className={ `${classes.subValue} ${classes.redText}` }>Dangerous</Typography> }
+                { BigNumber(position && position.length >= 3 ? position[3] / 100 : 0).gte(50) && BigNumber(position && position.length >= 3 ? position[3] / 100 : 0).lte(80) && <Typography className={ `${classes.subValue} ${classes.orangeText}` }>Risky</Typography> }
                 </Grid>
               </Grid>
             </div>

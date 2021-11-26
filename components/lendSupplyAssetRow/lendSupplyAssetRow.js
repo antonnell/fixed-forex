@@ -269,13 +269,7 @@ function LendSupplyAssetDetails({
 
   return (
     <Paper elevation={0} square className={classes.assetActions}>
-      <div
-        className={
-          theLimitUsed === "infinite" || BigNumber(theLimitUsed).gt(100)
-            ? classes.assetInfoError
-            : classes.assetInfo
-        }
-      >
+      <div className={ theLimitUsed === "infinite" || BigNumber(theLimitUsed).gt(80) ? classes.assetInfoError : BigNumber(theLimitUsed).gte(50) ? classes.assetInfoWarning : classes.assetInfo } >
         <div className={classes.infoField}>
           <Typography variant={"h5"}>
             Borrow limit:

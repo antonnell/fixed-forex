@@ -114,6 +114,18 @@
   margin-right: 24px !important;
 }
 
+.greenText {
+  color: #49a766 !important;
+}
+
+.orangeText {
+  color: #ffc512 !important;
+}
+
+.redText {
+  color: #dc3545 !important;
+}
+
 @media screen and (max-width: 1200px) {
   .container {
     width: calc(100% - 0px);

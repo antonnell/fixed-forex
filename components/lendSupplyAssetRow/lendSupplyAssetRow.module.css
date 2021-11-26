@@ -166,6 +166,18 @@
   background: #dc3545;
 }
 
+.assetInfoWarning {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  padding: 36px;
+  width: 100%;
+  flex-wrap: wrap;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.32);
+  background: #ffc512;
+}
+
 
 @media screen and (max-width: 1000px) {
   .lendingRow {
