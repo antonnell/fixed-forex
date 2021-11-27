@@ -488,7 +488,7 @@ export default function LendAllAssetRow({ lendingAsset, lendingBorrow, lendingBo
 
   return (
     <React.Fragment>
-      <TableRow hover tabIndex={-1} key={lendingAsset.symbol} onClick={() => setOpen(!open)} class={classes.lendindAssetTableRow}>
+      <TableRow hover tabIndex={-1} key={lendingAsset.symbol} onClick={() => setOpen(!open)} className={classes.lendindAssetTableRow}>
         <TableCell className={classes.removePadding}>
           <div className={classes.lendTitleCell} id={lendingAsset.address}>
             <div className={classes.logo}>

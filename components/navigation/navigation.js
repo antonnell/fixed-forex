@@ -154,11 +154,11 @@ function Navigation(props) {
         )}
         <div className={ classes.subAssets }>
           {renderSubNav(
-            'CRV LP',
+            'Curve + Convex',
             'home',
           )}
           {renderSubNav(
-            'Uniswap LP',
+            'Uniswap',
             'staking',
           )}
           {renderSubNav(

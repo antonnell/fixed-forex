@@ -24,6 +24,11 @@ import { uniswapV3PoolABI } from './uniswapV3PoolABI'
 import { comptrollerABI } from './comptrollerABI'
 import { cERC20DelegatorABI } from './cERC20DelegatorABI'
 import { ironBankRegistryAdapterABI } from './ironBankRegistryAdapterABI'
+import { convexBaseRewardPoolABI } from './convexBaseRewardPoolABI'
+import { convexBoosterABI } from './convexBoosterABI'
+import { convexVirtualBalanceRewardPoolABI } from './convexVirtualBalanceRewardPoolABI'
+import { convexClaimZapABI } from './convexClaimZapABI'
+import { convexCVXABI } from './convexCVXABI'
 
 export default {
   erc20ABI: erc20ABI,
@@ -52,5 +57,9 @@ export default {
   comptrollerABI: comptrollerABI,
   cERC20DelegatorABI: cERC20DelegatorABI,
   ironBankRegistryAdapterABI: ironBankRegistryAdapterABI,
-
+  convexBaseRewardPoolABI: convexBaseRewardPoolABI,
+  convexBoosterABI: convexBoosterABI,
+  convexVirtualBalanceRewardPoolABI: convexVirtualBalanceRewardPoolABI,
+  convexClaimZapABI: convexClaimZapABI,
+  convexCVXABI: convexCVXABI
 };
