@@ -2,6 +2,7 @@ import async from 'async';
 import {
   MAX_UINT256,
   ZERO_ADDRESS,
+  CURVE_FI_STATS_API,
   FF_FEE_DISTRIBUTION_LOOKUP_ADDRESS,
   FF_MULTICALL_ADDRESS,
   IBKRW_ADDRESS,
@@ -52,6 +53,7 @@ import {
   FF_STAKING_REWARDS_V3_ADDRESS,
   FF_UNSIWAP_POSITIONS_MANAGER_ADDRESS,
   FF_CONVEX_CLAIM_ZAP,
+  FF_CURVE_GAUGE_CONTROLLER,
 
   IBEUR_ETH_ADDRESS_OLD,
   IBEUR_GAUGE_ADDRESS_OLD,
@@ -693,6 +695,22 @@ class Store {
     }
   }
 
+  //need to get $ value of ibAssets and sAssets, as well as pool ratios and take things further from there. fk knows.
+  calcPoolAPY = (gaugeWeight, totalWeight, inflationRate, workingSupply, virtualPrice, assetPrice, curvePrice) => {
+    try {
+
+      let weightOfRewards = gaugeWeight / totalWeight
+      let rate = (inflationRate * weightOfRewards * 31536000 / workingSupply * 0.4) / (virtualPrice * (assetPrice/1e18))
+      let apy  = rate * curvePrice * 100 * 1e36
+
+
+      return apy
+    } catch(ex) {
+      console.error(ex)
+      return 0
+    }
+  }
+
   _getAssetInfo = async (web3, account, assets) => {
     try {
       const gaugeProxyContract = new web3.eth.Contract(abis.gaugeProxyABI, GAUGE_PROXY_ADDRESS)
@@ -710,10 +728,20 @@ class Store {
         convexCVXContract.methods.totalCliffs().call(),
       ]);
 
-      console.log(convexReductionPerCliff)
-      console.log(convexTotalSupply)
-      console.log(convexMaxSupply)
-      console.log(convexTotalCliffs)
+      let gaugeControllerContract = new web3.eth.Contract(abis.curveGaugeControllerABI, FF_CURVE_GAUGE_CONTROLLER)
+
+      let curveFiBaseAPY = []
+      try {
+        const url = `${CURVE_FI_STATS_API}api/getFactoryAPYs?version=2`
+        const apysResult = await fetch(url);
+        const apysJSON = await apysResult.json();
+        curveFiBaseAPY = apysJSON.data.poolDetails.filter((pool) => {
+          return [IBGBP_POOL_ADDRESS, IBJPY_POOL_ADDRESS, IBKRW_POOL_ADDRESS, IBAUD_POOL_ADDRESS, IBCHF_POOL_ADDRESS, IBEUR_POOL_ADDRESS].includes(pool.poolAddress)
+        })
+        console.log(curveFiBaseAPY)
+      } catch(ex) {
+        console.log(ex)
+      }
 
       const assetsBalances = await Promise.all(assets.map(async (asset) => {
         const assetContract = new web3.eth.Contract(abis.erc20ABI, asset.address)
@@ -722,7 +750,8 @@ class Store {
         const convexGaugeContract = new web3.eth.Contract(abis.convexBaseRewardPoolABI, asset.convex.address)
 
         const [balanceOf, userGaugeBalance, userGaugeEarned, userRKP3REarned, poolBalances, userPoolBalance, poolSymbol,
-          virtualPrice, poolGaugeAllowance, coins0, coins1, gaugeVotes, userGaugeVotes, price, convexBalanceOf, convexEarned ] = await Promise.all([
+          virtualPrice, poolGaugeAllowance, coins0, coins1, gaugeVotes, userGaugeVotes, price, convexBalanceOf, convexEarned,
+          curveInflationRate, curveWorkingSupply, curveGaugeWeight, curveTotalWeight ] = await Promise.all([
           assetContract.methods.balanceOf(account.address).call(),
           gaugeContract.methods.balanceOf(account.address).call(),
           gaugeContract.methods.claimable_tokens(account.address).call(),
@@ -739,6 +768,10 @@ class Store {
           priceOracleContract.methods.getUnderlyingPrice(asset.oracleAddress).call(),
           convexGaugeContract.methods.balanceOf(account.address).call(),
           convexGaugeContract.methods.earned(account.address).call(),
+          gaugeContract.methods.inflation_rate().call(),
+          gaugeContract.methods.working_supply().call(),
+          gaugeControllerContract.methods.get_gauge_weight(asset.gauge.address).call(),
+          gaugeControllerContract.methods.get_total_weight().call()
         ]);
 
         // get coin asset info
@@ -806,7 +839,11 @@ class Store {
           convexReductionPerCliff,
           convexTotalSupply,
           convexMaxSupply,
-          convexTotalCliffs
+          convexTotalCliffs,
+          curveInflationRate,
+          curveWorkingSupply,
+          curveGaugeWeight,
+          curveTotalWeight
         }
       }))
 
@@ -847,6 +884,14 @@ class Store {
         assets[i].convex.earnedCVX = BigNumber(assetsBalances[i].convexEarned).times(reduction).div(assetsBalances[i].convexTotalCliffs).toFixed(18) // this is crv
         assets[i].convex.earnedRKP3R = BigNumber(assetsBalances[i].convexRewardCallsResponse).div(10**18).toFixed(18)
 
+        const crv = this.getStore('crv')
+        const curvePrice = crv.price
+        assets[i].gauge.apyBase = BigNumber(this.calcPoolAPY(assetsBalances[i].curveGaugeWeight, assetsBalances[i].curveTotalWeight, assetsBalances[i].curveInflationRate, assetsBalances[i].curveWorkingSupply, assetsBalances[i].virtualPrice, assetsBalances[i].price, curvePrice)).toFixed(18)
+        assets[i].gauge.apyBoosted = BigNumber(assets[i].gauge.apyBase).times(2.5).toFixed(18)
+
+        let poolMeta = curveFiBaseAPY.filter((pool) => { return pool.poolAddress === assets[i].gauge.poolAddress})
+        console.log(poolMeta)
+        assets[i].gauge.apy = BigNumber(poolMeta[0]?.apy).toFixed(18)
       }
 
       this.setStore({ assets })

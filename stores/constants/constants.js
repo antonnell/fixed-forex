@@ -4,6 +4,7 @@ import BigNumber from 'bignumber.js';
 export const GAS_PRICE_API = 'https://gasprice.poa.network/';
 export const ZAPPER_GAS_PRICE_API = 'https://api.zapper.fi/v1/gas-price?api_key=96e0cc51-a62e-42ca-acee-910ea7d2a241';
 export const ETHERSCAN_URL = 'https://etherscan.io/';
+export const CURVE_FI_STATS_API = 'https://api.curve.fi/'
 
 export const CREAM_PRICE_ORACLE_ADDRESS = '0xde19f5a7cf029275be9cec538e81aa298e297266';
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
@@ -27,6 +28,7 @@ export const FF_RKP3R_ADDRESS = '0xEdB67Ee1B171c4eC66E6c10EC43EDBbA20FaE8e9'
 export const FF_OKP3R_ADDRESS = '0xba15ab4c5b27917e19f772c9718095e248feff35'
 export const FF_STAKING_REWARDS_V3_ADDRESS = '0x68924dbd6eb82bFe666B2E0403f4cd1Cd6790C3f'
 export const FF_UNSIWAP_POSITIONS_MANAGER_ADDRESS = '0xC36442b4a4522E871399CD717aBDD847Ab11FE88'
+export const FF_CURVE_GAUGE_CONTROLLER = '0x2f50d538606fa9edd2b11e2446beb18c9d5846bb'
 
 export const FF_CONVEX_POOL_MANAGEMENT_ADDRESS = '0xF403C135812408BFbE8713b5A23a04b3D48AAE31'
 export const FF_CONVEX_CLAIM_ZAP = '0x92Cf9E5e4D1Dfbf7dA0d2BB3e884a68416a65070'

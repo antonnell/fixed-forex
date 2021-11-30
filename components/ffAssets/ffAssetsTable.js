@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography } from '@material-ui/core';
+import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography, Tooltip } from '@material-ui/core';
 import { useRouter } from "next/router";
 
 import { formatCurrency } from '../../utils';
@@ -47,13 +47,19 @@ const headCells = [
     id: 'poolBalance',
     numeric: true,
     disablePadding: false,
-    label: 'Pool',
+    label: 'Curve LP',
   },
   {
     id: 'stakedBalance',
     numeric: true,
     disablePadding: false,
-    label: 'Staked',
+    label: 'Staked in Curve',
+  },
+  {
+    id: 'convexBalance',
+    numeric: true,
+    disablePadding: false,
+    label: 'Staked in Convex',
   },
   {
     id: '',
@@ -273,13 +279,25 @@ export default function EnhancedTable({ assets }) {
                     <Typography variant="h2" className={classes.textSpaced}>
                       { formatCurrency(row.gauge.userPoolBalance) }
                     </Typography>
-                    <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
-                      { row.gauge.poolSymbol }
-                    </Typography>
+                    <Tooltip title={ 'Variable APY based on todays trading activity' }>
+                      <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
+                        { formatCurrency(row.gauge.apy) }%
+                      </Typography>
+                    </Tooltip>
                   </TableCell>
                   <TableCell className={classes.cell} align="right">
                     <Typography variant="h2" className={classes.textSpaced}>
                       { formatCurrency(row.gauge.userGaugeBalance) }
+                    </Typography>
+                    <Tooltip title={ 'Token APY based on current prices and reward rates. Stake veCRV to acheive up to 2.5x the rewards.' }>
+                      <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
+                        { formatCurrency(row.gauge.apyBase) }% -> { formatCurrency(row.gauge.apyBoosted) }%
+                      </Typography>
+                    </Tooltip>
+                  </TableCell>
+                  <TableCell className={classes.cell} align="right">
+                    <Typography variant="h2" className={classes.textSpaced}>
+                      { formatCurrency(row.convex.balance) }
                     </Typography>
                     <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
                       { row.gauge.poolSymbol }

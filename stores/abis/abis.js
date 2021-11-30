@@ -29,6 +29,7 @@ import { convexBoosterABI } from './convexBoosterABI'
 import { convexVirtualBalanceRewardPoolABI } from './convexVirtualBalanceRewardPoolABI'
 import { convexClaimZapABI } from './convexClaimZapABI'
 import { convexCVXABI } from './convexCVXABI'
+import { curveGaugeControllerABI } from './curveGaugeControllerABI'
 
 export default {
   erc20ABI: erc20ABI,
@@ -61,5 +62,6 @@ export default {
   convexBoosterABI: convexBoosterABI,
   convexVirtualBalanceRewardPoolABI: convexVirtualBalanceRewardPoolABI,
   convexClaimZapABI: convexClaimZapABI,
-  convexCVXABI: convexCVXABI
+  convexCVXABI: convexCVXABI,
+  curveGaugeControllerABI: curveGaugeControllerABI
 };
