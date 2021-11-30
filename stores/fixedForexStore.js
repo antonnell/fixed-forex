@@ -653,8 +653,8 @@ class Store {
 
       const rKP3RContract = new web3.eth.Contract(abis.rKP3RABI, FF_RKP3R_ADDRESS)
       const price = await rKP3RContract.methods.twap().call()
-      rKP3R.price = BigNumber(price).div(10**6).toFixed(18)
       const discount = await rKP3RContract.methods.discount().call()
+      rKP3R.price = BigNumber(price).times((100-discount)/100).div(10**6).toFixed(18)
       rKP3R.discount = discount
 
       this.setStore({ rKP3R })
@@ -890,7 +890,6 @@ class Store {
         assets[i].gauge.apyBoosted = BigNumber(assets[i].gauge.apyBase).times(2.5).toFixed(18)
 
         let poolMeta = curveFiBaseAPY.filter((pool) => { return pool.poolAddress === assets[i].gauge.poolAddress})
-        console.log(poolMeta)
         assets[i].gauge.apy = BigNumber(poolMeta[0]?.apy).toFixed(18)
       }
 
