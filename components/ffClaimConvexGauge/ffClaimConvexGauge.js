@@ -6,7 +6,7 @@ import { formatCurrency } from '../../utils';
 import classes from './ffClaimConvexGauge.module.css';
 
 import stores from '../../stores'
-import { ERROR, FIXED_FOREX_CLAIM_CURVE_REWARDS, FIXED_FOREX_CURVE_REWARD_CLAIMED } from '../../stores/constants';
+import { ERROR, FIXED_FOREX_CLAIM_CONVEX_REWARDS, FIXED_FOREX_CONVEX_REWARD_CLAIMED } from '../../stores/constants';
 
 export default function ffClaimConvexGauge({ asset }) {
 
@@ -17,18 +17,18 @@ export default function ffClaimConvexGauge({ asset }) {
       setLoading(false)
     }
 
-    stores.emitter.on(FIXED_FOREX_CURVE_REWARD_CLAIMED, rewardClaimed);
+    stores.emitter.on(FIXED_FOREX_CONVEX_REWARD_CLAIMED, rewardClaimed);
     stores.emitter.on(ERROR, rewardClaimed);
     return () => {
-      stores.emitter.removeListener(FIXED_FOREX_CURVE_REWARD_CLAIMED, rewardClaimed);
+      stores.emitter.removeListener(FIXED_FOREX_CONVEX_REWARD_CLAIMED, rewardClaimed);
       stores.emitter.removeListener(ERROR, rewardClaimed);
     };
   }, []);
 
   const claim = () => {
-    if(BigNumber(asset && asset.gauge ? asset.gauge.earned : 0).gt(0)) {
+    if(BigNumber(asset && asset.convex ? asset.convex.earnedCRV : 0).gt(0)) {
       setLoading(true)
-      stores.dispatcher.dispatch({ type: FIXED_FOREX_CLAIM_CURVE_REWARDS, content: { asset }})
+      stores.dispatcher.dispatch({ type: FIXED_FOREX_CLAIM_CONVEX_REWARDS, content: { asset }})
     }
   }
 

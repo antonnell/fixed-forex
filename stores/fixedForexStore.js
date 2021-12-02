@@ -147,7 +147,9 @@ import {
   FIXED_FOREX_GET_UNI_REWARDS,
   FIXED_FOREX_UNI_REWARDS_RETURNED,
   FIXED_FOREX_GET_ALL_UNI_REWARDS,
-  FIXED_FOREX_ALL_UNI_REWARDS_RETURNED
+  FIXED_FOREX_ALL_UNI_REWARDS_RETURNED,
+  FIXED_FOREX_CLAIM_CONVEX_REWARDS,
+  FIXED_FOREX_CONVEX_REWARD_CLAIMED,
 } from './constants';
 import { Pool, tickToPrice } from "@uniswap/v3-sdk";
 import { Token } from "@uniswap/sdk-core";
@@ -200,6 +202,9 @@ class Store {
             break;
           case FIXED_FOREX_CLAIM_CURVE_RKP3R_REWARDS:
             this.claimCurveKP3RReward(payload);
+            break;
+          case FIXED_FOREX_CLAIM_CONVEX_REWARDS:
+            this.claimConvexReward(payload);
             break;
             // SUSHISWAP LP
           case FIXED_FOREX_STAKE_SLP:
@@ -781,7 +786,7 @@ class Store {
 
         const [balanceOf, userGaugeBalance, userGaugeEarned, userRKP3REarned, poolBalances, userPoolBalance, poolSymbol,
           virtualPrice, poolGaugeAllowance, coins0, coins1, gaugeVotes, userGaugeVotes, price, convexBalanceOf, convexEarned,
-          curveInflationRate, curveWorkingSupply, curveGaugeWeight, curveTotalWeight, poolConvexAllowance ] = await Promise.all([
+          curveInflationRate, curveWorkingSupply, curveGaugeWeight, curveTotalWeight, poolConvexAllowance, curveRewardData ] = await Promise.all([
           assetContract.methods.balanceOf(account.address).call(),
           gaugeContract.methods.balanceOf(account.address).call(),
           gaugeContract.methods.claimable_tokens(account.address).call(),
@@ -803,6 +808,7 @@ class Store {
           gaugeControllerContract.methods.get_gauge_weight(asset.gauge.address).call(),
           gaugeControllerContract.methods.get_total_weight().call(),
           poolContract.methods.allowance(account.address, FF_CONVEX_POOL_MANAGEMENT_ADDRESS).call(),
+          gaugeContract.methods.reward_data(FF_RKP3R_ADDRESS).call(),
         ]);
 
         // get coin asset info
@@ -875,7 +881,8 @@ class Store {
           curveWorkingSupply,
           curveGaugeWeight,
           curveTotalWeight,
-          poolConvexAllowance
+          poolConvexAllowance,
+          curveRewardData
         }
       }))
 
@@ -925,7 +932,6 @@ class Store {
 
         let poolMeta = curveFiBaseAPY.filter((pool) => { return pool.poolAddress === assets[i].gauge.poolAddress})
         assets[i].gauge.apy = BigNumber(poolMeta[0]?.apy).toFixed(18)
-
         assets[i].gauge.rKP3RAPY = BigNumber(1).toFixed(18)
       }
 
@@ -1437,6 +1443,42 @@ class Store {
       const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
 
       this._callContractWait(web3, gaugeContract, 'claim_rewards', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  }
+
+  claimConvexReward = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { gasSpeed, asset } = payload.content;
+
+    this._callClaimConvexReward(web3, account, asset, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_CONVEX_REWARD_CLAIMED, res);
+    });
+  }
+
+  _callClaimConvexReward = async (web3, account, asset, gasSpeed, callback) => {
+    try {
+      const minterContract = new web3.eth.Contract(abis.convexBaseRewardPoolABI, asset.convex.address)
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, minterContract, 'getReward', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
     } catch (ex) {
       console.log(ex);
       return this.emitter.emit(ERROR, ex);
