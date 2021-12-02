@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Skeleton from '@material-ui/lab/Skeleton';
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography, Tooltip } from '@material-ui/core';
 import { useRouter } from "next/router";
+import BigNumber from 'bignumber.js';
 
 import { formatCurrency } from '../../utils';
 
@@ -240,6 +241,15 @@ export default function EnhancedTable({ assets }) {
     router.push(`/asset/${asset.address}/curve`)
   }
 
+  const showCurveTooltip = (row) => {
+    return <div className={ classes.tooltipContainer }>
+      <Typography>Token APY based on current prices and reward rates. Stake veCRV to acheive up to 2.5x the CRV rewards.</Typography>
+      <Typography>Fees ~ { formatCurrency(row.gauge.apy) }%</Typography>
+      <Typography>CRV ~ { formatCurrency(row.gauge.apyBase) }% -> { formatCurrency(row.gauge.apyBoosted) }%</Typography>
+      <Typography>rKP3R ~ { formatCurrency(row.gauge.rKP3RAPY) }%</Typography>
+    </div>
+  }
+
   return (
     <div className={classes.root}>
       <TableContainer>
@@ -289,9 +299,9 @@ export default function EnhancedTable({ assets }) {
                     <Typography variant="h2" className={classes.textSpaced}>
                       { formatCurrency(row.gauge.userGaugeBalance) }
                     </Typography>
-                    <Tooltip title={ 'Token APY based on current prices and reward rates. Stake veCRV to acheive up to 2.5x the rewards.' }>
+                    <Tooltip title={ showCurveTooltip(row) }>
                       <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
-                        { formatCurrency(row.gauge.apyBase) }% -> { formatCurrency(row.gauge.apyBoosted) }%
+                        { formatCurrency(BigNumber(row.gauge.apyBase).plus(row.gauge.apy).plus(row.gauge.rKP3RAPY)) }% -> { formatCurrency(BigNumber(row.gauge.apyBoosted).plus(row.gauge.apy).plus(row.gauge.rKP3RAPY)) }%
                       </Typography>
                     </Tooltip>
                   </TableCell>

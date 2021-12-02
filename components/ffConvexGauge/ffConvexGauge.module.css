@@ -12,14 +12,14 @@
 
 .title {
   font-size: 20px !important;
-  margin-bottom: 24px !important;
+  margin-left: 12px !important;
 }
 
 .inline {
   display: flex;
   align-items: center;
+  margin-bottom: 24px !important;
 }
-
 
 .lpOptionsContainer {
   /* border: 1px solid rgba(104, 108, 122, 0.25); */
@@ -299,13 +299,5 @@
 }
 
 @media screen and (max-width: 960px) {
-  .helpIcon { display: none; }
-}
-
-.inputSelect > div {
-  padding: 12px 14px;
-}
-
-.lpOptionIcon {
-  margin-right: 12px;
+.helpIcon { display: none; }
 }

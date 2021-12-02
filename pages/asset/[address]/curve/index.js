@@ -9,6 +9,7 @@ import Layout from '../../../../components/layout/layout.js';
 import FfAssetOverview from '../../../../components/ffAssetOverview'
 import FFCurveLiquidity from '../../../../components/ffCurveLiquidity'
 import FFCurveGauge from '../../../../components/ffCurveGauge'
+import FFConvexGauge from '../../../../components/ffConvexGauge'
 import FFClaimCurveGauge from '../../../../components/ffClaimCurveGauge'
 import FFClaimCurveRKP3RGauge from '../../../../components/ffClaimCurveRKP3RGauge'
 
@@ -59,25 +60,22 @@ function Asset({ changeTheme }) {
       <div className={classes.container}>
 
         <div className={classes.backBtn} onClick={() => router.push('/home')}>
-        <Tooltip placement="top" title="Back">
-        <KeyboardBackspaceIcon />
-        </Tooltip>
+          <Tooltip placement="top" title="Back">
+            <KeyboardBackspaceIcon />
+          </Tooltip>
         </div>
-
         <FfAssetOverview asset={ asset } />
-
-
         <Grid container className={classes.xxxContainer} spacing={0}>
           <Grid className={classes.xxx} item lg={8} md={12} sm={12} xs={12}>
             <FFCurveLiquidity asset={ asset } />
             <FFCurveGauge asset={ asset } />
           </Grid>
           <Grid className={classes.columnRight} item lg={4} md={12} sm={12} xs={12}>
-          <Typography variant="h5" className={ classes.title}>Claimable Rewards</Typography>
-          <div className={classes.rewardsWrap}>
-          <FFClaimCurveGauge asset={ asset } />
-          <FFClaimCurveRKP3RGauge asset={ asset } />
-          </div>
+            <Typography variant="h5" className={ classes.title}>Claimable Rewards</Typography>
+            <div className={classes.rewardsWrap}>
+              <FFClaimCurveGauge asset={ asset } />
+              <FFClaimCurveRKP3RGauge asset={ asset } />
+            </div>
           </Grid>
         </Grid>
 

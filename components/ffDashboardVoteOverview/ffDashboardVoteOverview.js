@@ -65,7 +65,7 @@ export default function ffVoteOverview() {
             <Grid item lg={9} md={9} sm={9} xs={9} className={ classes.itemContent }>
               <Typography className={ classes.title }>Your Voting Power:</Typography>
               <div className={ classes.inline }>
-                <Typography className={ classes.value }>{ formatCurrency((veIBFF && veIBFF.vestingInfo) ? veIBFF.vestingInfo.lockValue : 0) }</Typography>
+                <Typography className={ classes.value }>{ formatCurrency((veIBFF && veIBFF.vestingInfo) ? veIBFF.vestingInfo.votePower : 0) }</Typography>
                 <Typography className={ classes.valueSymbol }>{ veIBFF ? veIBFF.symbol : '' }</Typography>
               </div>
             </Grid>

@@ -9,26 +9,32 @@ import {
   IBKRW_GAUGE_ADDRESS,
   IBKRW_POOL_ADDRESS,
   IBKRW_CONVEX_GAUGE_ADDRESS,
+  IBKRW_CONVEX_PID,
   IBEUR_ADDRESS,
   IBEUR_GAUGE_ADDRESS,
   IBEUR_POOL_ADDRESS,
   IBEUR_CONVEX_GAUGE_ADDRESS,
+  IBEUR_CONVEX_PID,
   IBCHF_ADDRESS,
   IBCHF_GAUGE_ADDRESS,
   IBCHF_POOL_ADDRESS,
   IBCHF_CONVEX_GAUGE_ADDRESS,
+  IBCHF_CONVEX_PID,
   IBAUD_ADDRESS,
   IBAUD_GAUGE_ADDRESS,
   IBAUD_POOL_ADDRESS,
   IBAUD_CONVEX_GAUGE_ADDRESS,
+  IBAUD_CONVEX_PID,
   IBJPY_ADDRESS,
   IBJPY_GAUGE_ADDRESS,
   IBJPY_POOL_ADDRESS,
   IBJPY_CONVEX_GAUGE_ADDRESS,
+  IBJPY_CONVEX_PID,
   IBGBP_ADDRESS,
   IBGBP_GAUGE_ADDRESS,
   IBGBP_POOL_ADDRESS,
   IBGBP_CONVEX_GAUGE_ADDRESS,
+  IBGBP_CONVEX_PID,
   IBEUR_ETH_ADDRESS,
   IBFF_ADDRESS,
   VEIBFF_ADDRESS,
@@ -54,6 +60,7 @@ import {
   FF_UNSIWAP_POSITIONS_MANAGER_ADDRESS,
   FF_CONVEX_CLAIM_ZAP,
   FF_CURVE_GAUGE_CONTROLLER,
+  FF_CONVEX_POOL_MANAGEMENT_ADDRESS,
 
   IBEUR_ETH_ADDRESS_OLD,
   IBEUR_GAUGE_ADDRESS_OLD,
@@ -87,18 +94,28 @@ import {
   FIXED_FOREX_DURATION_VESTED,
   FIXED_FOREX_VOTE,
   FIXED_FOREX_VOTE_RETURNED,
+
   FIXED_FOREX_APPROVE_DEPOSIT_CURVE,
   FIXED_FOREX_DEPOSIT_CURVE_APPROVED,
   FIXED_FOREX_DEPOSIT_CURVE,
   FIXED_FOREX_CURVE_DEPOSITED,
   FIXED_FOREX_WITHDRAW_CURVE,
   FIXED_FOREX_CURVE_WITHDRAWN,
+
   FIXED_FOREX_APPROVE_STAKE_CURVE,
   FIXED_FOREX_STAKE_CURVE_APPROVED,
   FIXED_FOREX_STAKE_CURVE,
   FIXED_FOREX_CURVE_STAKED,
   FIXED_FOREX_UNSTAKE_CURVE,
   FIXED_FOREX_CURVE_UNSTAKED,
+
+  FIXED_FOREX_APPROVE_STAKE_CONVEX,
+  FIXED_FOREX_STAKE_CONVEX_APPROVED,
+  FIXED_FOREX_STAKE_CONVEX,
+  FIXED_FOREX_CONVEX_STAKED,
+  FIXED_FOREX_UNSTAKE_CONVEX,
+  FIXED_FOREX_CONVEX_UNSTAKED,
+
   FIXED_FOREX_CLAIM_DISTRIBUTION_REWARD,
   FIXED_FOREX_DISTRIBUTION_REWARD_CLAIMED,
   FIXED_FOREX_CLAIM_CURVE_REWARDS,
@@ -236,6 +253,16 @@ class Store {
             break;
           case FIXED_FOREX_UNSTAKE_CURVE:
             this.unstakeCurve(payload);
+            break;
+            // STAKING CONVEX LP
+          case FIXED_FOREX_APPROVE_STAKE_CONVEX:
+            this.approveStakeConvex(payload);
+            break;
+          case FIXED_FOREX_STAKE_CONVEX:
+            this.stakeConvex(payload);
+            break;
+          case FIXED_FOREX_UNSTAKE_CONVEX:
+            this.unstakeConvex(payload);
             break;
 
           case FIXED_FOREX_CLAIM_VECLAIM:
@@ -402,6 +429,7 @@ class Store {
         },
         convex: {
           address: IBEUR_CONVEX_GAUGE_ADDRESS,
+          pid: IBEUR_CONVEX_PID,
           rewards: [
             {
               poolAddress: '0x21034ccc4f8D07d0cF8998Fdd4c45e426540dEc1',   //rKP3R Reward Pool
@@ -425,6 +453,7 @@ class Store {
         },
         convex: {
           address: IBKRW_CONVEX_GAUGE_ADDRESS,
+          pid: IBKRW_CONVEX_PID,
           rewards: [
             {
               poolAddress: '0xE3A64E08EEbf38b19a3d9fec51d8cD5A8898Dd5e',   //rKP3R Reward Pool
@@ -448,6 +477,7 @@ class Store {
         },
         convex: {
           address: IBGBP_CONVEX_GAUGE_ADDRESS,
+          pid: IBGBP_CONVEX_PID,
           rewards: [
             {
               poolAddress: '0xE689DB5D753abc411ACB8a3fEf226C08ACDAE13f',   //rKP3R Reward Pool
@@ -471,6 +501,7 @@ class Store {
         },
         convex: {
           address: IBCHF_CONVEX_GAUGE_ADDRESS,
+          pid: IBCHF_CONVEX_PID,
           rewards: [
             {
               poolAddress: '0x9D9EBCc8E7B4eF061C0F7Bab532d1710b874f789',   //rKP3R Reward Pool
@@ -494,6 +525,7 @@ class Store {
         },
         convex: {
           address: IBAUD_CONVEX_GAUGE_ADDRESS,
+          pid: IBAUD_CONVEX_PID,
           rewards: [
             {
               poolAddress: '0x91ad51F0897552ce77f76B44e9a86B4Ad2B28c25',   //rKP3R Reward Pool
@@ -517,6 +549,7 @@ class Store {
         },
         convex: {
           address: IBJPY_CONVEX_GAUGE_ADDRESS,
+          pid: IBJPY_CONVEX_PID,
           rewards: [
             {
               poolAddress: '0x771bc5c888d1B318D0c5b177e4F996d3D5fd3d18',   //rKP3R Reward Pool
@@ -698,11 +731,9 @@ class Store {
   //need to get $ value of ibAssets and sAssets, as well as pool ratios and take things further from there. fk knows.
   calcPoolAPY = (gaugeWeight, totalWeight, inflationRate, workingSupply, virtualPrice, assetPrice, curvePrice) => {
     try {
-
       let weightOfRewards = gaugeWeight / totalWeight
       let rate = (inflationRate * weightOfRewards * 31536000 / workingSupply * 0.4) / (virtualPrice * (assetPrice/1e18))
       let apy  = rate * curvePrice * 100 * 1e36
-
 
       return apy
     } catch(ex) {
@@ -738,7 +769,6 @@ class Store {
         curveFiBaseAPY = apysJSON.data.poolDetails.filter((pool) => {
           return [IBGBP_POOL_ADDRESS, IBJPY_POOL_ADDRESS, IBKRW_POOL_ADDRESS, IBAUD_POOL_ADDRESS, IBCHF_POOL_ADDRESS, IBEUR_POOL_ADDRESS].includes(pool.poolAddress)
         })
-        console.log(curveFiBaseAPY)
       } catch(ex) {
         console.log(ex)
       }
@@ -751,7 +781,7 @@ class Store {
 
         const [balanceOf, userGaugeBalance, userGaugeEarned, userRKP3REarned, poolBalances, userPoolBalance, poolSymbol,
           virtualPrice, poolGaugeAllowance, coins0, coins1, gaugeVotes, userGaugeVotes, price, convexBalanceOf, convexEarned,
-          curveInflationRate, curveWorkingSupply, curveGaugeWeight, curveTotalWeight ] = await Promise.all([
+          curveInflationRate, curveWorkingSupply, curveGaugeWeight, curveTotalWeight, poolConvexAllowance ] = await Promise.all([
           assetContract.methods.balanceOf(account.address).call(),
           gaugeContract.methods.balanceOf(account.address).call(),
           gaugeContract.methods.claimable_tokens(account.address).call(),
@@ -771,7 +801,8 @@ class Store {
           gaugeContract.methods.inflation_rate().call(),
           gaugeContract.methods.working_supply().call(),
           gaugeControllerContract.methods.get_gauge_weight(asset.gauge.address).call(),
-          gaugeControllerContract.methods.get_total_weight().call()
+          gaugeControllerContract.methods.get_total_weight().call(),
+          poolContract.methods.allowance(account.address, FF_CONVEX_POOL_MANAGEMENT_ADDRESS).call(),
         ]);
 
         // get coin asset info
@@ -843,7 +874,8 @@ class Store {
           curveInflationRate,
           curveWorkingSupply,
           curveGaugeWeight,
-          curveTotalWeight
+          curveTotalWeight,
+          poolConvexAllowance
         }
       }))
 
@@ -883,6 +915,7 @@ class Store {
         const reduction = BigNumber(assetsBalances[i].convexTotalCliffs).minus(cliff)
         assets[i].convex.earnedCVX = BigNumber(assetsBalances[i].convexEarned).times(reduction).div(assetsBalances[i].convexTotalCliffs).toFixed(18) // this is crv
         assets[i].convex.earnedRKP3R = BigNumber(assetsBalances[i].convexRewardCallsResponse).div(10**18).toFixed(18)
+        assets[i].convex.poolGaugeAllowance = BigNumber(assetsBalances[i].poolConvexAllowance).div(10**18).toFixed(18)
 
         const crv = this.getStore('crv')
         const curvePrice = crv.price
@@ -891,6 +924,8 @@ class Store {
 
         let poolMeta = curveFiBaseAPY.filter((pool) => { return pool.poolAddress === assets[i].gauge.poolAddress})
         assets[i].gauge.apy = BigNumber(poolMeta[0]?.apy).toFixed(18)
+
+        assets[i].gauge.rKP3RAPY = BigNumber(1).toFixed(18)
       }
 
       this.setStore({ assets })
@@ -1113,220 +1148,6 @@ class Store {
     }
   }
 
-  getFFBalances_old = async (payload) => {
-    try {
-      const assets = this.getStore('assets');
-      if (!assets) {
-        return null;
-      }
-
-      const account = stores.accountStore.getStore('account');
-      if (!account) {
-        return null;
-      }
-
-      const web3 = await stores.accountStore.getWeb3Provider();
-      if (!web3) {
-        return null;
-      }
-
-      const systemAssets = this._getSystemAssets()
-
-      // in comes the hacks. WE have changed ibFF to kp3r. And veIBFF to vKP3R.
-      // now, veIBFF is veIBFFOld because we need values from that.
-
-
-      // GET IBFF balance and vesting allowance
-      const ibff = systemAssets.kp3r
-      ibff.balance = await this._getAssetBalance(web3, ibff, account)
-      const vestingContractApprovalAmount = await this._getApprovalAmount(web3, ibff, account.address, FF_VEKP3R_ADDRESS)
-      ibff.vestAllowance = vestingContractApprovalAmount
-
-      this.setStore({ ibff })
-      this.emitter.emit(FIXED_FOREX_UPDATED);
-
-      //// NOTE: scrappying this multicall contract, we've moved on from it
-      // const multicallContract = new web3.eth.Contract(abis.multicallABI, FF_MULTICALL_ADDRESS)
-      // const vestingInfo = await multicallContract.methods._getVestingInfo(account.address).call()
-
-      // get veIBFF balance and vesting info
-      const veIBFF = systemAssets.vKP3R
-      veIBFF.balance = await this._getAssetBalance(web3, veIBFF, account)
-      const vi = await this._getVestingInfo(web3, account, veIBFF)
-      veIBFF.vestingInfo = vi
-
-      this.setStore({ veIBFF })
-      this.emitter.emit(FIXED_FOREX_UPDATED);
-
-
-      const veIBFFOld = systemAssets.veIBFF
-      veIBFFOld.balance = await this._getAssetBalance(web3, veIBFFOld, account)
-      const viOld = await this._getVestingInfoOld(web3, account, veIBFFOld)
-      veIBFFOld.vestingInfo = viOld
-
-      this.setStore({ veIBFFOld })
-      this.emitter.emit(FIXED_FOREX_UPDATED);
-
-
-      // get IBEUR ETH bal
-      const veEURETHSLP = systemAssets.ibERUETH
-      veEURETHSLP.balance = await this._getAssetBalance(web3, veEURETHSLP, account)
-      const faucetContractApprovalAmount = await this._getApprovalAmount(web3, veEURETHSLP, account.address, FF_FAUCET_ADDRESS)
-
-      // get different reward contract info
-      let rewards = {}
-
-      const faucetRewards = await this._getFaucetRewards(vestingInfo, ibff)
-      const feeDistributionRewards = await this._getFeeDistributionRewards(web3, account, ibff)
-      const veIBFFDistributionRewards = await this._getVEIBFFDistributionRewards(vestingInfo, ibff)
-      const veClaimRewards = await this._getClaimableVKP3R(web3, account)
-
-      rewards.faucet = faucetRewards
-      rewards.feeDistribution = feeDistributionRewards
-      rewards.veIBFFDistribution = veIBFFDistributionRewards
-      rewards.veClaimRewards = veClaimRewards
-
-      veEURETHSLP.faucetAllowance = faucetContractApprovalAmount
-      veEURETHSLP.faucetBalance = faucetRewards.balance
-
-      this.setStore({
-        veEURETHSLP,
-        rewards,
-      })
-      this.emitter.emit(FIXED_FOREX_UPDATED);
-
-      const gaugeProxyContract = new web3.eth.Contract(abis.gaugeProxyABI, GAUGE_PROXY_ADDRESS)
-
-      const [totalGaugeVotes] = await Promise.all([
-        gaugeProxyContract.methods.totalWeight().call(),
-      ]);
-
-
-      // get asset balances
-      // get asset approvals (swap/stake/vest)
-      const assetsBalancesPromise = assets.map(async (asset) => {
-        const assetContract = new web3.eth.Contract(abis.erc20ABI, asset.address)
-        const balanceOf = await assetContract.methods.balanceOf(account.address).call()
-
-        const gaugeContract = new web3.eth.Contract(abis.gaugeABI, asset.gauge.address)
-
-        const [userRewards, userGaugeBalance, gaugeVotes, userGaugeVotes] = await Promise.all([
-          gaugeContract.methods.earned(account.address).call(),
-          gaugeContract.methods.balanceOf(account.address).call(),
-          gaugeProxyContract.methods.weights(asset.gauge.poolAddress).call(),
-          gaugeProxyContract.methods.votes(account.address, asset.gauge.poolAddress).call()
-        ]);
-
-        const poolContract = new web3.eth.Contract(abis.poolABI, asset.gauge.poolAddress)
-
-        const [poolBalances, userPoolBalance, poolSymbol, virtualPrice, poolGaugeAllowance, coins0, coins1] = await Promise.all([
-          poolContract.methods.get_balances().call(),
-          poolContract.methods.balanceOf(account.address).call(),
-          poolContract.methods.symbol().call(),
-          poolContract.methods.get_virtual_price().call(),
-          poolContract.methods.allowance(account.address, asset.gauge.address).call(),
-          poolContract.methods.coins(0).call(),
-          poolContract.methods.coins(1).call()
-        ]);
-
-        // get coin asset info
-        const coin0Contract = new web3.eth.Contract(abis.erc20ABI, coins0)
-        const coin1Contract = new web3.eth.Contract(abis.erc20ABI, coins1)
-
-        const [
-          coin0Symbol, coin0Decimals, coin0Balance, coin0GaugeAllowance,
-          coin1Symbol, coin1Decimals, coin1Balance, coin1GaugeAllowance
-        ] = await Promise.all([
-          coin0Contract.methods.symbol().call(),
-          coin0Contract.methods.decimals().call(),
-          coin0Contract.methods.balanceOf(account.address).call(),
-          coin0Contract.methods.allowance(account.address, asset.gauge.poolAddress).call(),
-
-          coin1Contract.methods.symbol().call(),
-          coin1Contract.methods.decimals().call(),
-          coin1Contract.methods.balanceOf(account.address).call(),
-          coin1Contract.methods.allowance(account.address, asset.gauge.poolAddress).call()
-        ]);
-
-        let intCoin0Decimasls = parseInt(coin0Decimals)
-        let intCoin1Decimasls = parseInt(coin1Decimals)
-
-        const coin0 = {
-          address: coins0,
-          symbol: coin0Symbol,
-          decimals: intCoin0Decimasls,
-          balance: BigNumber(coin0Balance).div(10**intCoin0Decimasls).toFixed(intCoin0Decimasls),
-          poolBalance: BigNumber(poolBalances[0]).div(10**intCoin0Decimasls).toFixed(intCoin0Decimasls),
-          gaugeAllowance: BigNumber(coin0GaugeAllowance).div(10**intCoin0Decimasls).toFixed(intCoin0Decimasls),
-        }
-
-        const coin1 = {
-          address: coins1,
-          symbol: coin1Symbol,
-          decimals: intCoin1Decimasls,
-          balance: BigNumber(coin1Balance).div(10**intCoin1Decimasls).toFixed(intCoin1Decimasls),
-          poolBalance: BigNumber(poolBalances[1]).div(10**intCoin1Decimasls).toFixed(intCoin1Decimasls),
-          gaugeAllowance: BigNumber(coin1GaugeAllowance).div(10**intCoin1Decimasls).toFixed(intCoin1Decimasls),
-        }
-
-        return {
-          balanceOf,
-          userRewards,
-          poolBalances,
-          coin0,
-          coin1,
-          gaugeVotes,
-          userGaugeVotes,
-          poolSymbol,
-          virtualPrice,
-          userPoolBalance,
-          userGaugeBalance,
-          poolGaugeAllowance,
-        }
-      })
-
-      const assetsBalances = await Promise.all(assetsBalancesPromise);
-
-      const totalUserVotes = assetsBalances.reduce((curr, acc) => {
-        return BigNumber(curr).plus(acc.userGaugeVotes)
-      }, 0)
-
-      for(let i = 0; i < assets.length; i++) {
-        let userVotePercent = '0'
-        if(BigNumber(totalUserVotes).gt(0)) {
-          userVotePercent = BigNumber(assetsBalances[i].userGaugeVotes).times(100).div(totalUserVotes).toFixed(assets[i].decimals)
-        }
-
-        assets[i].balance = BigNumber(assetsBalances[i].balanceOf).div(10**assets[i].decimals).toFixed(assets[i].decimals)
-        assets[i].gauge.earned = BigNumber(assetsBalances[i].userRewards).div(10**assets[i].decimals).toFixed(assets[i].decimals)
-        assets[i].gauge.userVotes = BigNumber(assetsBalances[i].userGaugeVotes).div(10**assets[i].decimals).toFixed(assets[i].decimals)
-        assets[i].gauge.userVotePercent = userVotePercent
-        assets[i].gauge.votes = BigNumber(assetsBalances[i].gaugeVotes).div(10**assets[i].decimals).toFixed(assets[i].decimals)
-        assets[i].gauge.votePercent = BigNumber(assetsBalances[i].gaugeVotes).times(100).div(totalGaugeVotes).toFixed(assets[i].decimals)
-        assets[i].gauge.coin0 = assetsBalances[i].coin0
-        assets[i].gauge.coin1 = assetsBalances[i].coin1
-        assets[i].gauge.poolSymbol = assetsBalances[i].poolSymbol
-        assets[i].gauge.userPoolBalance = BigNumber(assetsBalances[i].userPoolBalance).div(10**18).toFixed(18)
-        assets[i].gauge.userGaugeBalance = BigNumber(assetsBalances[i].userGaugeBalance).div(10**18).toFixed(18)
-        assets[i].gauge.virtualPrice = BigNumber(assetsBalances[i].virtualPrice).div(10**18).toFixed(18)
-        assets[i].gauge.poolGaugeAllowance = BigNumber(assetsBalances[i].poolGaugeAllowance).div(10**18).toFixed(18)
-      }
-
-      this.setStore({
-        assets: assets,
-        ibff,
-        veIBFF,
-        veEURETHSLP,
-        rewards,
-      })
-
-      this.emitter.emit(FIXED_FOREX_UPDATED);
-    } catch(ex) {
-      console.log(ex)
-      this.emitter.emit(ERROR, ex)
-    }
-  };
-
   _getClaimableVKP3R = async (web3, account, vKP3R) => {
     const vKP3RContract = new web3.eth.Contract(abis.veClaimABI, FF_VECLAIM_ADDRESS)
     const [ claimable, hasClaimed ] = await Promise.all([
@@ -1391,11 +1212,18 @@ class Store {
       const lockedInfo = await veIBFFContract.methods.locked(account.address).call()
       const totalSupply = await veIBFFContract.methods.totalSupply().call()
 
+      const fourYears = 126144000    // 60 * 60 * 24 * 365 * 4
+      const now = Math.floor(Date.now() / 1000)
+      const maxLock = BigNumber(now).plus(fourYears).toNumber()
+      const percentOfFourYearsLocked = 1-BigNumber(maxLock).minus(lockedInfo.end).div(fourYears).toFixed(veIBFF.decimals)
+      const locked = BigNumber(lockedInfo.amount).div(10**veIBFF.decimals).toFixed(veIBFF.decimals)
+
       return {
-        locked: BigNumber(lockedInfo.amount).div(10**veIBFF.decimals).toFixed(veIBFF.decimals),
+        locked: locked,
         lockEnds: lockedInfo.end,
-        lockValue: BigNumber(lockedInfo.amount).div(10**veIBFF.decimals).toFixed(veIBFF.decimals),
-        totalSupply: BigNumber(totalSupply).div(10**veIBFF.decimals).toFixed(veIBFF.decimals)
+        lockValue: BigNumber(locked).times(percentOfFourYearsLocked).toFixed(veIBFF.decimals),
+        votePower: BigNumber(locked).times(percentOfFourYearsLocked).toFixed(veIBFF.decimals),
+        totalSupply: BigNumber(totalSupply).div(10**veIBFF.decimals).toFixed(veIBFF.decimals),
       }
     } catch(ex) {
       console.log(ex)
@@ -2255,6 +2083,124 @@ class Store {
       return this.emitter.emit(ERROR, ex);
     }
   };
+
+  approveStakeConvex = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { asset, gasSpeed } = payload.content;
+
+    this._callApproveStakeConvex(web3, account, asset, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_STAKE_CURVE_APPROVED, res);
+    });
+  }
+
+  _callApproveStakeConvex = async (web3, account, asset, gasSpeed, callback) => {
+    const erc20Contract = new web3.eth.Contract(abis.erc20ABI, asset.gauge.poolAddress);
+    const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+    this._callContractWait(web3, erc20Contract, 'approve', [FF_CONVEX_POOL_MANAGEMENT_ADDRESS, MAX_UINT256], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+  };
+
+  stakeConvex = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { asset, amount, gasSpeed } = payload.content;
+
+    this._callDepositGaugeConvex(web3, account, asset, amount, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_CURVE_STAKED, res);
+    });
+
+  }
+
+  _callDepositGaugeConvex = async (web3, account, asset, amount, gasSpeed, callback) => {
+    try {
+      let gaugeContract = new web3.eth.Contract(abis.convexBoosterABI, FF_CONVEX_POOL_MANAGEMENT_ADDRESS);
+
+      const sendAmount = BigNumber(amount === '' ? 0 : amount)
+        .times(10 ** 18)
+        .toFixed(0);
+
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, gaugeContract, 'deposit', [asset.convex.pid, sendAmount, true], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  };
+
+  unstakeConvex = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { asset, withdrawAmount, gasSpeed } = payload.content;
+
+    this._callWithdrawGaugeConvex(web3, account, asset, withdrawAmount, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_CURVE_UNSTAKED, res);
+    });
+
+  }
+
+  _callWithdrawGaugeConvex = async (web3, account, asset, withdrawAmount, gasSpeed, callback) => {
+    try {
+      let gaugeContract = new web3.eth.Contract(abis.convexBaseRewardPoolABI, asset.convex.address);
+
+      const sendWithdrawAmount = BigNumber(withdrawAmount === '' ? 0 : withdrawAmount)
+        .times(10 ** 18)
+        .toFixed(0);
+
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      this._callContractWait(web3, gaugeContract, 'withdrawAndUnwrap', [sendWithdrawAmount, true], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  };
+
+
+
+
 
   claimVeclaim = async (payload) => {
     const account = stores.accountStore.getStore('account');
