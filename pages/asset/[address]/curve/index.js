@@ -12,6 +12,7 @@ import FFCurveGauge from '../../../../components/ffCurveGauge'
 import FFConvexGauge from '../../../../components/ffConvexGauge'
 import FFClaimCurveGauge from '../../../../components/ffClaimCurveGauge'
 import FFClaimCurveRKP3RGauge from '../../../../components/ffClaimCurveRKP3RGauge'
+import FFClaimConvexGauge from '../../../../components/ffClaimConvexGauge'
 
 import classes from './curve.module.css';
 
@@ -73,6 +74,7 @@ function Asset({ changeTheme }) {
           <Grid className={classes.columnRight} item lg={4} md={12} sm={12} xs={12}>
             <Typography variant="h5" className={ classes.title}>Claimable Rewards</Typography>
             <div className={classes.rewardsWrap}>
+              <FFClaimConvexGauge asset={ asset } />
               <FFClaimCurveGauge asset={ asset } />
               <FFClaimCurveRKP3RGauge asset={ asset } />
             </div>

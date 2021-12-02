@@ -64,7 +64,7 @@ export default function ffAssetOverview({ asset }) {
           </div>
           <div className={ classes.flex1 }>
             <Typography className={ classes.title }>Total Staked:</Typography>
-            <Typography className={ classes.stakedAmount }>{formatCurrency(asset?.gauge?.userGaugeBalance)}</Typography>
+            <Typography className={ classes.stakedAmount }>{formatCurrency(BigNumber(asset?.gauge?.userGaugeBalance).plus(asset?.convex?.balance))}</Typography>
             <Typography className={ classes.assetSymbol }>{asset?.gauge?.poolSymbol}</Typography>
           </div>
         </div>

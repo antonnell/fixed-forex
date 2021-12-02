@@ -911,9 +911,10 @@ class Store {
         assets[i].convex.balance = BigNumber(assetsBalances[i].convexBalanceOf).div(10**18).toFixed(18)
         assets[i].convex.earnedCRV = BigNumber(assetsBalances[i].convexEarned).div(10**18).toFixed(18) // this is crv
 
-        const cliff = BigNumber(assetsBalances[i].convexTotalSupply).div(assetsBalances[i].reductionPerCliff)
-        const reduction = BigNumber(assetsBalances[i].convexTotalCliffs).minus(cliff)
-        assets[i].convex.earnedCVX = BigNumber(assetsBalances[i].convexEarned).times(reduction).div(assetsBalances[i].convexTotalCliffs).toFixed(18) // this is crv
+        const cliff = BigNumber(assetsBalances[i].convexTotalSupply).div(assetsBalances[i].convexReductionPerCliff).toFixed(18)
+        const reduction = BigNumber(assetsBalances[i].convexTotalCliffs).minus(cliff).toFixed(18)
+
+        assets[i].convex.earnedCVX = BigNumber(assetsBalances[i].convexEarned).times(reduction).div(assetsBalances[i].convexTotalCliffs).div(10**18).toFixed(18) // this is crv
         assets[i].convex.earnedRKP3R = BigNumber(assetsBalances[i].convexRewardCallsResponse).div(10**18).toFixed(18)
         assets[i].convex.poolGaugeAllowance = BigNumber(assetsBalances[i].poolConvexAllowance).div(10**18).toFixed(18)
 
