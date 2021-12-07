@@ -246,7 +246,7 @@ export default function EnhancedTable({ assets }) {
       <Typography>Token APY based on current prices and reward rates. Stake veCRV to acheive up to 2.5x the CRV rewards.</Typography>
       <Typography>Fees ~ { formatCurrency(row.gauge.apy) }%</Typography>
       <Typography>CRV ~ { formatCurrency(row.gauge.apyBase) }% -> { formatCurrency(row.gauge.apyBoosted) }%</Typography>
-      <Typography>rKP3R ~ { formatCurrency(row.gauge.rKP3RAPY) }%</Typography>
+      <Typography>rKP3R ~ Unknown</Typography>
     </div>
   }
 
