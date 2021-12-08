@@ -1,14 +1,14 @@
-import { erc20ABI } from './erc20ABI';
-import { ibEURABI } from './ibEURABI';
-import { sushiLPABI } from './sushiLPABI';
-import { veIBFFABI } from './veIBFFABI';
-import { faucetABI } from './faucetABI';
-import { distributionABI } from './distributionABI';
-import { gaugeProxyABI } from './gaugeProxyABI';
-import { gaugeABI } from './gaugeABI';
-import { poolABI } from './poolABI';
-import { feeClaimDistributionABI } from './feeClaimDistributionABI';
-import { multicallABI } from './multicallABI';
+import { erc20ABI } from './erc20ABI'
+import { ibEURABI } from './ibEURABI'
+import { sushiLPABI } from './sushiLPABI'
+import { veIBFFABI } from './veIBFFABI'
+import { faucetABI } from './faucetABI'
+import { distributionABI } from './distributionABI'
+import { gaugeProxyABI } from './gaugeProxyABI'
+import { gaugeABI } from './gaugeABI'
+import { poolABI } from './poolABI'
+import { feeClaimDistributionABI } from './feeClaimDistributionABI'
+import { multicallABI } from './multicallABI'
 import { feeDistributionLookupABI } from './feeDistributionLookupABI'
 import { boostDelegateABI } from './boostDelegateABI'
 import { veClaimABI } from './veClaimABI'
@@ -30,6 +30,7 @@ import { convexVirtualBalanceRewardPoolABI } from './convexVirtualBalanceRewardP
 import { convexClaimZapABI } from './convexClaimZapABI'
 import { convexCVXABI } from './convexCVXABI'
 import { curveGaugeControllerABI } from './curveGaugeControllerABI'
+import { yearnVaultABI } from './yearnVaultABI'
 import { ibAMMABI } from './ibAMMABI'
 
 export default {
@@ -65,5 +66,6 @@ export default {
   convexClaimZapABI: convexClaimZapABI,
   convexCVXABI: convexCVXABI,
   curveGaugeControllerABI: curveGaugeControllerABI,
-  ibAMMABI: ibAMMABI
-};
+  ibAMMABI: ibAMMABI,
+  yearnVaultABI: yearnVaultABI
+}
