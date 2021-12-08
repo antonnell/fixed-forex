@@ -21,7 +21,6 @@ import { formatAddress } from '../../utils';
 
 import classes from './welcomeHeader.module.css';
 import HelpIcon from '@material-ui/icons/Help';
-import { useHotkeys } from 'react-hotkeys-hook';
 
 function WrongNetworkIcon(props) {
   const { color, className } = props;

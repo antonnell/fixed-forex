@@ -35,12 +35,8 @@ import lendJSON from './configurations/lend';
 import abis from './abis';
 import { bnDec } from '../utils';
 
-import BatchCall from 'web3-batch-call';
 import BigNumber from 'bignumber.js';
 const fetch = require('node-fetch');
-
-const CoinGecko = require('coingecko-api');
-const CoinGeckoClient = new CoinGecko();
 
 class Store {
   constructor(dispatcher, emitter) {
