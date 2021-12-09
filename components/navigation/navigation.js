@@ -135,10 +135,9 @@ function Navigation(props) {
           'Dashboard',
           'dashboard',
         )}
-        {renderNav(
-          'Stats',
-          'ffDashboard',
-          'https://fixedforex.live/'
+        {renderSubNav(
+          'Swap',
+          'swap',
         )}
         <div className={classes.sectionDivider}></div>
         {renderSectionHeader(
@@ -192,6 +191,15 @@ function Navigation(props) {
           {renderSubNav(
             'Vote',
             'vote',
+          )}
+          <div className={classes.sectionDivider}></div>
+          {renderSectionHeader(
+            'Stats'
+          )}
+          {renderNav(
+            'Stats',
+            'ffDashboard',
+            'https://fixedforex.live/'
           )}
         </div>
       </React.Fragment>

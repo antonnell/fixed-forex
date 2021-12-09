@@ -62,6 +62,8 @@ import {
   FF_CURVE_GAUGE_CONTROLLER,
   FF_CONVEX_POOL_MANAGEMENT_ADDRESS,
 
+  FF_IBAMM_ADDRESS,
+
   IBEUR_ETH_ADDRESS_OLD,
   IBEUR_GAUGE_ADDRESS_OLD,
   IBKRW_GAUGE_ADDRESS_OLD,
@@ -94,6 +96,13 @@ import {
   FIXED_FOREX_DURATION_VESTED,
   FIXED_FOREX_VOTE,
   FIXED_FOREX_VOTE_RETURNED,
+
+  FIXED_FOREX_QUOTE_SWAP,
+  FIXED_FOREX_QUOTE_SWAP_RETURNED,
+  FIXED_FOREX_APPROVE_SWAP,
+  FIXED_FOREX_SWAP_APPROVED,
+  FIXED_FOREX_SWAP,
+  FIXED_FOREX_SWAP_RETURNED,
 
   FIXED_FOREX_APPROVE_DEPOSIT_CURVE,
   FIXED_FOREX_DEPOSIT_CURVE_APPROVED,
@@ -176,6 +185,15 @@ class Store {
       rewards: null,
       rKP3R: null,
       oldAssets: [],
+      swapFromAssets: [
+        {
+          address: '0x99D8a9C45b2ecA8864373A26D1459e3Dff1e17F3',
+          symbol: 'MIM',
+          name: 'Magic Internet Money',
+          decimals: 18,
+          icon: 'https://assets.coingecko.com/coins/images/16786/large/mimlogopng.png'
+        }
+      ]
     };
 
     dispatcher.register(
@@ -304,6 +322,17 @@ class Store {
             break;
           case FIXED_FOREX_GET_ALL_UNI_REWARDS:
             this.getAllUniRewards(payload);
+            break;
+
+            //swap
+          case FIXED_FOREX_QUOTE_SWAP:
+            this.quoteSwap(payload);
+            break;
+          case FIXED_FOREX_APPROVE_SWAP:
+            this.approveSwap(payload);
+            break;
+          case FIXED_FOREX_SWAP:
+            this.swap(payload);
             break;
           default: {
           }
@@ -613,6 +642,7 @@ class Store {
       this._getOldGaugeInfo(web3, account)
       this._getUniV3Info(web3, account)
       this._getStakingV3Rewards(web3, account)
+      this._getSwapFromBalances(web3, account)
     } catch(ex) {
       console.log(ex)
       this.emitter.emit(ERROR, ex)
@@ -1155,61 +1185,35 @@ class Store {
     }
   }
 
-  _getClaimableVKP3R = async (web3, account, vKP3R) => {
-    const vKP3RContract = new web3.eth.Contract(abis.veClaimABI, FF_VECLAIM_ADDRESS)
-    const [ claimable, hasClaimed ] = await Promise.all([
-      vKP3RContract.methods.claimable(account.address).call(),
-      vKP3RContract.methods.has_claimed(account.address).call()
-    ]);
-
-    return {
-      hasClaimed: hasClaimed,
-      claimable: BigNumber(claimable).div(10**18).toFixed(18),
-    }
-  }
-
-  _getFaucetRewards = async (vestingInfo, ibff) => {
+  _getSwapFromBalances = async (web3, account) => {
     try {
-      const earned = vestingInfo.earned
-      const totalRewards = vestingInfo.totalRewards
-      const totalSupply = vestingInfo.faucetTotalSupply
-      const balanceOf = vestingInfo.faucetBalanceOf
+      const swapFromAssets = this.getStore('swapFromAssets')
+      const assetsBalances = await Promise.all(swapFromAssets.map(async (asset) => {
+        const assetContract = new web3.eth.Contract(abis.erc20ABI, asset.address)
 
-      return {
-        earned: BigNumber(earned).div(10**ibff.decimals).toFixed(ibff.decimals),
-        faucetSupply: BigNumber(totalSupply).div(10**ibff.decimals).toFixed(ibff.decimals),
-        totalRewards: BigNumber(totalRewards).div(10**ibff.decimals).toFixed(ibff.decimals),
-        balance: BigNumber(balanceOf).div(10**ibff.decimals).toFixed(ibff.decimals)
+        const [ balanceOf, allowance ] = await Promise.all([
+          assetContract.methods.balanceOf(account.address).call(),
+          assetContract.methods.allowance(account.address, FF_IBAMM_ADDRESS).call(),
+        ]);
+
+        return {
+          balanceOf,
+          allowance,
+        }
+      }))
+
+      for(let i = 0; i < assetsBalances.length; i++) {
+        swapFromAssets[i].balance = BigNumber(assetsBalances[i].balanceOf).div(10**swapFromAssets[i].decimals).toFixed(swapFromAssets[i].decimals)
+        swapFromAssets[i].allowance = BigNumber(assetsBalances[i].allowance).div(10**swapFromAssets[i].decimals).toFixed(swapFromAssets[i].decimals)
       }
+
+      this.setStore({
+        swapFromAssets: swapFromAssets
+      })
+
+      this.emitter.emit(FIXED_FOREX_UPDATED);
     } catch(ex) {
       console.log(ex)
-      return null
-    }
-  }
-
-  _getFeeDistributionRewards = async (web3, account, ibff) => {
-    try {
-      const feeDistributionLookupContract = new web3.eth.Contract(abis.feeDistributionLookupABI, FF_FEE_DISTRIBUTION_LOOKUP_ADDRESS)
-      const earned = await feeDistributionLookupContract.methods.claimable(account.address).call()
-
-      return {
-        earned: BigNumber(earned).div(10**18).toFixed(18),
-      }
-    } catch(ex) {
-      console.log(ex)
-      return null
-    }
-  }
-
-  _getVEIBFFDistributionRewards = async (vestingInfo, ibff) => {
-    try {
-      const claimable = vestingInfo.claimable
-      return {
-        earned: BigNumber(claimable).div(1e18).toFixed(18),
-      }
-    } catch(ex) {
-      console.log(ex)
-      return null
     }
   }
 
@@ -2783,6 +2787,110 @@ class Store {
       const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
 
       this._callContractWait(web3, stakingContract, 'getRewards', [], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  };
+
+  quoteSwap = async (payload) => {
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { fromAsset, toAsset, amount, gasSpeed } = payload.content;
+
+    try {
+      const sendAmount = BigNumber(amount === '' ? 0 : amount)
+        .times(10 ** 18)
+        .toFixed(0);
+
+      const ibAMMContract = new web3.eth.Contract(abis.ibAMMABI, FF_IBAMM_ADDRESS);
+
+      const quoteRes = await ibAMMContract.methods.quote(toAsset.address, sendAmount).call()
+
+      const returnValue = BigNumber(quoteRes).div(10**toAsset.decimals).toFixed(toAsset.decimals)
+
+      const retVal = {
+        toAsset: toAsset,
+        fromAmount: amount,
+        toAmount: returnValue
+      }
+
+      return this.emitter.emit(FIXED_FOREX_QUOTE_SWAP_RETURNED, retVal);
+    } catch (ex) {
+      console.log(ex);
+      return this.emitter.emit(ERROR, ex);
+    }
+  }
+
+  approveSwap = async (payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { fromAsset, gasSpeed } = payload.content;
+
+    this._callApproveSwap(web3, account, fromAsset, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_SWAP_APPROVED, res);
+    });
+  }
+
+  _callApproveSwap = async (web3, account, asset, gasSpeed, callback) => {
+    const erc20Contract = new web3.eth.Contract(abis.erc20ABI, asset.address);
+    const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+    this._callContractWait(web3, erc20Contract, 'approve', [FF_IBAMM_ADDRESS, MAX_UINT256], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+  };
+
+  swap = async(payload) => {
+    const account = stores.accountStore.getStore('account');
+    if (!account) {
+      return false;
+      //maybe throw an error
+    }
+
+    const web3 = await stores.accountStore.getWeb3Provider();
+    if (!web3) {
+      return false;
+      //maybe throw an error
+    }
+
+    const { fromAsset, toAsset, fromAmount, toAmount, gasSpeed } = payload.content;
+
+    this._callSwap(web3, account, fromAsset, toAsset, fromAmount, toAmount, gasSpeed, (err, res) => {
+      if (err) {
+        return this.emitter.emit(ERROR, err);
+      }
+
+      return this.emitter.emit(FIXED_FOREX_SWAP_RETURNED, res);
+    });
+  }
+
+  _callSwap = async (web3, account, fromAsset, toAsset, fromAmount, toAmount, gasSpeed, callback) => {
+    try {
+      let ibAMMContract = new web3.eth.Contract(abis.ibAMMABI, FF_IBAMM_ADDRESS);
+      const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
+
+      const sendAmount = BigNumber(fromAmount === '' ? 0 : fromAmount)
+        .times(10 ** 18)
+        .toFixed(0);
+      const minOut = BigNumber(toAmount).times(10 ** 18).times(0.97).toFixed(0)
+
+      this._callContractWait(web3, ibAMMContract, 'swap', [toAsset.address, sendAmount, minOut], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
     } catch (ex) {
       console.log(ex);
       return this.emitter.emit(ERROR, ex);
