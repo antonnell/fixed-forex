@@ -1221,7 +1221,9 @@ class Store {
       const veIBFFContract = new web3.eth.Contract(abis.veIBFFABI, FF_VEKP3R_ADDRESS)
       const lockedInfo = await veIBFFContract.methods.locked(account.address).call()
       const totalSupply = await veIBFFContract.methods.totalSupply().call()
-      const balanceOf = await veIBFFContract.methods.balanceOf().call(account)
+      const balanceOf = await veIBFFContract.methods.balanceOf(account.address).call()
+
+      console.log(balanceOf)
 
       // const fourYears = 126144000    // 60 * 60 * 24 * 365 * 4
       // const now = Math.floor(Date.now() / 1000)

@@ -361,7 +361,7 @@ export default function ffCurveGauge({ asset }) {
                       disabled={ depositLoading || !depositApprovalNotRequired }
                       onClick={ onDeposit }
                       >
-                      <Typography className={ classes.actionButtonText }>{ depositLoading ? `Depositing` : `Deposit` }</Typography>
+                      <Typography className={ classes.actionButtonText }>{ depositLoading ? `Staking` : `Stake` }</Typography>
                       { depositLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
                     </Button>
                   </div>
@@ -377,7 +377,7 @@ export default function ffCurveGauge({ asset }) {
                       disabled={ depositLoading }
                       onClick={ onWithdraw }
                       >
-                      <Typography className={ classes.actionButtonText }>{ depositLoading ? `Withdrawing` : `Withdraw` }</Typography>
+                      <Typography className={ classes.actionButtonText }>{ depositLoading ? `Unstaking` : `Unstake` }</Typography>
                       { depositLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
                     </Button>
                   </div>
