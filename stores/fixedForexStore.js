@@ -861,7 +861,7 @@ class Store {
       }
       let yearnNetworkAPY = [];
       try {
-        const yearnUrl = `https://test-api.yearn.network/v1/chains/1/vaults/get`;
+        const yearnUrl = `https://d28fcsszptni1s.cloudfront.net/v1/chains/1/vaults/all`;
         const yearnApysResult = await fetch(yearnUrl);
         const yearnApysJSON = await yearnApysResult.json();
         yearnNetworkAPY = yearnApysJSON.filter((vault) => {
@@ -1128,7 +1128,7 @@ class Store {
           return vault.address === assets[i].yearn.address;
         });
         assets[i].gauge.apy = BigNumber(poolMeta[0]?.apy).toFixed(18);
-        assets[i].yearn.apy = (vaultMeta[0]?.metadata?.apy?.net_apy * 100).toFixed(2);
+        assets[i].yearn.apy = (vaultMeta[0]?.apy?.net_apy * 100).toFixed(2);
         assets[i].gauge.rKP3RAPY = BigNumber(1).toFixed(18);
       }
 
