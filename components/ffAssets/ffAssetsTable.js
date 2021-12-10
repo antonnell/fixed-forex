@@ -351,9 +351,6 @@ export default function EnhancedTable({ assets }) {
                       {formatCurrency(row.yearn.userVaultBalance)}
                     </Typography>
                     <Typography variant='h5' className={classes.textSpaced} color='textSecondary'>
-                      {row.yearn.poolSymbol}
-                    </Typography>
-                    <Typography variant='h5' className={classes.textSpaced} color='textSecondary'>
                       {row.yearn.apy}%
                     </Typography>
                   </TableCell>
