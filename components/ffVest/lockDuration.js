@@ -37,7 +37,7 @@ export default function ffLockDuration({ ibff, veIBFF, veIBFFOld }) {
   }, []);
 
   useEffect(() => {
-    if(veIBFF.vestingInfo.lockEnds) {
+    if(veIBFF && veIBFF.vestingInfo && veIBFF.vestingInfo.lockEnds) {
       setSelectedDate(moment.unix(veIBFF.vestingInfo.lockEnds).format('YYYY-MM-DD'))
       setSelectedValue(null)
     }
@@ -67,7 +67,7 @@ export default function ffLockDuration({ ibff, veIBFF, veIBFFOld }) {
         break;
       default:
     }
-    const newDate = moment.unix(veIBFF.vestingInfo.lockEnds).add(days, 'days').format('YYYY-MM-DD');
+    const newDate = moment().add(days, 'days').format('YYYY-MM-DD');
 
     setSelectedDate(newDate);
   }
@@ -98,12 +98,15 @@ export default function ffLockDuration({ ibff, veIBFF, veIBFFOld }) {
                   shrink: true,
                 }}
               />
-              <RadioGroup className={classes.vestPeriodToggle} row aria-label="position" name="position" onChange={handleChange} value={selectedValue}>
-                <FormControlLabel value="week" control={<Radio color="primary" />} label="1 week" labelPlacement="left" />
-                <FormControlLabel value="month" control={<Radio color="primary" />} label="1 month" labelPlacement="left" />
-                <FormControlLabel value="year" control={<Radio color="primary" />} label="1 year" labelPlacement="left" />
-                <FormControlLabel value="years" control={<Radio color="primary" />} label="4 years" labelPlacement="left" />
-              </RadioGroup>
+              <div className={ classes.inline }>
+                <Typography className={ classes.expiresIn }>Expires in </Typography>
+                <RadioGroup className={classes.vestPeriodToggle} row aria-label="position" name="position" onChange={handleChange} value={selectedValue}>
+                  <FormControlLabel value="week" control={<Radio color="primary" />} label="1 week" labelPlacement="left" />
+                  <FormControlLabel value="month" control={<Radio color="primary" />} label="1 month" labelPlacement="left" />
+                  <FormControlLabel value="year" control={<Radio color="primary" />} label="1 year" labelPlacement="left" />
+                  <FormControlLabel value="years" control={<Radio color="primary" />} label="4 years" labelPlacement="left" />
+                </RadioGroup>
+              </div>
             </div>
           </div>
         </Grid>
