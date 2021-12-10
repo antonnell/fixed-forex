@@ -153,7 +153,7 @@ function Navigation(props) {
         )}
         <div className={ classes.subAssets }>
           {renderSubNav(
-            'Curve + Convex',
+            'Curve + Convex + Yearn',
             'home',
           )}
           {renderSubNav(

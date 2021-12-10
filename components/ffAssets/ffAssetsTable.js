@@ -63,11 +63,17 @@ const headCells = [
     label: 'Staked in Convex',
   },
   {
+    id: 'yearnBalance',
+    numeric: true,
+    disablePadding: false,
+    label: 'Staked in Yearn',
+  },
+  {
     id: '',
     numeric: true,
     disablePadding: false,
     label: 'Actions',
-  }
+  },
 ];
 
 function EnhancedTableHead(props) {
@@ -80,9 +86,15 @@ function EnhancedTableHead(props) {
     <TableHead>
       <TableRow>
         {headCells.map((headCell) => (
-          <TableCell className={classes.overrideTableHead} key={headCell.id} align={headCell.numeric ? 'right' : 'left'} padding={'normal'} sortDirection={orderBy === headCell.id ? order : false}>
+          <TableCell
+            className={classes.overrideTableHead}
+            key={headCell.id}
+            align={headCell.numeric ? 'right' : 'left'}
+            padding={'normal'}
+            sortDirection={orderBy === headCell.id ? order : false}
+          >
             <TableSortLabel active={orderBy === headCell.id} direction={orderBy === headCell.id ? order : 'asc'} onClick={createSortHandler(headCell.id)}>
-              <Typography variant="h5">{headCell.label}</Typography>
+              <Typography variant='h5'>{headCell.label}</Typography>
               {orderBy === headCell.id ? <span className={classes.visuallyHidden}>{order === 'desc' ? 'sorted descending' : 'sorted ascending'}</span> : null}
             </TableSortLabel>
           </TableCell>
@@ -106,7 +118,7 @@ const useStyles = makeStyles((theme) => ({
   assetTableRow: {
     '&:hover': {
       background: 'rgba(104,108,122,0.05)',
-    }
+    },
   },
   paper: {
     width: '100%',
@@ -204,7 +216,7 @@ const useStyles = makeStyles((theme) => ({
     color: 'green',
   },
   imgLogo: {
-    marginRight: '12px'
+    marginRight: '12px',
   },
   overrideTableHead: {
     borderBottom: '1px solid rgba(104,108,122,0.2) !important',
@@ -238,22 +250,26 @@ export default function EnhancedTable({ assets }) {
   }
 
   const onView = (asset) => {
-    router.push(`/asset/${asset.address}/curve`)
-  }
+    router.push(`/asset/${asset.address}/curve`);
+  };
 
   const showCurveTooltip = (row) => {
-    return <div className={ classes.tooltipContainer }>
-      <Typography>Token APY based on current prices and reward rates. Stake veCRV to acheive up to 2.5x the CRV rewards.</Typography>
-      <Typography>Fees ~ { formatCurrency(row.gauge.apy) }%</Typography>
-      <Typography>CRV ~ { formatCurrency(row.gauge.apyBase) }% -> { formatCurrency(row.gauge.apyBoosted) }%</Typography>
-      <Typography>rKP3R ~ Unknown</Typography>
-    </div>
-  }
+    return (
+      <div className={classes.tooltipContainer}>
+        <Typography>Token APY based on current prices and reward rates. Stake veCRV to acheive up to 2.5x the CRV rewards.</Typography>
+        <Typography>Fees ~ {formatCurrency(row.gauge.apy)}%</Typography>
+        <Typography>
+          CRV ~ {formatCurrency(row.gauge.apyBase)}% -> {formatCurrency(row.gauge.apyBoosted)}%
+        </Typography>
+        <Typography>rKP3R ~ Unknown</Typography>
+      </div>
+    );
+  };
 
   return (
     <div className={classes.root}>
       <TableContainer>
-        <Table className={classes.table} aria-labelledby="tableTitle" size={'medium'} aria-label="enhanced table">
+        <Table className={classes.table} aria-labelledby='tableTitle' size={'medium'} aria-label='enhanced table'>
           <EnhancedTableHead classes={classes} order={order} orderBy={orderBy} onRequestSort={handleRequestSort} />
           <TableBody>
             {stableSort(assets, getComparator(order, orderBy)).map((row, index) => {
@@ -263,58 +279,94 @@ export default function EnhancedTable({ assets }) {
               const labelId = `enhanced-table-checkbox-${index}`;
 
               return (
-                <TableRow key={labelId} className={classes.assetTableRow} onClick={ () => { onView(row) } }>
+                <TableRow
+                  key={labelId}
+                  className={classes.assetTableRow}
+                  onClick={() => {
+                    onView(row);
+                  }}
+                >
                   <TableCell className={classes.cell}>
-                    <div className={ classes.inline }>
-                      <img className={ classes.imgLogo } src={`https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/${row.address}/logo-128.png`} width='35' height='35' alt='' onError={(e)=>{e.target.onerror = null; e.target.src="/tokens/unknown-logo.png"}} />
+                    <div className={classes.inline}>
+                      <img
+                        className={classes.imgLogo}
+                        src={`https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/${row.address}/logo-128.png`}
+                        width='35'
+                        height='35'
+                        alt=''
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = '/tokens/unknown-logo.png';
+                        }}
+                      />
                       <div>
-                        <Typography variant="h2" className={classes.textSpaced}>
-                          { row.symbol }
+                        <Typography variant='h2' className={classes.textSpaced}>
+                          {row.symbol}
                         </Typography>
-                        <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
-                          { row.name }
+                        <Typography variant='h5' className={classes.textSpaced} color='textSecondary'>
+                          {row.name}
                         </Typography>
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className={classes.cell} align="right">
-                    <Typography variant="h2" className={classes.textSpaced}>
-                      { formatCurrency(row.balance) }
+                  <TableCell className={classes.cell} align='right'>
+                    <Typography variant='h2' className={classes.textSpaced}>
+                      {formatCurrency(row.balance)}
                     </Typography>
-                    <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
-                      { row.symbol }
+                    <Typography variant='h5' className={classes.textSpaced} color='textSecondary'>
+                      {row.symbol}
                     </Typography>
                   </TableCell>
-                  <TableCell className={classes.cell} align="right">
-                    <Typography variant="h2" className={classes.textSpaced}>
-                      { formatCurrency(row.gauge.userPoolBalance) }
+                  <TableCell className={classes.cell} align='right'>
+                    <Typography variant='h2' className={classes.textSpaced}>
+                      {formatCurrency(row.gauge.userPoolBalance)}
                     </Typography>
-                    <Tooltip title={ 'Variable APY based on todays trading activity' }>
-                      <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
-                        { formatCurrency(row.gauge.apy) }%
+                    <Tooltip title={'Variable APY based on todays trading activity'}>
+                      <Typography variant='h5' className={classes.textSpaced} color='textSecondary'>
+                        {formatCurrency(row.gauge.apy)}%
                       </Typography>
                     </Tooltip>
                   </TableCell>
-                  <TableCell className={classes.cell} align="right">
-                    <Typography variant="h2" className={classes.textSpaced}>
-                      { formatCurrency(row.gauge.userGaugeBalance) }
+                  <TableCell className={classes.cell} align='right'>
+                    <Typography variant='h2' className={classes.textSpaced}>
+                      {formatCurrency(row.gauge.userGaugeBalance)}
                     </Typography>
-                    <Tooltip title={ showCurveTooltip(row) }>
-                      <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
-                        { formatCurrency(BigNumber(row.gauge.apyBase).plus(row.gauge.apy).plus(row.gauge.rKP3RAPY)) }% -> { formatCurrency(BigNumber(row.gauge.apyBoosted).plus(row.gauge.apy).plus(row.gauge.rKP3RAPY)) }%
+                    <Tooltip title={showCurveTooltip(row)}>
+                      <Typography variant='h5' className={classes.textSpaced} color='textSecondary'>
+                        {formatCurrency(BigNumber(row.gauge.apyBase).plus(row.gauge.apy).plus(row.gauge.rKP3RAPY))}% ->{' '}
+                        {formatCurrency(BigNumber(row.gauge.apyBoosted).plus(row.gauge.apy).plus(row.gauge.rKP3RAPY))}%
                       </Typography>
                     </Tooltip>
                   </TableCell>
-                  <TableCell className={classes.cell} align="right">
-                    <Typography variant="h2" className={classes.textSpaced}>
-                      { formatCurrency(row.convex.balance) }
+                  <TableCell className={classes.cell} align='right'>
+                    <Typography variant='h2' className={classes.textSpaced}>
+                      {formatCurrency(row.convex.balance)}
                     </Typography>
-                    <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
-                      { row.gauge.poolSymbol }
+                    <Typography variant='h5' className={classes.textSpaced} color='textSecondary'>
+                      {row.gauge.poolSymbol}
                     </Typography>
                   </TableCell>
-                  <TableCell className={classes.cell} align="right">
-                    <Button variant='outlined' color='primary' onClick={ () => { onView(row) } }>View</Button>
+                  <TableCell className={classes.cell} align='right'>
+                    <Typography variant='h2' className={classes.textSpaced}>
+                      {formatCurrency(row.yearn.userVaultBalance)}
+                    </Typography>
+                    <Typography variant='h5' className={classes.textSpaced} color='textSecondary'>
+                      {row.yearn.poolSymbol}
+                    </Typography>
+                    <Typography variant='h5' className={classes.textSpaced} color='textSecondary'>
+                      {row.yearn.apy}%
+                    </Typography>
+                  </TableCell>
+                  <TableCell className={classes.cell} align='right'>
+                    <Button
+                      variant='outlined'
+                      color='primary'
+                      onClick={() => {
+                        onView(row);
+                      }}
+                    >
+                      View
+                    </Button>
                   </TableCell>
                 </TableRow>
               );

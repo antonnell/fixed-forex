@@ -1,0 +1,303 @@
+.container {
+  /* width: calc(100% - 180px); */
+  margin: 0 auto;
+  margin-top: 40px;
+  position: relative;
+  -webkit-transition: all 300ms ease-out !important;
+  -moz-transition: all 300ms ease-out !important;
+  -ms-transition: all 300ms ease-out !important;
+  -o-transition: all 600ms ease-out !important;
+  transition: all 300ms ease-out !important;
+}
+
+.title {
+  font-size: 20px !important;
+  margin-left: 12px !important;
+}
+
+.inline {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px !important;
+}
+
+.lpOptionsContainer {
+  /* border: 1px solid rgba(104, 108, 122, 0.25); */
+  border: 3px solid LightSlateGray !important;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  cursor: pointer;
+  overflow: hidden;
+  -webkit-transition: all 300ms ease-out !important;
+  -moz-transition: all 300ms ease-out !important;
+  -ms-transition: all 300ms ease-out !important;
+  -o-transition: all 600ms ease-out !important;
+  transition: all 300ms ease-out !important;
+}
+
+.lpOptionsContainer:hover {
+  -webkit-box-shadow: 0px 5px 0px 0 LightSlateGray !important;
+  box-shadow: 0px 5px 0px 0 LightSlateGray !important;
+  transform: translate(0px, -3px);
+}
+
+.helpIcon {
+  border: 1px solid rgba(104,108,122,0.2);
+  border-radius: 50px;
+  width: 26px;
+  height: 26px;
+  font-weight: 700 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0px;
+  right: 0;
+  cursor: help !important;
+}
+
+.topLeftButton,
+.bottomLeftButton {
+  border-radius: 10px 10px 0 0 !important;
+  width: 100%;
+  min-height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none !important;
+  cursor: pointer;
+}
+
+.inputsContainer {
+  padding: 0px 24px;
+}
+
+.multiApproval {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.multiApprovalButton {
+  min-width: auto;
+}
+
+.inputContainer {
+  position: relative;
+}
+
+.textField {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.activeIcon {
+  height: 100%;
+  width: 2px;
+  background: linear-gradient(0deg, #23a6d5, LightSlateGray);
+  background-size: 400% 400%;
+	animation: gradient 35s ease infinite;
+  display: inline-block;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  display: none;
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+.inputTitleContainer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.inputTitle {
+  padding-bottom: 6px;
+  margin-left: 6px;
+}
+
+.balances {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 12px;
+  padding-bottom: 6px;
+}
+
+.value {
+  cursor: pointer;
+  font-size: 14px !important;
+  margin-bottom: 5px !important;
+}
+
+.inputTitleText {
+  font-size: 15px !important;
+  margin-bottom: 10px !important;
+}
+
+.infoContainer {
+  display: flex;
+}
+
+.infoIcon {
+  border: 1px solid rgba(128, 128, 128, 0.8);
+  color: rgba(128, 128, 128, 0.8);
+  border-radius: 30px;
+  font-size: 40px !important;
+  padding: 6px;
+  margin-right: 12px !important;
+}
+
+.infoField {
+  display: flex;
+  align-items: center;
+  min-width: 300px;
+  margin-top: 32px;
+}
+
+.infoText {
+  color: rgba(128, 128, 128, 0.8);
+  font-size: 14px !important;
+}
+
+.actionsContainer {
+  display: grid;
+  grid-gap: 12px;
+  grid-template-columns: 1fr;
+  padding: 0px 24px;
+  width: 100%;
+  height: 100%;
+  margin-top: 10px;
+}
+
+.actionButtonText {
+  font-size: 12px !important;
+  text-transform: capitalize !important;
+}
+
+.autocompleteContainer {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.reAddPadding {
+  padding: 24px 0px;
+  display: flex;
+  flex: 1;
+}
+
+.loadingCircle {
+  margin-left: 6px !important;
+  color: #FFF !important;
+}
+
+.toggleButtons {
+  display: flex;
+  flex-direction: column;
+  /* min-height: 170px; */
+  width: 100%;
+  background: LightSlateGray !important;
+}
+
+.button {
+  flex: 1;
+  transition: none !important;
+  opacity: 1;
+  color: rgba(255,255,255,0.6) !important;
+  background: none !important;
+}
+
+/* .buttonActive {
+  border-radius: 0px !important;
+  flex: 1;
+} */
+
+.amountAndPercent {
+  display: grid;
+  grid-template-columns: 1fr ;
+  grid-column-gap: 12px;
+  padding-bottom: 12px;
+}
+
+.actionsContainerWithdraw {
+  display: grid;
+  grid-gap: 12px;
+  grid-template-columns: 1fr;
+  border-left: 1px solid rgba(128, 128, 128, 0.8);
+  padding: 0px 24px;
+  width: 100%;
+}
+
+.extraTF {
+  padding-bottom: 12px;
+}
+
+.buttonOverride {
+  background: LightSlateGray !important;
+  color: #FFF !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+  height: 100%;
+}
+
+
+@media screen and (max-width: 1280px) {
+  .container {
+    margin-top: 40px;
+  }
+
+  .buttonWrap {
+    margin-top: 20px !important;
+  }
+
+  .actionsContainer {
+    border-left: 0px solid rgba(104, 108, 122, 0.25) !important;
+    margin-top: 10px;
+  }
+
+  .toggleButtons {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .actionsContainer {
+    border-left: 0px solid rgba(104, 108, 122, 0.25) !important;
+  }
+
+  .topLeftButton,
+  .bottomLeftButton {
+    border-radius: 10px 10px 0 0 !important;
+    width: 100%;
+    min-height: 85px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none !important;
+    cursor: pointer;
+  }
+
+  .inputsContainer {
+    /* margin-top: -90px; */
+  }
+}
+
+@media screen and (max-width: 960px) {
+.helpIcon { display: none; }
+}
