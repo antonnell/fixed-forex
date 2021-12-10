@@ -1221,18 +1221,19 @@ class Store {
       const veIBFFContract = new web3.eth.Contract(abis.veIBFFABI, FF_VEKP3R_ADDRESS)
       const lockedInfo = await veIBFFContract.methods.locked(account.address).call()
       const totalSupply = await veIBFFContract.methods.totalSupply().call()
+      const balanceOf = await veIBFFContract.methods.balanceOf().call(account)
 
-      const fourYears = 126144000    // 60 * 60 * 24 * 365 * 4
-      const now = Math.floor(Date.now() / 1000)
-      const maxLock = BigNumber(now).plus(fourYears).toNumber()
-      const percentOfFourYearsLocked = 1-BigNumber(maxLock).minus(lockedInfo.end).div(fourYears).toFixed(veIBFF.decimals)
+      // const fourYears = 126144000    // 60 * 60 * 24 * 365 * 4
+      // const now = Math.floor(Date.now() / 1000)
+      // const maxLock = BigNumber(now).plus(fourYears).toNumber()
+      // const percentOfFourYearsLocked = 1-BigNumber(maxLock).minus(lockedInfo.end).div(fourYears).toFixed(veIBFF.decimals)
       const locked = BigNumber(lockedInfo.amount).div(10**veIBFF.decimals).toFixed(veIBFF.decimals)
 
       return {
         locked: locked,
         lockEnds: lockedInfo.end,
-        lockValue: BigNumber(locked).times(percentOfFourYearsLocked).toFixed(veIBFF.decimals),
-        votePower: BigNumber(locked).times(percentOfFourYearsLocked).toFixed(veIBFF.decimals),
+        lockValue: BigNumber(balanceOf).div(10**veIBFF.decimals).toFixed(veIBFF.decimals),
+        votePower: BigNumber(balanceOf).div(10**veIBFF.decimals).toFixed(veIBFF.decimals),
         totalSupply: BigNumber(totalSupply).div(10**veIBFF.decimals).toFixed(veIBFF.decimals),
       }
     } catch(ex) {
