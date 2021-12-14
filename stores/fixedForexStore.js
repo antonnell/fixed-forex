@@ -861,7 +861,7 @@ class Store {
       }
       let yearnNetworkAPY = [];
       try {
-        const yearnUrl = `https://d28fcsszptni1s.cloudfront.net/v1/chains/1/vaults/all`;
+        const yearnUrl = `https://api.yearn.finance/v1/chains/1/vaults/all`;
         const yearnApysResult = await fetch(yearnUrl);
         const yearnApysJSON = await yearnApysResult.json();
         yearnNetworkAPY = yearnApysJSON.filter((vault) => {

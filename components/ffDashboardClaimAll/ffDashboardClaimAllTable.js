@@ -212,6 +212,7 @@ export default function EnhancedTable({ claimable, crv, ibEUR, rKP3R }) {
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('balance');
   const [claimLoading, setClaimLoading ] = React.useState(false)
+  const [claimedAsset, setClaimedAsset] = React.useState()
 
   React.useEffect(() => {
     const rewardClaimed = () => {
@@ -242,18 +243,18 @@ export default function EnhancedTable({ claimable, crv, ibEUR, rKP3R }) {
   const onClaim = (asset) => {
     console.log(asset)
     setClaimLoading(true)
+    setClaimedAsset(asset)
 
     if(asset.gauge) {
       // this is a gauge
       stores.dispatcher.dispatch({ type: FIXED_FOREX_CLAIM_CURVE_REWARDS, content: { asset: asset.gauge }})
     } else if(asset.type === 'Fixed Forex' && asset.description === 'Fee Claim') {
       stores.dispatcher.dispatch({ type: FIXED_FOREX_CLAIM_DISTRIBUTION_REWARD, content: {  }})
-    } else if(gauge.type === 'Fixed Forex' && gauge.description === 'Vesting Rewards') {
+    } else if(asset.type === 'Fixed Forex' && asset.description === 'Vesting Rewards') {
       stores.dispatcher.dispatch({ type: FIXED_FOREX_CLAIM_VESTING_REWARD, content: {  }})
-    } else if(gauge.type === 'Fixed Forex' && gauge.description === 'Redeemable KP3R') {
+    } else if(asset.type === 'Fixed Forex' && asset.description === 'Redeemable KP3R') {
       stores.dispatcher.dispatch({ type: FIXED_FOREX_CLAIM_RKP3R, content: {  }})
     }
-
   }
 
   if (!claimable) {
@@ -349,10 +350,10 @@ export default function EnhancedTable({ claimable, crv, ibEUR, rKP3R }) {
                                 variant='contained'
                                 size='large'
                                 color='primary'
-                                disabled={ claimLoading }
+                                disabled={ claimLoading && (!claimedAsset || claimedAsset.symbol === row.symbol) }
                                 onClick={ () => { onClaim(row) } }>
-                                <Typography className={ classes.actionButtonText }>{ claimLoading ? `Claiming` : `Claim` }</Typography>
-                                { claimLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
+                                <Typography className={ classes.actionButtonText }>{ claimLoading && (!claimedAsset || claimedAsset.symbol === row.symbol) ? `Claiming` : `Claim` }</Typography>
+                                { claimLoading && (!claimedAsset || claimedAsset.symbol === row.symbol) && <CircularProgress size={10} className={ classes.loadingCircle } /> }
                               </Button>
 
                             </Grid>

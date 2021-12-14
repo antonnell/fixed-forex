@@ -225,6 +225,7 @@ export default function EnhancedTable({ claimable, crv, ibEUR, rKP3R }) {
   const [order, setOrder] = React.useState('desc');
   const [orderBy, setOrderBy] = React.useState('balance');
   const [claimLoading, setClaimLoading ] = React.useState(false)
+  const [claimedAsset, setClaimedAsset] = React.useState(null)
 
   React.useEffect(() => {
     const rewardClaimed = () => {
@@ -254,6 +255,7 @@ export default function EnhancedTable({ claimable, crv, ibEUR, rKP3R }) {
 
   const onClaim = (asset) => {
     setClaimLoading(true)
+    setClaimedAsset(asset)
 
     if(asset.gauge) {
       // this is a gauge
@@ -341,10 +343,10 @@ export default function EnhancedTable({ claimable, crv, ibEUR, rKP3R }) {
                       variant='contained'
                       size='large'
                       color='primary'
-                      disabled={ claimLoading }
+                      disabled={ claimLoading && (!claimedAsset || claimedAsset.symbol === row.symbol) }
                       onClick={ () => { onClaim(row) } }>
-                      <Typography className={ classes.actionButtonText }>{ claimLoading ? `Claiming` : `Claim` }</Typography>
-                      { claimLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
+                      <Typography className={ classes.actionButtonText }>{ claimLoading && (!claimedAsset || claimedAsset.symbol === row.symbol) ? `Claiming` : `Claim` }</Typography>
+                      { claimLoading && (!claimedAsset || claimedAsset.symbol === row.symbol) && <CircularProgress size={10} className={ classes.loadingCircle } /> }
                     </Button>
                   </TableCell>
                 </TableRow>

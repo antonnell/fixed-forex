@@ -21,6 +21,7 @@ function NoRewardsIcon(props) {
 export default function ffClaimAll() {
 
   const [ claimLoading, setClaimLoading ] = useState(false)
+  const [ claimedAsset, setClaimedAsset ] = useState(null)
   const [ claimable, setClaimable ] = useState([])
   const [ crv, setCRV ] = useState(null)
   const [ ibEUR, setIBEUR ] = useState(null)
@@ -116,6 +117,7 @@ export default function ffClaimAll() {
 
   const onClaim = () => {
     setClaimLoading(true)
+    setClaimedAsset(null)
     stores.dispatcher.dispatch({ type: FIXED_FOREX_CLAIM_ALL, content: { claimable }})
   }
 
