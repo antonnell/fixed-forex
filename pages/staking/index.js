@@ -105,7 +105,7 @@ function Staking({ changeTheme }) {
           <div className={classes.connected}>
             <Typography className={classes.mainHeading} variant='h1'>Uniswap Liquidity Pool</Typography>
             <Typography className={classes.mainDesc} variant='body2'>
-              Stake your KP3R + ETH Uniswap position to earn KP3R rewards on top of your current Uniswap fees.
+              Stake your KP3R + ETH Uniswap position to earn rKP3R rewards on top of your current Uniswap fees.
             </Typography>
             <Overview />
             <Tokens />
@@ -116,7 +116,7 @@ function Staking({ changeTheme }) {
              <UniswapIcon className={ classes.overviewIcon } />
              <Typography className={classes.mainHeadingNC} variant='h1'>Uniswap Liquidity Pool</Typography>
              <Typography className={classes.mainDescNC} variant='body2'>
-               Stake your KP3R + ETH Uniswap position to earn KP3R rewards on top of your current Uniswap fees.
+               Stake your KP3R + ETH Uniswap position to earn rKP3R rewards on top of your current Uniswap fees.
              </Typography>
              <Button
                disableElevation
