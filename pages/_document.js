@@ -8,6 +8,7 @@ export default class MyDocument extends Document {
     return (
       <Html lang="en">
         <Head>
+          <script defer data-domain="fixedforex.fi" src="https://plausible.io/js/plausible.js"></script>
           <link rel="stylesheet" href="/fonts/Inter/Inter.css" />
           <link rel="stylesheet" href="/fonts/Druk/Druk.css" />
         </Head>
