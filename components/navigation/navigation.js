@@ -154,7 +154,7 @@ function Navigation(props) {
         <div className={ classes.subAssets }>
           {renderSubNav(
             'Curve + Convex + Yearn',
-            'home',
+            'gauges',
           )}
           {renderSubNav(
             'Uniswap',

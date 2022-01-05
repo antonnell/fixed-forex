@@ -4,7 +4,7 @@ import { Typography, Button, Paper, SvgIcon, Grid } from "@material-ui/core";
 import Head from 'next/head';
 import Layout from '../../components/layout/layout.js';
 import Vesting from '../../components/ffVest';
-import Overview from '../../components/ffOverview';
+import Overview from '../../components/ffVestOverview';
 import Claim from '../../components/ffClaim';
 import ClaimDistribution from '../../components/ffClaimDistirbution';
 

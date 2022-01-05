@@ -30,13 +30,13 @@ function Asset({ changeTheme }) {
 
   useEffect(function () {
     const fixedForexUpdated = () => {
-      const ass = stores.fixedForexStore.getAsset(router.query.address)
+      const ass = stores.fixedForexStore.getAssetByGauge(router.query.address)
       setAsset(ass)
       forceUpdate()
     };
 
     //set asset
-    const ass = stores.fixedForexStore.getAsset(router.query.address)
+    const ass = stores.fixedForexStore.getAssetByGauge(router.query.address)
     setAsset(ass)
 
     //register emitters
@@ -49,7 +49,7 @@ function Asset({ changeTheme }) {
 
   useEffect(function () {
     //set asset
-    const ass = stores.fixedForexStore.getAsset(router.query.address)
+    const ass = stores.fixedForexStore.getAssetByGauge(router.query.address)
     setAsset(ass)
   }, [router.query.address])
 
@@ -60,7 +60,7 @@ function Asset({ changeTheme }) {
       </Head>
       <div className={classes.container}>
 
-        <div className={classes.backBtn} onClick={() => router.push('/home')}>
+        <div className={classes.backBtn} onClick={() => router.push('/gauges')}>
           <Tooltip placement="top" title="Back">
             <KeyboardBackspaceIcon />
           </Tooltip>

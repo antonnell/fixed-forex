@@ -1,4 +1,4 @@
-import Home from "./welcome";
+import Welcome from "./welcome";
 
 import { useRouter } from "next/router";
 
@@ -6,9 +6,9 @@ function Route({ changeTheme, ...props }) {
   const router = useRouter();
   const activePath = router.asPath;
   if (activePath.includes("/")) {
-    return <Home props={props} changeTheme={changeTheme} />;
+    return <Welcome props={props} changeTheme={changeTheme} />;
   } else {
-    return <Home props={props} changeTheme={changeTheme} />;
+    return <Welcome props={props} changeTheme={changeTheme} />;
   }
 }
 

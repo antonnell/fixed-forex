@@ -82,8 +82,10 @@ export default function ffOverview() {
       if(asset && asset.gauge) {
         let pooledBalance = BigNumber(asset.gauge.userPoolBalance).times(asset.gauge.virtualPrice)
         let stakedBalance = BigNumber(asset.gauge.userGaugeBalance).times(asset.gauge.virtualPrice)
-        let convexBalance = BigNumber(asset.convex.balance).times(asset.gauge.virtualPrice)
-        let tot = BigNumber(asset.balance).plus(pooledBalance).plus(stakedBalance).plus(convexBalance).times(asset.price)
+        let convexBalance = BigNumber((asset && asset.convex && asset.convex.balance) ? asset.convex.balance : 0).times(asset.gauge.virtualPrice)
+        let yearnBalance = BigNumber((asset && asset.yearn && asset.yearn.userVaultBalance) ? asset.yearn.userVaultBalance : 0)
+
+        let tot = BigNumber(asset.balance).plus(pooledBalance).plus(stakedBalance).plus(convexBalance).plus(yearnBalance).times(asset.price)
         balance = BigNumber(balance).plus(tot)
       }
     }

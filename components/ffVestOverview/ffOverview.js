@@ -5,7 +5,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import BigNumber from 'bignumber.js';
 
 import { formatCurrency } from '../../utils';
-import classes from './ffDashboardOverview.module.css';
+import classes from './ffOverview.module.css';
 
 import stores from '../../stores'
 import { FIXED_FOREX_UPDATED } from '../../stores/constants';
@@ -13,9 +13,9 @@ import { FIXED_FOREX_UPDATED } from '../../stores/constants';
 function BalanceIcon(props) {
   const { color, className } = props;
   return (
-    <SvgIcon viewBox="0 0 48 48" stroke-width="3" className={className}>
-    <g stroke-width="3" transform="translate(0.5, 0.5)"><rect x="16" y="23" width="16" height="10" fill="none" stroke="#ffffff" stroke-linecap="square" stroke-miterlimit="10" stroke-width="3" data-color="color-2" stroke-linejoin="miter"></rect><path d="M20,23V17a4.012,4.012,0,0,1,4-4h0a4.012,4.012,0,0,1,4,4v6" fill="none" stroke="#ffffff" stroke-linecap="square" stroke-miterlimit="10" stroke-width="3" data-color="color-2" stroke-linejoin="miter"></path><path d="M42,27A18,18,0,0,1,6,27V7L24,3,42,7Z" fill="none" stroke="#ffffff" stroke-linecap="square" stroke-miterlimit="10" stroke-width="3" stroke-linejoin="miter"></path></g>
-    </SvgIcon>
+    <SvgIcon viewBox="0 0 32 32" stroke-width="1" className={className}>
+    <g stroke-width="2" transform="translate(0, 0)"><line fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" x1="28" y1="12" x2="25" y2="12" stroke-linejoin="miter"></line> <line fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" x1="21" y1="12" x2="19" y2="12" stroke-linejoin="miter"></line> <line fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" x1="15" y1="12" x2="13" y2="12" stroke-linejoin="miter"></line> <line fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" x1="9" y1="12" x2="7" y2="12" stroke-linejoin="miter"></line> <line fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" x1="3" y1="12" x2="1" y2="12" stroke-linejoin="miter"></line> <line fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" x1="28" y1="26" x2="25" y2="26" stroke-linejoin="miter"></line> <line fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" x1="21" y1="26" x2="19" y2="26" stroke-linejoin="miter"></line> <line fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" x1="15" y1="26" x2="13" y2="26" stroke-linejoin="miter"></line> <line fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" x1="9" y1="26" x2="7" y2="26" stroke-linejoin="miter"></line> <line fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" x1="3" y1="26" x2="1" y2="26" stroke-linejoin="miter"></line> <path fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" d="M28,16V8h-6H9H4 C2.343,8,1,6.657,1,5v21c0,2.209,1.791,4,4,4h23v-8" stroke-linejoin="miter"></path> <path data-color="color-2" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" d="M31,22h-7 c-1.657,0-3-1.343-3-3v0c0-1.657,1.343-3,3-3h7V22z" stroke-linejoin="miter"></path> <path fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" d="M22,4V2H4 C2.343,2,1,3.343,1,5v0c0,1.657,1.343,3,3,3" stroke-linejoin="miter"></path></g>
+  </SvgIcon>
   );
 }
 
@@ -95,60 +95,52 @@ export default function ffOverview() {
 
   return (
     <div className={ classes.container }>
-        <Grid container spacing={4}>
-
+      <div className={ classes.fieldsContainer }>
+        <Grid container spacing={3}>
           <Grid item lg={4} md={4} sm={12} xs={12}>
-            <Paper elevation={0} className={ classes.itemWrapGrid }>
-            <Grid container spacing={0}>
-              <Grid item lg={3} md={3} sm={3} xs={3} className={classes.iconWrap}>
-                  <BalanceIcon className={ classes.overviewIcon } />
-              </Grid>
-              <Grid item lg={9} md={9} sm={9} xs={9} className={ classes.itemContent }>
+            <div className={ classes.field }>
+              <div className={classes.iconWrap}>
+                <BalanceIcon className={ classes.overviewIcon } />
+              </div>
+              <div>
                 <Typography className={ classes.title }>KP3R Balance:</Typography>
                 <div className={ classes.inline }>
-                <Typography className={ classes.value }>{ formatCurrency(ibff ? ibff.balance : 0) }</Typography>
-                <Typography className={ classes.valueSymbol }>{ ibff ? ibff.symbol : '' }</Typography>
+                  <Typography className={ classes.value }>{ formatCurrency(ibff ? ibff.balance : 0) }</Typography>
+                  <Typography className={ classes.valueSymbol }>{ ibff ? ibff.symbol : '' }</Typography>
                 </div>
-              </Grid>
-            </Grid>
-            </Paper>
+              </div>
+            </div>
           </Grid>
-
           <Grid item lg={4} md={4} sm={12} xs={12}>
-            <Paper elevation={0} className={ classes.itemWrapGrid }>
-            <Grid container spacing={0}>
-              <Grid item lg={3} md={3} sm={3} xs={3} className={classes.iconWrap}>
-                  <VestedBalanceIcon className={ classes.overviewIcon } />
-              </Grid>
-              <Grid item lg={9} md={9} sm={9} xs={9} className={ classes.itemContent }>
+            <div className={ classes.field }>
+              <div className={classes.iconWrap}>
+                <VestedBalanceIcon className={ classes.overviewIcon } />
+              </div>
+              <div>
                 <Typography className={ classes.title }>Vested Value:</Typography>
                 <div className={ classes.inline }>
                   <Typography className={ classes.value }>{ formatCurrency((veIBFF && veIBFF.vestingInfo) ? veIBFF.vestingInfo.lockValue : 0) }</Typography>
                   <Typography className={ classes.valueSymbol }>{ veIBFF ? veIBFF.symbol : '' }</Typography>
                 </div>
-              </Grid>
-            </Grid>
-            </Paper>
+              </div>
+            </div>
           </Grid>
-
           <Grid item lg={4} md={4} sm={12} xs={12}>
-            <Paper elevation={0} className={ classes.itemWrapGrid }>
-            <Grid container spacing={0}>
-              <Grid item lg={3} md={3} sm={3} xs={3} className={classes.iconWrap}>
-                  <VestedBalanceIcon className={ classes.overviewIcon } />
-              </Grid>
-              <Grid item lg={9} md={9} sm={9} xs={9} className={ classes.itemContent }>
+            <div className={ classes.field }>
+              <div className={classes.iconWrap}>
+                <VestedBalanceIcon className={ classes.overviewIcon } />
+              </div>
+              <div>
                 <Typography className={ classes.title }>Vested Balance:</Typography>
                 <div className={ classes.inline }>
                   <Typography className={ classes.value }>{ formatCurrency((veIBFF && veIBFF.vestingInfo) ? veIBFF.vestingInfo.locked : 0) }</Typography>
-                  <Typography className={ classes.valueSymbol }>{ veIBFF ? veIBFF.symbol : '' }</Typography>
+                  <Typography className={ classes.valueSymbol }>{ ibff ? ibff.symbol : '' }</Typography>
                 </div>
-              </Grid>
-            </Grid>
-            </Paper>
+              </div>
+            </div>
           </Grid>
-
         </Grid>
+      </div>
     </div>
   );
 }
