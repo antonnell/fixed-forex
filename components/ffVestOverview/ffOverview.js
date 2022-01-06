@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Grid, Typography, SvgIcon, Button, TextField, InputAdornment, CircularProgress } from '@material-ui/core';
+import { Paper, Grid, Typography, SvgIcon, Button, TextField, InputAdornment, CircularProgress, Tooltip } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Skeleton from '@material-ui/lab/Skeleton';
 import BigNumber from 'bignumber.js';
+import moment from 'moment';
 
 import { formatCurrency } from '../../utils';
 import classes from './ffOverview.module.css';
@@ -132,10 +133,12 @@ export default function ffOverview() {
               </div>
               <div>
                 <Typography className={ classes.title }>Vested Balance:</Typography>
-                <div className={ classes.inline }>
-                  <Typography className={ classes.value }>{ formatCurrency((veIBFF && veIBFF.vestingInfo) ? veIBFF.vestingInfo.locked : 0) }</Typography>
-                  <Typography className={ classes.valueSymbol }>{ ibff ? ibff.symbol : '' }</Typography>
-                </div>
+                <Tooltip title={ `Lock expires: ${moment.unix(veIBFF?.vestingInfo?.lockEnds).format('YYYY-MM-DD')}` }>
+                  <div className={ classes.inline }>
+                    <Typography className={ classes.value }>{ formatCurrency((veIBFF && veIBFF.vestingInfo) ? veIBFF.vestingInfo.locked : 0) }</Typography>
+                    <Typography className={ classes.valueSymbol }>{ ibff ? ibff.symbol : '' }</Typography>
+                  </div>
+                </Tooltip>
               </div>
             </div>
           </Grid>
