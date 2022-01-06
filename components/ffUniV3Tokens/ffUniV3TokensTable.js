@@ -288,6 +288,13 @@ const useStyles = makeStyles((theme) => ({
   overrideTableHead: {
     borderBottom: '1px solid rgba(104,108,122,0.2) !important',
   },
+  errorTho: {
+    background: 'rgb(237, 67, 55)',
+    borderRadius: '12px',
+    padding: '12px 24px',
+    width: 'fit-content',
+    float: 'right'
+  }
 }));
 
 export default function EnhancedTable({ tokens, rKP3R }) {
@@ -412,12 +419,13 @@ export default function EnhancedTable({ tokens, rKP3R }) {
                   }
                   { BigNumber(row.prices.currentPrice).gt(row.prices.lowPrice) && BigNumber(row.prices.currentPrice).lt(row.prices.highPrice) &&
                     <TableCell className={classes.cell} align="right">
-                      <Button
+                      <Typography variant='h2' className={ classes.errorTho }>Deposits are disabled</Typography>
+                      {/*<Button
                         className={ classes.buttonOverride }
                         variant='contained'
                         size='large'
                         color='primary'
-                        disabled={ approveLoading || row.stakingApproved }
+                        disabled={ true } // || approveLoading || row.stakingApproved
                         onClick={ () => { onApprove(row) } }>
                         <Typography className={ classes.actionButtonText }>{ approveLoading ? `Approving` : `Approve` }</Typography>
                         { approveLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
@@ -427,11 +435,11 @@ export default function EnhancedTable({ tokens, rKP3R }) {
                         variant='contained'
                         size='large'
                         color='primary'
-                        disabled={ stakeLoading || !row.stakingApproved }
+                        disabled={ true } // || stakeLoading || !row.stakingApproved
                         onClick={ () => { onStake(row) } }>
                         <Typography className={ classes.actionButtonText }>{ stakeLoading ? `Staking` : `Stake` }</Typography>
                         { stakeLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
-                      </Button>
+                      </Button>*/}
                     </TableCell>
                   }
                 </TableRow>
