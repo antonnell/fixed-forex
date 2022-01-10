@@ -201,7 +201,32 @@ function Navigation(props) {
             'ffDashboard',
             'https://fixedforex.live/'
           )}
-        </div>
+          <div className={classes.sectionDivider}></div>
+          {renderSectionHeader(
+            'Social'
+          )}
+          {renderNav(
+            'Twitter',
+            'ffDashboard',
+            'https://twitter.com/thekeep3r'
+          )}
+          {renderNav(
+            'Telegram',
+            'ffDashboard',
+            'https://t.me/keep3r_official'
+          )}
+           {renderNav(
+            'Discord',
+            'ffDashboard',
+            'https://discord.gg/FSNfbEKDWV'
+          )}
+           {renderNav(
+            'Github',
+            'ffDashboard',
+            'https://github.com/antonnell/fixed-forex'
+          )}
+          </div>
+
       </React.Fragment>
     );
   };
