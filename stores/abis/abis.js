@@ -32,6 +32,7 @@ import { convexCVXABI } from './convexCVXABI'
 import { curveGaugeControllerABI } from './curveGaugeControllerABI'
 import { yearnVaultABI } from './yearnVaultABI'
 import { ibAMMABI } from './ibAMMABI'
+import { ibAMMV2ABI } from './ibAMMV2ABI'
 
 export default {
   erc20ABI: erc20ABI,
@@ -67,5 +68,6 @@ export default {
   convexCVXABI: convexCVXABI,
   curveGaugeControllerABI: curveGaugeControllerABI,
   ibAMMABI: ibAMMABI,
+  ibAMMV2ABI: ibAMMV2ABI,
   yearnVaultABI: yearnVaultABI
 }

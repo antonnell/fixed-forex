@@ -77,6 +77,7 @@ import {
   FF_CONVEX_POOL_MANAGEMENT_ADDRESS,
 
   FF_IBAMM_ADDRESS,
+  FF_IBAMM_V2_ADDRESS,
 
   IBEUR_ETH_ADDRESS_OLD,
   IBEUR_GAUGE_ADDRESS_OLD,
@@ -208,6 +209,20 @@ class Store {
           name: 'Magic Internet Money',
           decimals: 18,
           icon: 'https://assets.coingecko.com/coins/images/16786/large/mimlogopng.png'
+        },
+        {
+          address: '0x96e61422b6a9ba0e068b6c5add4ffabc6a4aae27',
+          symbol: 'ibEUR',
+          name: 'Iron Bank Euro',
+          decimals: 18,
+          icon: 'https://assets.coingecko.com/coins/images/17285/large/Iron_Bank_Euro.png'
+        },
+        {
+          address: '0x57ab1ec28d129707052df4df418d58a2d46d5f51',
+          symbol: 'sUSD',
+          name: 'Synthetix USD',
+          decimals: 18,
+          icon: 'https://assets.coingecko.com/coins/images/5013/large/sUSD.png'
         }
       ]
     };
@@ -1463,20 +1478,23 @@ class Store {
       const assetsBalances = await Promise.all(swapFromAssets.map(async (asset) => {
         const assetContract = new web3.eth.Contract(abis.erc20ABI, asset.address)
 
-        const [ balanceOf, allowance ] = await Promise.all([
+        const [ balanceOf, allowance, allowanceV2 ] = await Promise.all([
           assetContract.methods.balanceOf(account.address).call(),
           assetContract.methods.allowance(account.address, FF_IBAMM_ADDRESS).call(),
+          assetContract.methods.allowance(account.address, FF_IBAMM_V2_ADDRESS).call(),
         ]);
 
         return {
           balanceOf,
           allowance,
+          allowanceV2,
         }
       }))
 
       for(let i = 0; i < assetsBalances.length; i++) {
         swapFromAssets[i].balance = BigNumber(assetsBalances[i].balanceOf).div(10**swapFromAssets[i].decimals).toFixed(swapFromAssets[i].decimals)
         swapFromAssets[i].allowance = BigNumber(assetsBalances[i].allowance).div(10**swapFromAssets[i].decimals).toFixed(swapFromAssets[i].decimals)
+        swapFromAssets[i].allowanceV2 = BigNumber(assetsBalances[i].allowanceV2).div(10**swapFromAssets[i].decimals).toFixed(swapFromAssets[i].decimals)
       }
 
       this.setStore({
@@ -3230,9 +3248,20 @@ class Store {
         .times(10 ** 18)
         .toFixed(0);
 
-      const ibAMMContract = new web3.eth.Contract(abis.ibAMMABI, FF_IBAMM_ADDRESS);
+      let ibAMMContract = null
+      let quoteRes = null
 
-      const quoteRes = await ibAMMContract.methods.quote(toAsset.address, sendAmount).call()
+      if(fromAsset.symbol === 'sUSD' || fromAsset.symbol === 'ibEUR') {
+        ibAMMContract = new web3.eth.Contract(abis.ibAMMV2ABI, FF_IBAMM_V2_ADDRESS);
+        if(fromAsset.symbol === 'sUSD') {
+          quoteRes = await ibAMMContract.methods.quote_out(sendAmount).call()
+        } else {
+          quoteRes = await ibAMMContract.methods.quote_in(sendAmount).call()
+        }
+      } else {
+        ibAMMContract = new web3.eth.Contract(abis.ibAMMABI, FF_IBAMM_ADDRESS);
+        quoteRes = await ibAMMContract.methods.quote(toAsset.address, sendAmount).call()
+      }
 
       const returnValue = BigNumber(quoteRes).div(10**toAsset.decimals).toFixed(toAsset.decimals)
 
@@ -3276,7 +3305,13 @@ class Store {
   _callApproveSwap = async (web3, account, asset, gasSpeed, callback) => {
     const erc20Contract = new web3.eth.Contract(abis.erc20ABI, asset.address);
     const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
-    this._callContractWait(web3, erc20Contract, 'approve', [FF_IBAMM_ADDRESS, MAX_UINT256], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+
+    let contract = FF_IBAMM_ADDRESS
+    if(asset.symbol === 'sUSD' || asset.symbol === 'ibEUR') {
+      contract = FF_IBAMM_V2_ADDRESS
+    }
+
+    this._callContractWait(web3, erc20Contract, 'approve', [contract, MAX_UINT256], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
   };
 
   swap = async(payload) => {
@@ -3305,7 +3340,6 @@ class Store {
 
   _callSwap = async (web3, account, fromAsset, toAsset, fromAmount, toAmount, gasSpeed, callback) => {
     try {
-      let ibAMMContract = new web3.eth.Contract(abis.ibAMMABI, FF_IBAMM_ADDRESS);
       const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
 
       const sendAmount = BigNumber(fromAmount === '' ? 0 : fromAmount)
@@ -3313,7 +3347,25 @@ class Store {
         .toFixed(0);
       const minOut = BigNumber(toAmount).times(10 ** 18).times(0.97).toFixed(0)
 
-      this._callContractWait(web3, ibAMMContract, 'swap', [toAsset.address, sendAmount, minOut], account, gasPrice, GET_FIXED_FOREX_BALANCES, callback);
+      let ibAMMContract = null
+      let call = ''
+      let params = []
+
+      if(fromAsset.symbol === 'sUSD' || fromAsset.symbol === 'ibEUR') {
+        ibAMMContract = new web3.eth.Contract(abis.ibAMMV2ABI, FF_IBAMM_V2_ADDRESS);
+        if(fromAsset.symbol === 'sUSD') {
+          call = 'swap_out'
+        } else {
+          call = 'swap_in'
+        }
+        params = [sendAmount, minOut]
+      } else {
+        ibAMMContract = new web3.eth.Contract(abis.ibAMMABI, FF_IBAMM_ADDRESS);
+        call = 'swap'
+        params = [toAsset.address, sendAmount, minOut]
+      }
+
+      this._callContractWait(web3, ibAMMContract, call, params, account, gasPrice, GET_FIXED_FOREX_BALANCES, callback, true);
     } catch (ex) {
       console.log(ex);
       return this.emitter.emit(ERROR, ex);
@@ -3329,7 +3381,7 @@ class Store {
 
         let sendGasAmount = gasAmount;
         if (paddGasCost) {
-          sendGasAmount = BigNumber(sendGasAmount).times(1.15).toFixed(0);
+          sendGasAmount = BigNumber(sendGasAmount).times(1.3).toFixed(0);
         }
 
         contract.methods[method](...params)
