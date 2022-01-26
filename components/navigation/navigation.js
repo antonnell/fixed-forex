@@ -512,7 +512,7 @@ function Navigation(props) {
           </Grid>
         </Grid>
       </div>
-      <Typography className={classes.smallVersion}>Version 0.7.3</Typography>
+      <Typography className={classes.smallVersion}>Version 0.7.4</Typography>
       { warningOpen &&
         <FFWarning close={ closeWarning } />
       }
