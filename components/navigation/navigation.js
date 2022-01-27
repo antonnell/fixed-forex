@@ -128,7 +128,7 @@ function Navigation(props) {
   );
 
   const activePath = router.asPath;
-  const renderNavs = () => {
+  const renderNavs = (mobile) => {
     return (
       <React.Fragment>
         {renderNav(
@@ -201,30 +201,35 @@ function Navigation(props) {
             'ffDashboard',
             'https://fixedforex.live/'
           )}
-          <div className={classes.sectionDivider}></div>
-          {renderSectionHeader(
-            'Social'
-          )}
-          {renderNav(
-            'Twitter',
-            'ffDashboard',
-            'https://twitter.com/thekeep3r'
-          )}
-          {renderNav(
-            'Telegram',
-            'ffDashboard',
-            'https://t.me/keep3r_official'
-          )}
-           {renderNav(
-            'Discord',
-            'ffDashboard',
-            'https://discord.gg/FSNfbEKDWV'
-          )}
-           {renderNav(
-            'Github',
-            'ffDashboard',
-            'https://github.com/antonnell/fixed-forex'
-          )}
+          {
+            mobile && <>
+              <div className={classes.sectionDivider}></div>
+              {renderSectionHeader(
+                'Social'
+              )}
+              {renderNav(
+                'Twitter',
+                'ffDashboard',
+                'https://twitter.com/thekeep3r'
+              )}
+              {renderNav(
+                'Telegram',
+                'ffDashboard',
+                'https://t.me/keep3r_official'
+              )}
+               {renderNav(
+                'Discord',
+                'ffDashboard',
+                'https://discord.gg/FSNfbEKDWV'
+              )}
+               {renderNav(
+                'Github',
+                'ffDashboard',
+                'https://github.com/antonnell/fixed-forex'
+              )}
+            </>
+          }
+
           </div>
 
       </React.Fragment>
@@ -435,7 +440,7 @@ function Navigation(props) {
           </a>
           </div>
 
-          <div className={classes.navigationContentNavs}>{renderNavs()}</div>
+          <div className={classes.navigationContentNavs}>{renderNavs(true)}</div>
           <div className={classes.headerThings}>
             <div className={classes.themeSelectContainer}>
               <StyledSwitch
