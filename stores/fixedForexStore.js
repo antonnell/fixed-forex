@@ -195,6 +195,7 @@ class Store {
     this.emitter = emitter;
 
     this.store = {
+      breaker: false,
       assets: [],
       ibff: null,
       veIBFF: null,
@@ -752,6 +753,7 @@ class Store {
       this._getUniV3Info(web3, account)
       this._getStakingV3Rewards(web3, account)
       this._getSwapFromBalances(web3, account)
+      this._getBreaker(web3, account)
     } catch(ex) {
       console.log(ex)
       this.emitter.emit(ERROR, ex)
@@ -1506,6 +1508,20 @@ class Store {
       console.log(ex)
     }
   };
+
+  _getBreaker = async (web3, account) => {
+    try {
+      const ibAMMContract = new web3.eth.Contract(abis.ibAMMABI, FF_IBAMM_ADDRESS);
+      const breaker = await ibAMMContract.methods.breaker().call()
+      this.setStore({
+        breaker
+      })
+
+      this.emitter.emit(FIXED_FOREX_UPDATED);
+    } catch(ex) {
+
+    }
+  }
 
   _getVestingInfo = async (web3, account, veIBFF) => {
     try {

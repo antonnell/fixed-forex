@@ -39,6 +39,8 @@ function Setup({ theme, handleNext }) {
   const [, updateState] = React.useState();
   const forceUpdate = React.useCallback(() => updateState({}), []);
 
+  const [ breaker, setBreaker ] = useState(false)
+
   const [ loading, setLoading ] = useState(false)
   const [ approvalLoading, setApprovalLoading ] = useState(false)
 
@@ -69,7 +71,9 @@ function Setup({ theme, handleNext }) {
     const ffUpdated = () => {
       const storeAssets = stores.fixedForexStore.getStore('assets')
       const storeSwapAssets = stores.fixedForexStore.getStore('swapFromAssets')
+      const storeBreaker = stores.fixedForexStore.getStore('breaker')
 
+      setBreaker(storeBreaker)
       setToAssetOptions(storeAssets)
       setFromAssetOptions(storeSwapAssets)
 
@@ -159,9 +163,6 @@ function Setup({ theme, handleNext }) {
   }
 
   const calculateReceiveAmount = (amount, to, from) => {
-    console.log(amount)
-    console.log(to)
-    console.log(from)
     if(amount && !isNaN(amount) && to != null) {
       stores.dispatcher.dispatch({ type: FIXED_FOREX_QUOTE_SWAP, content: {
         amount: amount,
@@ -335,32 +336,52 @@ function Setup({ theme, handleNext }) {
         <ArrowDownwardIcon className={ classes.swapIcon } />
       </div>
       { renderMassiveInput('To', toAmountValue, toAmountError, toAmountChanged, toAssetValue, toAssetError, toAssetOptions, onAssetSelect) }
-      <div className={ classes.actionsContainer }>
-        <Button
-          className={ classes.actionButton }
-          size='large'
-          disableElevation
-          variant='contained'
-          color='primary'
-          onClick={ onApprove }
-          disabled={ approvalLoading || approvalNotRequired }
-          >
-          <Typography className={ classes.actionButtonText }>{ approvalNotRequired ? formatApproved( fromAssetValue.symbol === 'MIM' ? fromAssetValue?.allowance : fromAssetValue?.allowanceV2 ) : ( approvalLoading ? `Approving` : `Approve`)}</Typography>
-          { approvalLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
-        </Button>
-        <Button
-          className={ classes.actionButton }
-          variant='contained'
-          size='large'
-          color='primary'
-          className={classes.buttonOverride}
-          disabled={ loading || !approvalNotRequired }
-          onClick={ onSwap }
-          >
-          <Typography className={ classes.actionButtonText }>{ loading ? `Swapping` : `Swap` }</Typography>
-          { loading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
-        </Button>
-      </div>
+      {
+        !(fromAssetValue && ((fromAssetValue.symbol === 'MIM' && breaker !== true) || (fromAssetValue.symbol !== 'MIM'))) &&
+        <div>
+          <Button
+            fullWidth
+            className={ classes.actionButton }
+            size='large'
+            disableElevation
+            variant='contained'
+            color='primary'
+            disabled={ true }
+            >
+            <Typography className={ classes.actionButtonText }>Swap not currently available</Typography>
+          </Button>
+        </div>
+      }
+      {
+        (fromAssetValue && ((fromAssetValue.symbol === 'MIM' && breaker !== true) || (fromAssetValue.symbol !== 'MIM'))) &&
+        <div className={ classes.actionsContainer }>
+          <Button
+            className={ classes.actionButton }
+            size='large'
+            disableElevation
+            variant='contained'
+            color='primary'
+            onClick={ onApprove }
+            disabled={ approvalLoading || approvalNotRequired }
+            >
+            <Typography className={ classes.actionButtonText }>{ approvalNotRequired ? formatApproved( (fromAssetValue && fromAssetValue.symbol === 'MIM') ? fromAssetValue.allowance : fromAssetValue.allowanceV2 ) : ( approvalLoading ? `Approving` : `Approve`) }</Typography>
+            { approvalLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
+          </Button>
+          <Button
+            className={ classes.actionButton }
+            variant='contained'
+            size='large'
+            color='primary'
+            className={classes.buttonOverride}
+            disabled={ loading || !approvalNotRequired }
+            onClick={ onSwap }
+            >
+            <Typography className={ classes.actionButtonText }>{ loading ? `Swapping` : `Swap` }</Typography>
+            { loading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
+          </Button>
+        </div>
+      }
+
     </div>
   )
 }
