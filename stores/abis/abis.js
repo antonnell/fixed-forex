@@ -33,6 +33,7 @@ import { curveGaugeControllerABI } from './curveGaugeControllerABI'
 import { yearnVaultABI } from './yearnVaultABI'
 import { ibAMMABI } from './ibAMMABI'
 import { ibAMMV2ABI } from './ibAMMV2ABI'
+import { ibAMMV3ABI } from './ibAMMV3ABI'
 
 export default {
   erc20ABI: erc20ABI,
@@ -69,5 +70,6 @@ export default {
   curveGaugeControllerABI: curveGaugeControllerABI,
   ibAMMABI: ibAMMABI,
   ibAMMV2ABI: ibAMMV2ABI,
-  yearnVaultABI: yearnVaultABI
+  yearnVaultABI: yearnVaultABI,
+  ibAMMV3ABI: ibAMMV3ABI
 }

@@ -78,6 +78,7 @@ import {
 
   FF_IBAMM_ADDRESS,
   FF_IBAMM_V2_ADDRESS,
+  FF_IBAMM_V3_ADDRESS,
 
   IBEUR_ETH_ADDRESS_OLD,
   IBEUR_GAUGE_ADDRESS_OLD,
@@ -203,29 +204,7 @@ class Store {
       rewards: null,
       rKP3R: null,
       oldAssets: [],
-      swapFromAssets: [
-        {
-          address: '0x99D8a9C45b2ecA8864373A26D1459e3Dff1e17F3',
-          symbol: 'MIM',
-          name: 'Magic Internet Money',
-          decimals: 18,
-          icon: 'https://assets.coingecko.com/coins/images/16786/large/mimlogopng.png'
-        },
-        {
-          address: '0x96e61422b6a9ba0e068b6c5add4ffabc6a4aae27',
-          symbol: 'ibEUR',
-          name: 'Iron Bank Euro',
-          decimals: 18,
-          icon: 'https://assets.coingecko.com/coins/images/17285/large/Iron_Bank_Euro.png'
-        },
-        {
-          address: '0x57ab1ec28d129707052df4df418d58a2d46d5f51',
-          symbol: 'sUSD',
-          name: 'Synthetix USD',
-          decimals: 18,
-          icon: 'https://assets.coingecko.com/coins/images/5013/large/sUSD.png'
-        }
-      ]
+      swapFromAssets: []
     };
 
     dispatcher.register(
@@ -449,6 +428,9 @@ class Store {
       const assets = this._getAssets(web3);
       this.setStore({ assets });
 
+      const swapFromAssets = this._getSwapFromAssets();
+      this.setStore({ swapFromAssets });
+
       this.emitter.emit(FIXED_FOREX_UPDATED);
       this.emitter.emit(FIXED_FOREX_CONFIGURED);
       this.dispatcher.dispatch({ type: GET_FIXED_FOREX_BALANCES });
@@ -457,6 +439,32 @@ class Store {
       this.emitter.emit(ERROR, ex);
     }
   };
+
+  _getSwapFromAssets = () => {
+    return [
+      {
+        address: '0x6b175474e89094c44da98b954eedeac495271d0f',
+        symbol: 'DAI',
+        name: 'Dai',
+        decimals: 18,
+        icon: 'https://assets.coingecko.com/coins/images/9956/large/4943.png'
+      },
+      {
+        address: '0x57ab1ec28d129707052df4df418d58a2d46d5f51',
+        symbol: 'sUSD',
+        name: 'Synthetix USD',
+        decimals: 18,
+        icon: 'https://assets.coingecko.com/coins/images/5013/large/sUSD.png'
+      },
+      {
+        address: '0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3',
+        symbol: 'MIM',
+        name: 'Magic Internet Money',
+        decimals: 18,
+        icon: 'https://assets.coingecko.com/coins/images/16786/large/mimlogopng.png'
+      },
+    ]
+  }
 
   _getSystemAssets = () => {
     return {
@@ -989,7 +997,9 @@ class Store {
           yearnBalanceOf,
           coin0,
           coin1,
-          convexRewardCallsResponse
+          convexRewardCallsResponse,
+          swapAllowanceV2,
+          swapAllowanceV3
 
 
 
@@ -1017,6 +1027,8 @@ class Store {
             curveGaugeWeight,
             curveTotalWeight,
             curveRewardData,
+            swapAllowanceV2,
+            swapAllowanceV3
           ] = await Promise.all([
             assetContract.methods.balanceOf(account.address).call(),
             gaugeContract.methods.balanceOf(account.address).call(),
@@ -1037,6 +1049,8 @@ class Store {
             gaugeControllerContract.methods.get_gauge_weight(asset.gauge.address).call(),
             gaugeControllerContract.methods.get_total_weight().call(),
             gaugeContract.methods.reward_data(FF_RKP3R_ADDRESS).call(),
+            assetContract.methods.allowance(account.address, FF_IBAMM_V2_ADDRESS).call(),
+            assetContract.methods.allowance(account.address, FF_IBAMM_V3_ADDRESS).call(),
           ]);
 
           // get coin asset info
@@ -1144,6 +1158,8 @@ class Store {
             poolYearnAllowance,
             curveRewardData,
             yearnPoolSymbol,
+            swapAllowanceV2,
+            swapAllowanceV3
           };
         }),
       );
@@ -1159,6 +1175,12 @@ class Store {
         }
 
         assets[i].balance = BigNumber(assetsBalances[i].balanceOf)
+          .div(10 ** assets[i].decimals)
+          .toFixed(assets[i].decimals);
+        assets[i].allowanceV2 = BigNumber(assetsBalances[i].swapAllowanceV2)
+          .div(10 ** assets[i].decimals)
+          .toFixed(assets[i].decimals);
+        assets[i].allowanceV3 = BigNumber(assetsBalances[i].swapAllowanceV3)
           .div(10 ** assets[i].decimals)
           .toFixed(assets[i].decimals);
         assets[i].gauge.coin0 = assetsBalances[i].coin0;
@@ -1480,16 +1502,18 @@ class Store {
       const assetsBalances = await Promise.all(swapFromAssets.map(async (asset) => {
         const assetContract = new web3.eth.Contract(abis.erc20ABI, asset.address)
 
-        const [ balanceOf, allowance, allowanceV2 ] = await Promise.all([
+        const [ balanceOf, allowance, allowanceV2, allowanceV3 ] = await Promise.all([
           assetContract.methods.balanceOf(account.address).call(),
           assetContract.methods.allowance(account.address, FF_IBAMM_ADDRESS).call(),
           assetContract.methods.allowance(account.address, FF_IBAMM_V2_ADDRESS).call(),
+          assetContract.methods.allowance(account.address, FF_IBAMM_V3_ADDRESS).call(),
         ]);
 
         return {
           balanceOf,
           allowance,
           allowanceV2,
+          allowanceV3,
         }
       }))
 
@@ -1497,6 +1521,7 @@ class Store {
         swapFromAssets[i].balance = BigNumber(assetsBalances[i].balanceOf).div(10**swapFromAssets[i].decimals).toFixed(swapFromAssets[i].decimals)
         swapFromAssets[i].allowance = BigNumber(assetsBalances[i].allowance).div(10**swapFromAssets[i].decimals).toFixed(swapFromAssets[i].decimals)
         swapFromAssets[i].allowanceV2 = BigNumber(assetsBalances[i].allowanceV2).div(10**swapFromAssets[i].decimals).toFixed(swapFromAssets[i].decimals)
+        swapFromAssets[i].allowanceV3 = BigNumber(assetsBalances[i].allowanceV3).div(10**swapFromAssets[i].decimals).toFixed(swapFromAssets[i].decimals)
       }
 
       this.setStore({
@@ -1530,8 +1555,6 @@ class Store {
       const lockedInfo = await veIBFFContract.methods.locked(account.address).call()
       const totalSupply = await veIBFFContract.methods.totalSupply().call()
       const balanceOf = await veIBFFContract.methods.balanceOf(account.address).call()
-
-      console.log(balanceOf)
 
       // const fourYears = 126144000    // 60 * 60 * 24 * 365 * 4
       // const now = Math.floor(Date.now() / 1000)
@@ -3267,7 +3290,7 @@ class Store {
       let ibAMMContract = null
       let quoteRes = null
 
-      if(fromAsset.symbol === 'sUSD' || fromAsset.symbol === 'ibEUR') {
+      if(fromAsset.symbol === 'sUSD' || (fromAsset.symbol === 'ibEUR' && toAsset.symbol === 'sUSD')) {
         ibAMMContract = new web3.eth.Contract(abis.ibAMMV2ABI, FF_IBAMM_V2_ADDRESS);
         if(fromAsset.symbol === 'sUSD') {
           quoteRes = await ibAMMContract.methods.quote_out(sendAmount).call()
@@ -3275,8 +3298,12 @@ class Store {
           quoteRes = await ibAMMContract.methods.quote_in(sendAmount).call()
         }
       } else {
-        ibAMMContract = new web3.eth.Contract(abis.ibAMMABI, FF_IBAMM_ADDRESS);
-        quoteRes = await ibAMMContract.methods.quote(toAsset.address, sendAmount).call()
+        ibAMMContract = new web3.eth.Contract(abis.ibAMMV3ABI, FF_IBAMM_V3_ADDRESS);
+        if(fromAsset.symbol === 'DAI') {
+          quoteRes = await ibAMMContract.methods.buy_quote(toAsset.address, sendAmount).call()
+        } else {
+          quoteRes = await ibAMMContract.methods.sell_quote(fromAsset.address, sendAmount).call()
+        }
       }
 
       const returnValue = BigNumber(quoteRes).div(10**toAsset.decimals).toFixed(toAsset.decimals)
@@ -3307,9 +3334,9 @@ class Store {
       //maybe throw an error
     }
 
-    const { fromAsset, gasSpeed } = payload.content;
+    const { fromAsset, gasSpeed, toAsset } = payload.content;
 
-    this._callApproveSwap(web3, account, fromAsset, gasSpeed, (err, res) => {
+    this._callApproveSwap(web3, account, fromAsset, toAsset, gasSpeed, (err, res) => {
       if (err) {
         return this.emitter.emit(ERROR, err);
       }
@@ -3318,12 +3345,12 @@ class Store {
     });
   }
 
-  _callApproveSwap = async (web3, account, asset, gasSpeed, callback) => {
+  _callApproveSwap = async (web3, account, asset, toAsset, gasSpeed, callback) => {
     const erc20Contract = new web3.eth.Contract(abis.erc20ABI, asset.address);
     const gasPrice = await stores.accountStore.getGasPrice(gasSpeed);
 
-    let contract = FF_IBAMM_ADDRESS
-    if(asset.symbol === 'sUSD' || asset.symbol === 'ibEUR') {
+    let contract = FF_IBAMM_V3_ADDRESS
+    if(asset.symbol === 'sUSD' || (asset.symbol === 'ibEUR' && toAsset.symbol === 'sUSD')) {
       contract = FF_IBAMM_V2_ADDRESS
     }
 
@@ -3367,7 +3394,7 @@ class Store {
       let call = ''
       let params = []
 
-      if(fromAsset.symbol === 'sUSD' || fromAsset.symbol === 'ibEUR') {
+      if(fromAsset.symbol === 'sUSD' || (fromAsset.symbol === 'ibEUR' && toAsset.symbol === 'sUSD')) {
         ibAMMContract = new web3.eth.Contract(abis.ibAMMV2ABI, FF_IBAMM_V2_ADDRESS);
         if(fromAsset.symbol === 'sUSD') {
           call = 'swap_out'
@@ -3376,10 +3403,19 @@ class Store {
         }
         params = [sendAmount, minOut]
       } else {
-        ibAMMContract = new web3.eth.Contract(abis.ibAMMABI, FF_IBAMM_ADDRESS);
-        call = 'swap'
-        params = [toAsset.address, sendAmount, minOut]
+        ibAMMContract = new web3.eth.Contract(abis.ibAMMV3ABI, FF_IBAMM_V3_ADDRESS);
+        if(fromAsset.symbol === 'DAI') {
+          call = 'buy'
+          params = [toAsset.address, sendAmount, minOut]
+        } else {
+          call = 'sell'
+          params = [fromAsset.address, sendAmount, minOut]
+        }
       }
+
+      console.log(ibAMMContract)
+      console.log(call)
+      console.log(params)
 
       this._callContractWait(web3, ibAMMContract, call, params, account, gasPrice, GET_FIXED_FOREX_BALANCES, callback, true);
     } catch (ex) {

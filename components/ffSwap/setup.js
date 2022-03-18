@@ -56,6 +56,36 @@ function Setup({ theme, handleNext }) {
   const [ toAssetError, setToAssetError ] = useState(false)
   const [ toAssetOptions, setToAssetOptions ] = useState([])
 
+  const populateReceiveList = (localFromAsset, force) => {
+    const storeAssets = stores.fixedForexStore.getStore('assets')
+    const storeSwapAssets = stores.fixedForexStore.getStore('swapFromAssets')
+
+    if(storeAssets.length > 0 && (toAssetValue == null || force)) {
+      let tav = ''
+      if(localFromAsset) {
+        if(localFromAsset.symbol === 'DAI') {
+          setToAssetOptions(storeAssets)
+          tav = storeAssets[0]
+        } else if (localFromAsset.symbol === 'sUSD') {
+          let options = [storeAssets.find(x => x.symbol === 'ibEUR')]
+          setToAssetOptions(options)
+          tav = options[0]
+        } else if (localFromAsset.symbol === 'ibEUR') {
+          let options = [storeSwapAssets.find(x => x.symbol === 'MIM'), storeSwapAssets.find(x => x.symbol === 'sUSD')]
+          setToAssetOptions(options)
+          tav = options[0]
+        } else {
+          let options = [storeSwapAssets.find(x => x.symbol === 'MIM')]
+          setToAssetOptions(options)
+          tav = options[0]
+        }
+      }
+
+      setToAssetValue(tav)
+      calculateReceiveAmount(fromAmountValue, tav, localFromAsset)
+    }
+  }
+
   useEffect(function() {
     const errorReturned = () => {
       setLoading(false)
@@ -73,30 +103,23 @@ function Setup({ theme, handleNext }) {
       const storeSwapAssets = stores.fixedForexStore.getStore('swapFromAssets')
       const storeBreaker = stores.fixedForexStore.getStore('breaker')
 
+      let excludeMim = storeSwapAssets.filter((a) => { return a.symbol !== 'MIM' })
+
+      const combinedAssets = [...excludeMim, ...storeAssets]
+
       setBreaker(storeBreaker)
-      setToAssetOptions(storeAssets)
-      setFromAssetOptions(storeSwapAssets)
+      setFromAssetOptions(combinedAssets)
 
       let localFromAsset = null
 
-      if(storeSwapAssets.length > 0 && fromAssetValue == null) {
-        setFromAssetValue(storeSwapAssets[0])
-        localFromAsset = storeSwapAssets[0]
+      if(excludeMim.length > 0 && fromAssetValue == null) {
+        localFromAsset = excludeMim[0]
+        setFromAssetValue(localFromAsset)
       } else {
         localFromAsset = fromAssetValue
       }
 
-      if(storeAssets.length > 0 && toAssetValue == null) {
-        if(localFromAsset) {
-          if(localFromAsset.symbol === 'sUSD') {
-            setToAssetValue(storeAssets.find(x => x.symbol === 'ibEUR'))
-          } else if (localFromAsset.symbol === 'ibEUR') {
-            setToAssetValue(storeAssets.find(x => x.symbol === 'sUSD'))
-          } else {
-            setToAssetValue(storeAssets[0])
-          }
-        }
-      }
+      populateReceiveList(localFromAsset, false)
 
       forceUpdate()
     }
@@ -131,24 +154,10 @@ function Setup({ theme, handleNext }) {
   const onAssetSelect = (type, value) => {
     if(type === 'From') {
       setFromAssetValue(value)
-
-      let tav = null
-
-      if(value.symbol === 'sUSD') {
-        tav = fromAssetOptions.find(x => x.symbol === 'ibEUR')
-      } else if (value.symbol === 'ibEUR') {
-        tav = fromAssetOptions.find(x => x.symbol === 'sUSD')
-      } else {
-        tav = toAssetOptions[0]
-      }
-      setToAssetValue(tav)
-
-      calculateReceiveAmount(fromAmountValue, tav, value)
+      populateReceiveList(value, true)
     } else {
       setToAssetValue(value)
-      let fav = fromAssetOptions.find(x => x.symbol === 'MIM')
-      setFromAssetValue(fav)
-      calculateReceiveAmount(fromAmountValue, value, fav)
+      calculateReceiveAmount(fromAmountValue, value, fromAssetValue)
     }
 
     forceUpdate()
@@ -164,6 +173,8 @@ function Setup({ theme, handleNext }) {
 
   const calculateReceiveAmount = (amount, to, from) => {
     if(amount && !isNaN(amount) && to != null) {
+      //clear current quote
+      setToAmountValue('')
       stores.dispatcher.dispatch({ type: FIXED_FOREX_QUOTE_SWAP, content: {
         amount: amount,
         toAsset: to,
@@ -317,7 +328,7 @@ function Setup({ theme, handleNext }) {
     if(['sUSD', 'ibEUR'].includes(fromAssetValue.symbol)) {
       approvalNotRequired = BigNumber(fromAssetValue.allowanceV2).gte(fromAmountValue) || ((!fromAmountValue || fromAmountValue === '') && BigNumber(fromAssetValue.allowanceV2).gt(0) )
     } else {
-      approvalNotRequired = BigNumber(fromAssetValue.allowance).gte(fromAmountValue) || ((!fromAmountValue || fromAmountValue === '') && BigNumber(fromAssetValue.allowance).gt(0) )
+      approvalNotRequired = BigNumber(fromAssetValue.allowanceV3).gte(fromAmountValue) || ((!fromAmountValue || fromAmountValue === '') && BigNumber(fromAssetValue.allowanceV3).gt(0) )
     }
   }
 
@@ -364,7 +375,7 @@ function Setup({ theme, handleNext }) {
             onClick={ onApprove }
             disabled={ approvalLoading || approvalNotRequired }
             >
-            <Typography className={ classes.actionButtonText }>{ approvalNotRequired ? formatApproved( (fromAssetValue && fromAssetValue.symbol === 'MIM') ? fromAssetValue.allowance : fromAssetValue.allowanceV2 ) : ( approvalLoading ? `Approving` : `Approve`) }</Typography>
+            <Typography className={ classes.actionButtonText }>{ approvalNotRequired ? formatApproved( (fromAssetValue && (fromAssetValue.symbol === 'sUSD' || (fromAssetValue.symbol === 'ibEUR' && toAssetValue.symbol === 'sUSD'))) ? fromAssetValue.allowanceV2 : fromAssetValue.allowanceV3 ) : ( approvalLoading ? `Approving` : `Approve`) }</Typography>
             { approvalLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
           </Button>
           <Button
@@ -412,7 +423,7 @@ function AssetSelect({ type, value, assetOptions, onSelect }) {
 
   const renderAssetOption = (type, asset, idx) => {
     return (
-      <MenuItem val={ asset.Name } key={ asset.Name+'_'+idx } className={ classes.assetSelectMenu } onClick={ () => { onLocalSelect(type, asset) } }>
+      <MenuItem val={ asset.name } key={ asset.name+'_'+idx } className={ classes.assetSelectMenu } onClick={ () => { onLocalSelect(type, asset) } }>
         <div className={ classes.assetSelectMenuItem }>
           <div className={ classes.displayDualIconContainerSmall }>
             <img
