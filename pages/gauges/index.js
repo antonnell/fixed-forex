@@ -1,7 +1,6 @@
 import Head from 'next/head';
 import { Typography, Button, Paper, SvgIcon } from "@material-ui/core";
 import Layout from '../../components/layout/layout.js';
-import Swap from '../../components/ffSwaps';
 import Overview from '../../components/ffOverview';
 import Assets from '../../components/ffAssets';
 
@@ -12,7 +11,7 @@ import { useRouter } from "next/router";
 import Unlock from '../../components/unlock';
 
 
-import classes from './home.module.css';
+import classes from './gauges.module.css';
 
 function BalanceIcon(props) {
   const { color, className } = props;
@@ -23,7 +22,7 @@ function BalanceIcon(props) {
   );
 }
 
-function Home({ changeTheme }) {
+function Gauges({ changeTheme }) {
 
   const accountStore = stores.accountStore.getStore('account');
   const router = useRouter();
@@ -96,6 +95,4 @@ function Home({ changeTheme }) {
   );
 }
 
-// <Swap />
-
-export default Home;
+export default Gauges;

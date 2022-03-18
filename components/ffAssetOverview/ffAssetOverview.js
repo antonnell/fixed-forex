@@ -26,10 +26,12 @@ function StakedIcon(props) {
 export default function ffAssetOverview({ asset }) {
 
   let balance = 0
-  if(asset && asset.gauge) {
+  if(asset && asset.gauge && asset.convex && asset.yearn) {
     let pooledBalance = BigNumber(asset.gauge.userPoolBalance).times(asset.gauge.virtualPrice)
     let stakedBalance = BigNumber(asset.gauge.userGaugeBalance).times(asset.gauge.virtualPrice)
-    balance = BigNumber(asset.balance).plus(pooledBalance).plus(stakedBalance)
+    let convexBalance = BigNumber(asset.convex.balance).times(asset.gauge.virtualPrice)
+    let yearnBalance = BigNumber(asset.yearn.userVaultBalance)
+    balance = BigNumber(asset.balance).plus(pooledBalance).plus(convexBalance).plus(stakedBalance).plus(yearnBalance)
   }
 
   return (
@@ -64,7 +66,7 @@ export default function ffAssetOverview({ asset }) {
           </div>
           <div className={ classes.flex1 }>
             <Typography className={ classes.title }>Total Staked:</Typography>
-            <Typography className={ classes.stakedAmount }>{formatCurrency(BigNumber(asset?.gauge?.userGaugeBalance).plus(asset?.convex?.balance))}</Typography>
+            <Typography className={ classes.stakedAmount }>{formatCurrency(BigNumber((asset && asset.gauge && asset.gauge.userGaugeBalance) ? asset.gauge.userGaugeBalance : 0).plus((asset && asset.convex && asset.convex.balance) ? asset.convex.balance : 0).plus((asset && asset.yearn && asset.yearn.balance) ? asset.yearn.balance : 0))}</Typography>
             <Typography className={ classes.assetSymbol }>{asset?.gauge?.poolSymbol}</Typography>
           </div>
         </div>

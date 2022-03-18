@@ -225,24 +225,24 @@ export default function ffCurveGauge({ asset }) {
                                 fullWidth
                                 className={classes.inputSelect}
                               >
-                                <MenuItem value={"Yearn"}>
+                                { asset && asset.yearn && asset.yearn.address && asset.yearn.address !== '' && <MenuItem value={"Yearn"}>
                                   <div className={classes.inline}>
-                                    <img className={classes.lpOptionIcon} src="/images/Yearn.png" alt="Convex Logo" width={30} height={30} />
+                                    <img className={classes.lpOptionIcon} src="/images/Yearn.png" alt="Yearn Logo" width={30} height={30} />
                                     <Typography>Stake in Yearn</Typography>
                                   </div>
-                                </MenuItem>
+                                </MenuItem>}
                                 <MenuItem value={"Curve"}>
                                   <div className={classes.inline}>
                                     <img className={classes.lpOptionIcon} src="/images/Curve.png" alt="Curve Logo" width={30} height={30} />
                                     <Typography>Stake in Curve</Typography>
                                   </div>
                                 </MenuItem>
-                                <MenuItem value={"Convex"}>
+                                { asset && asset.convex && asset.convex.address && asset.convex.address !== '' && <MenuItem value={"Convex"}>
                                   <div className={classes.inline}>
                                     <img className={classes.lpOptionIcon} src="/images/Convex.png" alt="Convex Logo" width={30} height={30} />
                                     <Typography>Stake in Convex</Typography>
                                   </div>
-                                </MenuItem>
+                                </MenuItem>}
                               </Select>
                             </div>
                           </Grid>

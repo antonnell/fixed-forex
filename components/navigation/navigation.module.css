@@ -9,6 +9,10 @@
   padding: 24px 0px 24px 0px;
   border-radius: 0px !important;
   border-right: 1px solid rgba(128,128,128, 0.2);
+
+  max-height: calc(100vh - 657px);
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 a.linkz { cursor: pointer !important; }

@@ -250,7 +250,7 @@ export default function EnhancedTable({ assets }) {
   }
 
   const onView = (asset) => {
-    router.push(`/asset/${asset.address}/curve`);
+    router.push(`/asset/${asset.gauge.address}/curve`);
   };
 
   const showCurveTooltip = (row) => {
@@ -301,7 +301,7 @@ export default function EnhancedTable({ assets }) {
                       />
                       <div>
                         <Typography variant='h2' className={classes.textSpaced}>
-                          {row.symbol}
+                          {row?.gauge?.coin0?.symbol}-{row?.gauge?.coin1?.symbol}
                         </Typography>
                         <Typography variant='h5' className={classes.textSpaced} color='textSecondary'>
                           {row.name}
@@ -340,18 +340,18 @@ export default function EnhancedTable({ assets }) {
                   </TableCell>
                   <TableCell className={classes.cell} align='right'>
                     <Typography variant='h2' className={classes.textSpaced}>
-                      {formatCurrency(row.convex.balance)}
+                      { row.convex.address && row.convex.address != '' ? formatCurrency(row.convex.balance) : 'Not Available' }
                     </Typography>
                     <Typography variant='h5' className={classes.textSpaced} color='textSecondary'>
-                      {row.gauge.poolSymbol}
+                      { row.convex.address && row.convex.address != '' ? row.gauge.poolSymbol : '' }
                     </Typography>
                   </TableCell>
                   <TableCell className={classes.cell} align='right'>
                     <Typography variant='h2' className={classes.textSpaced}>
-                      {formatCurrency(row.yearn.userVaultBalance)}
+                      { row.yearn.address && row.yearn.address != '' ? formatCurrency(row.yearn.userVaultBalance) : 'Not Available' }
                     </Typography>
                     <Typography variant='h5' className={classes.textSpaced} color='textSecondary'>
-                      {row.yearn.apy}%
+                      { row.yearn.address && row.yearn.address != '' ? row.yearn.apy+'%' : '' }
                     </Typography>
                   </TableCell>
                   <TableCell className={classes.cell} align='right'>

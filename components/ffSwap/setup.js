@@ -39,16 +39,18 @@ function Setup({ theme, handleNext }) {
   const [, updateState] = React.useState();
   const forceUpdate = React.useCallback(() => updateState({}), []);
 
+  const [ breaker, setBreaker ] = useState(false)
+
   const [ loading, setLoading ] = useState(false)
   const [ approvalLoading, setApprovalLoading ] = useState(false)
 
-  const [ fromAmountValue, setFromAmountValue ] = useState(null)
+  const [ fromAmountValue, setFromAmountValue ] = useState('')
   const [ fromAmountError, setFromAmountError ] = useState(false)
   const [ fromAssetValue, setFromAssetValue ] = useState(null)
   const [ fromAssetError, setFromAssetError ] = useState(false)
   const [ fromAssetOptions, setFromAssetOptions ] = useState([])
 
-  const [ toAmountValue, setToAmountValue ] = useState(null)
+  const [ toAmountValue, setToAmountValue ] = useState('')
   const [ toAmountError, setToAmountError ] = useState(false)
   const [ toAssetValue, setToAssetValue ] = useState(null)
   const [ toAssetError, setToAssetError ] = useState(false)
@@ -69,16 +71,31 @@ function Setup({ theme, handleNext }) {
     const ffUpdated = () => {
       const storeAssets = stores.fixedForexStore.getStore('assets')
       const storeSwapAssets = stores.fixedForexStore.getStore('swapFromAssets')
+      const storeBreaker = stores.fixedForexStore.getStore('breaker')
 
+      setBreaker(storeBreaker)
       setToAssetOptions(storeAssets)
       setFromAssetOptions(storeSwapAssets)
 
-      if(storeAssets.length > 0 && toAssetValue == null) {
-        setToAssetValue(storeAssets[0])
-      }
+      let localFromAsset = null
 
       if(storeSwapAssets.length > 0 && fromAssetValue == null) {
         setFromAssetValue(storeSwapAssets[0])
+        localFromAsset = storeSwapAssets[0]
+      } else {
+        localFromAsset = fromAssetValue
+      }
+
+      if(storeAssets.length > 0 && toAssetValue == null) {
+        if(localFromAsset) {
+          if(localFromAsset.symbol === 'sUSD') {
+            setToAssetValue(storeAssets.find(x => x.symbol === 'ibEUR'))
+          } else if (localFromAsset.symbol === 'ibEUR') {
+            setToAssetValue(storeAssets.find(x => x.symbol === 'sUSD'))
+          } else {
+            setToAssetValue(storeAssets[0])
+          }
+        }
       }
 
       forceUpdate()
@@ -91,7 +108,7 @@ function Setup({ theme, handleNext }) {
     const swapReturned = (event) => {
       setLoading(false)
       setFromAmountValue('')
-      calculateReceiveAmount(0, toAssetValue)
+      calculateReceiveAmount(0, toAssetValue, fromAssetValue)
     }
 
     stores.emitter.on(ERROR, errorReturned)
@@ -109,15 +126,29 @@ function Setup({ theme, handleNext }) {
       stores.emitter.removeListener(FIXED_FOREX_SWAP_RETURNED, swapReturned)
       stores.emitter.removeListener(FIXED_FOREX_QUOTE_SWAP_RETURNED, quoteReturned)
     }
-  },[fromAmountValue, toAssetValue]);
+  },[fromAmountValue, toAssetValue, fromAssetValue]);
 
   const onAssetSelect = (type, value) => {
     if(type === 'From') {
       setFromAssetValue(value)
-      calculateReceiveAmount(fromAmountValue, toAssetValue)
+
+      let tav = null
+
+      if(value.symbol === 'sUSD') {
+        tav = fromAssetOptions.find(x => x.symbol === 'ibEUR')
+      } else if (value.symbol === 'ibEUR') {
+        tav = fromAssetOptions.find(x => x.symbol === 'sUSD')
+      } else {
+        tav = toAssetOptions[0]
+      }
+      setToAssetValue(tav)
+
+      calculateReceiveAmount(fromAmountValue, tav, value)
     } else {
       setToAssetValue(value)
-      calculateReceiveAmount(fromAmountValue, value)
+      let fav = fromAssetOptions.find(x => x.symbol === 'MIM')
+      setFromAssetValue(fav)
+      calculateReceiveAmount(fromAmountValue, value, fav)
     }
 
     forceUpdate()
@@ -125,17 +156,18 @@ function Setup({ theme, handleNext }) {
 
   const fromAmountChanged = (event) => {
     setFromAmountValue(event.target.value)
-    calculateReceiveAmount(event.target.value, toAssetValue)
+    calculateReceiveAmount(event.target.value, toAssetValue, fromAssetValue)
   }
 
   const toAmountChanged = (event) => {
   }
 
-  const calculateReceiveAmount = (amount, to) => {
-    if(!isNaN(amount) && to != null) {
+  const calculateReceiveAmount = (amount, to, from) => {
+    if(amount && !isNaN(amount) && to != null) {
       stores.dispatcher.dispatch({ type: FIXED_FOREX_QUOTE_SWAP, content: {
         amount: amount,
         toAsset: to,
+        fromAsset: from
       } })
     }
   }
@@ -232,7 +264,7 @@ function Setup({ theme, handleNext }) {
 
   const setBalance100 = () => {
     setFromAmountValue(fromAssetValue.balance)
-    calculateReceiveAmount(fromAssetValue.balance, toAssetValue)
+    calculateReceiveAmount(fromAssetValue.balance, toAssetValue, fromAssetValue)
   }
 
   const renderMassiveInput = (type, amountValue, amountError, amountChanged, assetValue, assetError, assetOptions, onAssetSelect) => {
@@ -282,7 +314,11 @@ function Setup({ theme, handleNext }) {
 
   let approvalNotRequired = false
   if(fromAssetValue) {
-    approvalNotRequired = BigNumber(fromAssetValue.allowance).gte(fromAmountValue) || ((!fromAmountValue || fromAmountValue === '') && BigNumber(fromAssetValue.allowance).gt(0) )
+    if(['sUSD', 'ibEUR'].includes(fromAssetValue.symbol)) {
+      approvalNotRequired = BigNumber(fromAssetValue.allowanceV2).gte(fromAmountValue) || ((!fromAmountValue || fromAmountValue === '') && BigNumber(fromAssetValue.allowanceV2).gt(0) )
+    } else {
+      approvalNotRequired = BigNumber(fromAssetValue.allowance).gte(fromAmountValue) || ((!fromAmountValue || fromAmountValue === '') && BigNumber(fromAssetValue.allowance).gt(0) )
+    }
   }
 
   const formatApproved = (am) => {
@@ -300,32 +336,52 @@ function Setup({ theme, handleNext }) {
         <ArrowDownwardIcon className={ classes.swapIcon } />
       </div>
       { renderMassiveInput('To', toAmountValue, toAmountError, toAmountChanged, toAssetValue, toAssetError, toAssetOptions, onAssetSelect) }
-      <div className={ classes.actionsContainer }>
-        <Button
-          className={ classes.actionButton }
-          size='large'
-          disableElevation
-          variant='contained'
-          color='primary'
-          onClick={ onApprove }
-          disabled={ approvalLoading || approvalNotRequired }
-          >
-          <Typography className={ classes.actionButtonText }>{ approvalNotRequired ? formatApproved( fromAssetValue?.allowance ) : ( approvalLoading ? `Approving` : `Approve`)}</Typography>
-          { approvalLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
-        </Button>
-        <Button
-          className={ classes.actionButton }
-          variant='contained'
-          size='large'
-          color='primary'
-          className={classes.buttonOverride}
-          disabled={ loading || !approvalNotRequired }
-          onClick={ onSwap }
-          >
-          <Typography className={ classes.actionButtonText }>{ loading ? `Swapping` : `Swap` }</Typography>
-          { loading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
-        </Button>
-      </div>
+      {
+        !(fromAssetValue && ((fromAssetValue.symbol === 'MIM' && breaker !== true) || (fromAssetValue.symbol !== 'MIM'))) &&
+        <div>
+          <Button
+            fullWidth
+            className={ classes.actionButton }
+            size='large'
+            disableElevation
+            variant='contained'
+            color='primary'
+            disabled={ true }
+            >
+            <Typography className={ classes.actionButtonText }>Swap not currently available</Typography>
+          </Button>
+        </div>
+      }
+      {
+        (fromAssetValue && ((fromAssetValue.symbol === 'MIM' && breaker !== true) || (fromAssetValue.symbol !== 'MIM'))) &&
+        <div className={ classes.actionsContainer }>
+          <Button
+            className={ classes.actionButton }
+            size='large'
+            disableElevation
+            variant='contained'
+            color='primary'
+            onClick={ onApprove }
+            disabled={ approvalLoading || approvalNotRequired }
+            >
+            <Typography className={ classes.actionButtonText }>{ approvalNotRequired ? formatApproved( (fromAssetValue && fromAssetValue.symbol === 'MIM') ? fromAssetValue.allowance : fromAssetValue.allowanceV2 ) : ( approvalLoading ? `Approving` : `Approve`) }</Typography>
+            { approvalLoading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
+          </Button>
+          <Button
+            className={ classes.actionButton }
+            variant='contained'
+            size='large'
+            color='primary'
+            className={classes.buttonOverride}
+            disabled={ loading || !approvalNotRequired }
+            onClick={ onSwap }
+            >
+            <Typography className={ classes.actionButtonText }>{ loading ? `Swapping` : `Swap` }</Typography>
+            { loading && <CircularProgress size={10} className={ classes.loadingCircle } /> }
+          </Button>
+        </div>
+      }
+
     </div>
   )
 }
@@ -362,7 +418,7 @@ function AssetSelect({ type, value, assetOptions, onSelect }) {
             <img
               className={ classes.displayAssetIconSmall }
               alt=""
-              src={ asset ? `https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/${asset.address}/logo-128.png` : '' }
+              src={ (asset && asset.icon) ? asset.icon : `https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/${asset?.address}/logo-128.png` }
               height='60px'
               onError={(e)=>{e.target.onerror = null; e.target.src="/tokens/unknown-logo.png"}}
             />
@@ -388,7 +444,7 @@ function AssetSelect({ type, value, assetOptions, onSelect }) {
             <img
               className={ classes.displayAssetIcon }
               alt=""
-              src={ value ? `https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/${value.address}/logo-128.png` : '' }
+              src={ (value && value.icon) ? value.icon : `https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/${value?.address}/logo-128.png` }
               height='100px'
               onError={(e)=>{e.target.onerror = null; e.target.src="/tokens/unknown-logo.png"}}
             />

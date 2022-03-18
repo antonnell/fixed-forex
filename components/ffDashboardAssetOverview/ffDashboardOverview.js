@@ -43,7 +43,9 @@ export default function ffOverview() {
   const [ veIBFF, setVeIBFF] = useState(null)
   const [ rewards, setRewards] = useState(null)
   const [ assets, setAssets] = useState(null)
-  const [ totalBalance, setTotalBalance ] = useState(0)
+  const [ totalBalanceCurve, setTotalBalanceCurve ] = useState(0)
+  const [ totalBalanceConvex, setTotalBalanceConvex ] = useState(0)
+  const [ totalBalanceYearn, setTotalBalanceYearn ] = useState(0)
 
   useEffect(() => {
     const forexUpdated = () => {
@@ -75,22 +77,27 @@ export default function ffOverview() {
       return
     }
 
-    let balance = 0
+    let balanceCurve = 0
+    let balanceConvex = 0
+    let balanceYearn = 0
 
     for(let i = 0; i < ass.length; i++) {
       let asset = ass[i]
       if(asset && asset.gauge) {
-        let pooledBalance = BigNumber(asset.gauge.userPoolBalance).times(asset.gauge.virtualPrice)
-        let stakedBalance = BigNumber(asset.gauge.userGaugeBalance).times(asset.gauge.virtualPrice)
-        let convexBalance = BigNumber((asset && asset.convex && asset.convex.balance) ? asset.convex.balance : 0).times(asset.gauge.virtualPrice)
-        let yearnBalance = BigNumber((asset && asset.yearn && asset.yearn.userVaultBalance) ? asset.yearn.userVaultBalance : 0)
+        let pooledBalance = BigNumber(asset.gauge.userPoolBalance).times(asset.gauge.virtualPrice).times(asset.price)
+        let stakedBalance = BigNumber(asset.gauge.userGaugeBalance).times(asset.gauge.virtualPrice).times(asset.price)
+        let convexBalance = BigNumber((asset && asset.convex && asset.convex.balance) ? asset.convex.balance : 0).times(asset.gauge.virtualPrice).times(asset.price)
+        let yearnBalance = BigNumber((asset && asset.yearn && asset.yearn.userVaultBalance) ? asset.yearn.userVaultBalance : 0).times(asset.price)
 
-        let tot = BigNumber(asset.balance).plus(pooledBalance).plus(stakedBalance).plus(convexBalance).plus(yearnBalance).times(asset.price)
-        balance = BigNumber(balance).plus(tot)
+        balanceCurve = BigNumber(balanceCurve).plus(stakedBalance).plus(pooledBalance)
+        balanceConvex = BigNumber(balanceConvex).plus(convexBalance)
+        balanceYearn = BigNumber(balanceYearn).plus(yearnBalance)
       }
     }
 
-    setTotalBalance(balance)
+    setTotalBalanceCurve(balanceCurve)
+    setTotalBalanceConvex(balanceConvex)
+    setTotalBalanceYearn(balanceYearn)
   }
 
   return (
@@ -101,13 +108,12 @@ export default function ffOverview() {
             <Paper elevation={0} className={ classes.itemWrapGrid }>
             <Grid container spacing={0}>
               <Grid item lg={3} md={3} sm={3} xs={3} className={classes.iconWrap}>
-                  <BalanceIcon className={ classes.overviewIcon } />
+                  <IbBalanceIcon className={ classes.overviewIcon } />
               </Grid>
               <Grid item lg={9} md={9} sm={9} xs={9} className={ classes.itemContent }>
-                <Typography className={ classes.title }>KP3R Balance:</Typography>
+                <Typography className={ classes.title }>Curve (ib*) Balances:</Typography>
                 <div className={ classes.inline }>
-                <Typography className={ classes.value }>{ formatCurrency(ibff ? ibff.balance : 0) }</Typography>
-                <Typography className={ classes.valueSymbol }>{ ibff ? ibff.symbol : '' }</Typography>
+                  <Typography className={ classes.value }>${ formatCurrency(totalBalanceCurve) }</Typography>
                 </div>
               </Grid>
             </Grid>
@@ -118,13 +124,12 @@ export default function ffOverview() {
             <Paper elevation={0} className={ classes.itemWrapGrid }>
             <Grid container spacing={0}>
               <Grid item lg={3} md={3} sm={3} xs={3} className={classes.iconWrap}>
-                  <VestedBalanceIcon className={ classes.overviewIcon } />
+                  <IbBalanceIcon className={ classes.overviewIcon } />
               </Grid>
               <Grid item lg={9} md={9} sm={9} xs={9} className={ classes.itemContent }>
-                <Typography className={ classes.title }>Vested Value:</Typography>
+                <Typography className={ classes.title }>Convex (ib*) Balances:</Typography>
                 <div className={ classes.inline }>
-                  <Typography className={ classes.value }>{ formatCurrency((veIBFF && veIBFF.vestingInfo) ? veIBFF.vestingInfo.lockValue : 0) }</Typography>
-                  <Typography className={ classes.valueSymbol }>{ veIBFF ? veIBFF.symbol : '' }</Typography>
+                  <Typography className={ classes.value }>${ formatCurrency(totalBalanceConvex) }</Typography>
                 </div>
               </Grid>
             </Grid>
@@ -135,13 +140,12 @@ export default function ffOverview() {
             <Paper elevation={0} className={ classes.itemWrapGrid }>
             <Grid container spacing={0}>
               <Grid item lg={3} md={3} sm={3} xs={3} className={classes.iconWrap}>
-                  <VestedBalanceIcon className={ classes.overviewIcon } />
+                  <IbBalanceIcon className={ classes.overviewIcon } />
               </Grid>
               <Grid item lg={9} md={9} sm={9} xs={9} className={ classes.itemContent }>
-                <Typography className={ classes.title }>Vested Balance:</Typography>
+                <Typography className={ classes.title }>Yearn (ib*) Balances:</Typography>
                 <div className={ classes.inline }>
-                  <Typography className={ classes.value }>{ formatCurrency((veIBFF && veIBFF.vestingInfo) ? veIBFF.vestingInfo.locked : 0) }</Typography>
-                  <Typography className={ classes.valueSymbol }>{ veIBFF ? veIBFF.symbol : '' }</Typography>
+                  <Typography className={ classes.value }>${ formatCurrency(totalBalanceYearn) }</Typography>
                 </div>
               </Grid>
             </Grid>

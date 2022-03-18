@@ -5,6 +5,7 @@ import MintOverview from '../../components/ffDashboardMintOverview';
 import Overview from '../../components/ffDashboardOverview';
 import VoteOverview from '../../components/ffDashboardVoteOverview';
 import ClaimAll from '../../components/ffDashboardClaimAll';
+import AssetOverview from '../../components/ffDashboardAssetOverview';
 
 import classes from './dashboard.module.css';
 
@@ -96,6 +97,13 @@ function Rewards({ changeTheme }) {
 
               <Grid item lg={9} md={12} sm={12} xs={12}>
                 <Grid container spacing={0}>
+
+                  <Grid item lg={12} md={12} sm={12} xs={12}>
+                    <Typography className={classes.mainHeading} variant='h1'>Liquidity Providing</Typography>
+                    <Paper elevation={0} onClick={() => router.push('/gauges')} className={classes.viewVoting}>View</Paper>
+                    <AssetOverview />
+                  </Grid>
+
                   <Grid item lg={12} md={12} sm={12} xs={12}>
                     <Typography className={classes.mainHeadingTop} variant='h1'>Collateral</Typography>
                     <Paper elevation={0} onClick={() => router.push('/mint')} className={classes.viewCollateral}>View</Paper>
