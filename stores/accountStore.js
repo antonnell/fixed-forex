@@ -203,20 +203,17 @@ class Store {
     }
   };
 
-  getGasPrice = async (speed) => {
+  getGasPrice = async speed => {
     let gasSpeed = speed;
     if (!speed) {
       gasSpeed = this.getStore('gasSpeed');
     }
 
     try {
-      const url = ZAPPER_GAS_PRICE_API;
-      const priceResponse = await fetch(url);
-      const priceJSON = await priceResponse.json();
-
-      if (priceJSON) {
-        return priceJSON[gasSpeed].toFixed(0);
-      }
+      const web3 = await this.getWeb3Provider();
+      const gasPrice = await web3.eth.getGasPrice();
+      const gasPriceInGwei = web3.utils.fromWei(gasPrice, "gwei");
+      return gasPriceInGwei;
     } catch (e) {
       console.log(e);
       return {};
