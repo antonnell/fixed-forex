@@ -325,7 +325,7 @@ function Setup({ theme, handleNext }) {
 
   let approvalNotRequired = false
   if(fromAssetValue) {
-    if(['sUSD', 'ibEUR'].includes(fromAssetValue.symbol)) {
+    if(['sUSD'].includes(fromAssetValue.symbol) || (fromAssetValue.symbol === 'ibEUR' && toAssetValue.symbol === 'sUSD')) {
       approvalNotRequired = BigNumber(fromAssetValue.allowanceV2).gte(fromAmountValue) || ((!fromAmountValue || fromAmountValue === '') && BigNumber(fromAssetValue.allowanceV2).gt(0) )
     } else {
       approvalNotRequired = BigNumber(fromAssetValue.allowanceV3).gte(fromAmountValue) || ((!fromAmountValue || fromAmountValue === '') && BigNumber(fromAssetValue.allowanceV3).gt(0) )
