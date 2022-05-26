@@ -14,8 +14,8 @@ import { FIXED_FOREX_REDEEM_OPTION, FIXED_FOREX_OPTION_REDEEMED, ERROR, FIXED_FO
 function NoneIcon(props) {
   const { color, className } = props;
   return (
-    <SvgIcon viewBox="0 0 64 64" stroke-width="1" className={className}>
-    <g stroke-width="2" transform="translate(0, 0)"><path d="M15.029,48.971A24,24,0,0,1,48.971,15.029" fill="none" stroke="#686c7a" stroke-miterlimit="10" stroke-width="2" data-cap="butt" stroke-linecap="butt" stroke-linejoin="miter"></path><path d="M52.789,20A24.006,24.006,0,0,1,20,52.789" fill="none" stroke="#686c7a" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2" stroke-linejoin="miter"></path><line x1="60" y1="4" x2="4" y2="60" fill="none" stroke="#686c7a" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2" data-color="color-2" stroke-linejoin="miter"></line></g>
+    <SvgIcon viewBox="0 0 64 64" strokeWidth="1" className={className}>
+    <g strokeWidth="2" transform="translate(0, 0)"><path d="M15.029,48.971A24,24,0,0,1,48.971,15.029" fill="none" stroke="#686c7a" strokeMiterlimit="10" strokeWidth="2" data-cap="butt" strokeLinecap="butt" strokeLinejoin="miter"></path><path d="M52.789,20A24.006,24.006,0,0,1,20,52.789" fill="none" stroke="#686c7a" strokeLinecap="square" strokeMiterlimit="10" strokeWidth="2" strokeLinejoin="miter"></path><line x1="60" y1="4" x2="4" y2="60" fill="none" stroke="#686c7a" strokeLinecap="square" strokeMiterlimit="10" strokeWidth="2" data-color="color-2" strokeLinejoin="miter"></line></g>
     </SvgIcon>
   );
 }
