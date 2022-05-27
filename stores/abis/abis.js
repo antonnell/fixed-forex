@@ -36,10 +36,12 @@ import { ibAMMV2ABI } from './ibAMMV2ABI'
 import { ibAMMV3ABI } from './ibAMMV3ABI'
 import { ibsmtusdc } from './ibsmtusdc.abi'
 import { ibsmtusdcPool } from './ibsmtusdcPool.abi'
+import { lensABI } from './lens.abi'
 
 export default {
   erc20ABI: erc20ABI,
   ibEURABI: ibEURABI,
+  lensABI: lensABI,
   sushiLPABI: sushiLPABI,
   veIBFFABI: veIBFFABI,
   faucetABI: faucetABI,

@@ -1,11 +1,14 @@
-import async from "async";
 import {
   MAX_UINT256,
   ZERO_ADDRESS,
   CURVE_FI_STATS_API,
-  FF_FEE_DISTRIBUTION_LOOKUP_ADDRESS,
-  FF_MULTICALL_ADDRESS,
-
+  KP3RETH_ORACLE,
+  KP3RETH_ADDRESS,
+  KP3RETH_GAUGE_ADDRESS,
+  KP3RETH_POOL_ADDRESS,
+  KP3RETH_YEARN_GAUGE_ADDRESS,
+  KP3RETH_CONVEX_GAUGE_ADDRESS,
+  KP3RETH_CONVEX_PID,
   IBAUDUSDC_ORACLE,
   IBAUDUSDC_ADDRESS,
   IBAUDUSDC_GAUGE_ADDRESS,
@@ -48,7 +51,6 @@ import {
   IBKRWUSDC_YEARN_GAUGE_ADDRESS,
   IBKRWUSDC_CONVEX_GAUGE_ADDRESS,
   IBKRWUSDC_CONVEX_PID,
-
   IBKRW_ADDRESS,
   IBKRW_GAUGE_ADDRESS,
   IBKRW_POOL_ADDRESS,
@@ -61,14 +63,12 @@ import {
   IBEUR_CONVEX_GAUGE_ADDRESS,
   IBEUR_YEARN_GAUGE_ADDRESS,
   IBEUR_CONVEX_PID,
-
   IBEUR_AG_ADDRESS,
   IBEUR_AG_GAUGE_ADDRESS,
   IBEUR_AG_POOL_ADDRESS,
   IBEUR_AG_CONVEX_GAUGE_ADDRESS,
   IBEUR_AG_YEARN_GAUGE_ADDRESS,
   IBEUR_AG_CONVEX_PID,
-
   IBCHF_ADDRESS,
   IBCHF_GAUGE_ADDRESS,
   IBCHF_POOL_ADDRESS,
@@ -97,11 +97,7 @@ import {
   IBFF_ADDRESS,
   VEIBFF_ADDRESS,
   FF_FAUCET_ADDRESS,
-  FF_DISTRIBUTION_ADDRESS,
   GAUGE_PROXY_ADDRESS,
-  FF_VEIBFF_DISTRIBUTION_ADDRESS,
-  FF_FEE_CLAIM_DISTRIBUTION_ADDRESS,
-  FF_BOOST_DELEGATE_ADDRESS,
   FF_KP3R_ADDRESS,
   FF_VEKP3R_ADDRESS,
   FF_VECLAIM_ADDRESS,
@@ -116,7 +112,6 @@ import {
   CREAM_PRICE_ORACLE_ADDRESS,
   FF_STAKING_REWARDS_V3_ADDRESS,
   FF_UNSIWAP_POSITIONS_MANAGER_ADDRESS,
-  FF_CONVEX_CLAIM_ZAP,
   FF_CURVE_GAUGE_CONTROLLER,
   FF_CONVEX_POOL_MANAGEMENT_ADDRESS,
 
@@ -134,7 +129,6 @@ import {
   CONFIGURE_FIXED_FOREX,
   FIXED_FOREX_CONFIGURED,
   GET_FIXED_FOREX_BALANCES,
-  FIXED_FOREX_BALANCES_RETURNED,
   FIXED_FOREX_CLAIM_VESTING_REWARD,
   FIXED_FOREX_VESTING_REWARD_CLAIMED,
   FIXED_FOREX_CLAIM_STAKING_REWARD,
@@ -168,7 +162,6 @@ import {
   FIXED_FOREX_DEPOSIT_CURVE,
   FIXED_FOREX_CURVE_DEPOSITED,
   FIXED_FOREX_WITHDRAW_CURVE,
-  FIXED_FOREX_CURVE_WITHDRAWN,
   FIXED_FOREX_APPROVE_STAKE_CURVE,
   FIXED_FOREX_STAKE_CURVE_APPROVED,
   FIXED_FOREX_STAKE_CURVE,
@@ -177,15 +170,12 @@ import {
   FIXED_FOREX_CURVE_UNSTAKED,
   FIXED_FOREX_APPROVE_STAKE_CONVEX,
   FIXED_FOREX_APPROVE_STAKE_YEARN,
-  FIXED_FOREX_STAKE_CONVEX_APPROVED,
   FIXED_FOREX_STAKE_YEARN_APPROVED,
   FIXED_FOREX_STAKE_CONVEX,
   FIXED_FOREX_STAKE_YEARN,
-  FIXED_FOREX_CONVEX_STAKED,
   FIXED_FOREX_YEARN_STAKED,
   FIXED_FOREX_UNSTAKE_CONVEX,
   FIXED_FOREX_UNSTAKE_YEARN,
-  FIXED_FOREX_CONVEX_UNSTAKED,
   FIXED_FOREX_YEARN_UNSTAKED,
   FIXED_FOREX_CLAIM_DISTRIBUTION_REWARD,
   FIXED_FOREX_DISTRIBUTION_REWARD_CLAIMED,
@@ -200,7 +190,6 @@ import {
   FIXED_FOREX_CLAIM_ALL,
   FIXED_FOREX_ALL_CLAIMED,
   FIXED_FOREX_CLAIM_CURVE_RKP3R_REWARDS,
-  FIXED_FOREX_CURVE_RKP3R_REWARD_CLAIMED,
   FIXED_FOREX_CLAIM_RKP3R,
   FIXED_FOREX_RKP3R_CLAIMED,
   FIXED_FOREX_REDEEM_OPTION,
@@ -210,7 +199,6 @@ import {
   FIXED_FOREX_WITHDRAW_OLD,
   FIXED_FOREX_OLD_WITHDRAWN,
   FIXED_FOREX_APPROVE_DEPOSIT_UNI,
-  FIXED_FOREX_DEPOSIT_UNI_APPROVED,
   FIXED_FOREX_DEPOSIT_UNI,
   FIXED_FOREX_UNI_DEPOSITED,
   FIXED_FOREX_WITHDRAW_UNI,
@@ -225,11 +213,10 @@ import {
 import { Pool, tickToPrice } from "@uniswap/v3-sdk";
 import { Token } from "@uniswap/sdk-core";
 
-import * as moment from "moment";
 
 import stores from "./";
 import abis from "./abis";
-import { bnDec, bnToFixed, multiplyBnToFixed, sumArray } from "../utils";
+import { bnToFixed, sumArray } from "../utils";
 
 import BigNumber from "bignumber.js";
 const fetch = require("node-fetch");
@@ -566,6 +553,33 @@ class Store {
 
   _getAssets = (web3) => {
     const assets = [
+      {
+        address: KP3RETH_ADDRESS,
+        symbol: "ETH+KP3R",
+        shouldUseNewABI: true,
+        decimals: 18,
+        name: "Curve kp3reth pool",
+        oracleAddress: KP3RETH_ORACLE,
+        gauge: {
+          address: KP3RETH_GAUGE_ADDRESS,
+          poolAddress: KP3RETH_POOL_ADDRESS,
+        },
+        yearn: {
+          address: KP3RETH_YEARN_GAUGE_ADDRESS,
+        },
+        convex: {
+          address: KP3RETH_CONVEX_GAUGE_ADDRESS,
+          pid: KP3RETH_CONVEX_PID,
+          rewards: [{
+              poolAddress: "0x21034ccc4f8D07d0cF8998Fdd4c45e426540dEc1", //rKP3R Reward Pool
+              address: FF_RKP3R_ADDRESS,
+              decimals: 18,
+              symbol: "rKP3R",
+              name: "Redeemable Keep3r",
+              },
+            ],
+            },
+        },
       {
         address: IBAUDUSDC_ADDRESS,
         symbol: "ibAUD+USDC",
@@ -1267,6 +1281,9 @@ class Store {
             ]);
             poolBalances[0] = poolBalances0
             poolBalances[1] = poolBalances1
+            if (asset.address === KP3RETH_ADDRESS) {
+              price = 0
+            }
           } else {
             const assetContract = new web3.eth.Contract(abis.erc20ABI, asset.address);
             const gaugeContract = new web3.eth.Contract(abis.gaugeABI, asset.gauge.address);
