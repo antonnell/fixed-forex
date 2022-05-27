@@ -1130,7 +1130,7 @@ class Store {
   };
 
   _getAssetInfo = async (web3, account, assets) => {
-    // try {
+    try {
       const gaugeProxyContract = new web3.eth.Contract(abis.gaugeProxyABI, GAUGE_PROXY_ADDRESS);
       const priceOracleContract = new web3.eth.Contract(abis.creamPriceOracleABI, CREAM_PRICE_ORACLE_ADDRESS);
       const [totalGaugeVotes] = await Promise.all([gaugeProxyContract.methods.totalWeight().call()]);
@@ -1543,9 +1543,9 @@ class Store {
 
       this.setStore({ assets });
       this.emitter.emit(FIXED_FOREX_UPDATED);
-    // } catch (ex) {
-    //   console.log(ex);
-    // }
+    } catch (ex) {
+      console.error(ex);
+    }
   };
 
   _getRewardInfo = async (web3, account) => {
