@@ -57,9 +57,10 @@ function Setup({ theme, handleNext }) {
   const [ toAssetOptions, setToAssetOptions ] = useState([])
 
   const populateReceiveList = (localFromAsset, force) => {
-    const storeAssets = stores.fixedForexStore.getStore('assets')
+    const _storeAssets = stores.fixedForexStore.getStore('assets')
     const storeSwapAssets = stores.fixedForexStore.getStore('swapFromAssets')
 
+    const storeAssets = _storeAssets.filter(e => !e.shouldUseNewABI)
     if(storeAssets.length > 0 && (toAssetValue == null || force)) {
       let tav = ''
       if(localFromAsset) {
