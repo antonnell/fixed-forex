@@ -100,9 +100,10 @@ function Setup({ theme, handleNext }) {
     }
 
     const ffUpdated = () => {
-      const storeAssets = stores.fixedForexStore.getStore('assets')
+      const _storeAssets = stores.fixedForexStore.getStore('assets')
       const storeSwapAssets = stores.fixedForexStore.getStore('swapFromAssets')
       const storeBreaker = stores.fixedForexStore.getStore('breaker')
+      const storeAssets = _storeAssets.filter(e => !e.shouldUseNewABI)
 
       let excludeMim = storeSwapAssets.filter((a) => { return a.symbol !== 'MIM' })
 
