@@ -307,7 +307,7 @@ export default function EnhancedTable({ gauges, setParentSliderValues, defaultVo
                   </TableCell>
                   <TableCell className={classes.cell} align="right">
                     <Typography variant="h2" className={classes.textSpaced}>
-                      { formatCurrency(row?.gauge?.userGaugeBalance) } { row.symbol }
+                      { formatCurrency(row?.gauge?.userGaugeBalance) } { row.symbolAlt }
                     </Typography>
                     <Typography variant="h5" className={classes.textSpaced} color='textSecondary'>
                       $ { formatCurrency(0.00) }

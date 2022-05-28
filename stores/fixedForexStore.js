@@ -556,6 +556,7 @@ class Store {
       {
         address: KP3RETH_ADDRESS,
         logoAddress: KP3RETH_ADDRESS,
+        symbolAlt: "WETH+KP3R",
         symbol: "ETH+KP3R",
         shouldUseNewABI: true,
         decimals: 18,
@@ -584,7 +585,8 @@ class Store {
       {
         address: IBAUDUSDC_ADDRESS,
         logoAddress: IBAUDUSDC_ADDRESS,
-        symbol: "ibAUD+USDC",
+        symbolAlt: "ibAUD+USDC",
+        symbol: "ibAUD",
         shouldUseNewABI: true,
         decimals: 18,
         name: "Curve ibaudusdc pool",
@@ -612,7 +614,8 @@ class Store {
       {
         address: IBCHFUSDC_ADDRESS,
         logoAddress: IBCHFUSDC_ADDRESS,
-        symbol: "ibCHF+USDC",
+        symbolAlt: "ibCHF+USDC",
+        symbol: "ibCHF",
         shouldUseNewABI: true,
         decimals: 18,
         name: "Curve ibchfusdc pool",
@@ -640,7 +643,8 @@ class Store {
       {
         address: IBEURUSDC_ADDRESS,
         logoAddress: IBEURUSDC_ADDRESS,
-        symbol: "ibEUR+USDC",
+        symbolAlt: "ibEUR+USDC",
+        symbol: "ibEUR",
         shouldUseNewABI: true,
         decimals: 18,
         name: "Curve ibeurusdc pool",
@@ -668,7 +672,8 @@ class Store {
       {
         address: IBGBPUSDC_ADDRESS,
         logoAddress: IBGBPUSDC_ADDRESS,
-        symbol: "ibGBP+USDC",
+        symbolAlt: "ibGBP+USDC",
+        symbol: "ibGBP",
         shouldUseNewABI: true,
         decimals: 18,
         name: "Curve ibgbpusdc pool",
@@ -696,7 +701,8 @@ class Store {
       {
         address: IBJPYUSDC_ADDRESS,
         logoAddress: IBJPYUSDC_ADDRESS,
-        symbol: "ibJPY+USDC",
+        symbolAlt: "ibJPY+USDC",
+        symbol: "ibJPY",
         shouldUseNewABI: true,
         decimals: 18,
         name: "Curve ibjpyusdc pool",
@@ -724,7 +730,8 @@ class Store {
       {
         address: IBKRWUSDC_ADDRESS,
         logoAddress: IBKRWUSDC_ADDRESS,
-        symbol: "ibKRW+USDC",
+        symbolAlt: "ibKRW+USDC",
+        symbol: "ibKRW",
         shouldUseNewABI: true,
         decimals: 18,
         name: "Curve ibkrwusdc pool",
@@ -752,7 +759,8 @@ class Store {
       {
         address: IBEUR_ADDRESS,
         logoAddress: IBEUR_POOL_ADDRESS,
-        symbol: "ibEUR+sEUR",
+        symbolAlt: "ibEUR+sEUR",
+        symbol: "ibEUR",
         decimals: 18,
         name: "Iron Bank EUR",
         oracleAddress: "0x00e5c0774A5F065c285068170b20393925C84BF3",
@@ -780,7 +788,8 @@ class Store {
       {
         address: IBKRW_ADDRESS,
         logoAddress: IBKRW_POOL_ADDRESS,
-        symbol: "ibKRW+sKRW",
+        symbolAlt: "ibKRW+sKRW",
+        symbol: "ibKRW",
         decimals: 18,
         name: "Iron Bank KRW",
         oracleAddress: "0x3c9f5385c288cE438Ed55620938A4B967c080101",
@@ -808,7 +817,8 @@ class Store {
       {
         address: IBGBP_ADDRESS,
         logoAddress: IBGBP_POOL_ADDRESS,
-        symbol: "ibGBP+sGBP",
+        symbolAlt: "ibGBP+sGBP",
+        symbol: "ibGBP",
         decimals: 18,
         name: "Iron Bank GBP",
         oracleAddress: "0xecaB2C76f1A8359A06fAB5fA0CEea51280A97eCF",
@@ -836,7 +846,8 @@ class Store {
       {
         address: IBCHF_ADDRESS,
         logoAddress: IBCHF_POOL_ADDRESS,
-        symbol: "ibCHF+sCHF",
+        symbolAlt: "ibCHF+sCHF",
+        symbol: "ibCHF",
         decimals: 18,
         name: "Iron Bank CHF",
         oracleAddress: "0x1b3E95E8ECF7A7caB6c4De1b344F94865aBD12d5",
@@ -864,7 +875,8 @@ class Store {
       {
         address: IBAUD_ADDRESS,
         logoAddress: IBAUD_POOL_ADDRESS,
-        symbol: "ibAUD+sAUD",
+        symbolAlt: "ibAUD+sAUD",
+        symbol: "ibAUD",
         decimals: 18,
         name: "Iron Bank AUD",
         oracleAddress: "0x86BBD9ac8B9B44C95FFc6BAAe58E25033B7548AA",
@@ -892,7 +904,8 @@ class Store {
       {
         address: IBJPY_ADDRESS,
         logoAddress: IBJPY_POOL_ADDRESS,
-        symbol: "ibJPY+sJPY",
+        symbolAlt: "ibJPY+sJPY",
+        symbol: "ibJPY",
         decimals: 18,
         name: "Iron Bank JPY",
         oracleAddress: "0x215F34af6557A6598DbdA9aa11cc556F5AE264B1",
@@ -920,7 +933,8 @@ class Store {
       {
         address: IBEUR_AG_ADDRESS,
         logoAddress: IBEUR_POOL_ADDRESS,
-        symbol: "ibEUR+agEUR",
+        symbolAlt: "ibEUR+agEUR",
+        symbol: "ibEUR",
         decimals: 18,
         name: "Iron Bank EUR",
         oracleAddress: "0x00e5c0774A5F065c285068170b20393925C84BF3",

@@ -432,7 +432,7 @@ function AssetSelect({ type, value, assetOptions, onSelect }) {
             <img
               className={ classes.displayAssetIconSmall }
               alt=""
-              src={ (asset && asset.icon) ? asset.icon : `https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/${asset?.logoAddress || asset?.address}/logo-128.png` }
+              src={ (asset && asset.icon) ? asset.icon : `https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/${asset?.address}/logo-128.png` }
               height='60px'
               onError={(e)=>{e.target.onerror = null; e.target.src="/tokens/unknown-logo.png"}}
             />
@@ -458,7 +458,7 @@ function AssetSelect({ type, value, assetOptions, onSelect }) {
             <img
               className={ classes.displayAssetIcon }
               alt=""
-              src={ (value && value.icon) ? value.icon : `https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/${value?.logoAddress || value?.address}/logo-128.png` }
+              src={ (value && value.icon) ? value.icon : `https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/${value?.address}/logo-128.png` }
               height='100px'
               onError={(e)=>{e.target.onerror = null; e.target.src="/tokens/unknown-logo.png"}}
             />
