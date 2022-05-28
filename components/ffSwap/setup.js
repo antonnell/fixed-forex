@@ -60,7 +60,7 @@ function Setup({ theme, handleNext }) {
     const _storeAssets = stores.fixedForexStore.getStore('assets')
     const storeSwapAssets = stores.fixedForexStore.getStore('swapFromAssets')
 
-    const storeAssets = _storeAssets.filter(e => !e.shouldUseNewABI)
+    const storeAssets = _storeAssets.filter(e => !e.shouldUseNewABI).filter(e => e.gauge.address !== '0x38039dD47636154273b287F74C432Cac83Da97e2')
     if(storeAssets.length > 0 && (toAssetValue == null || force)) {
       let tav = ''
       if(localFromAsset) {
@@ -103,7 +103,8 @@ function Setup({ theme, handleNext }) {
       const _storeAssets = stores.fixedForexStore.getStore('assets')
       const storeSwapAssets = stores.fixedForexStore.getStore('swapFromAssets')
       const storeBreaker = stores.fixedForexStore.getStore('breaker')
-      const storeAssets = _storeAssets.filter(e => !e.shouldUseNewABI)
+      const storeAssets = _storeAssets.filter(e => !e.shouldUseNewABI).filter(e => e.gauge.address !== '0x38039dD47636154273b287F74C432Cac83Da97e2')
+
 
       let excludeMim = storeSwapAssets.filter((a) => { return a.symbol !== 'MIM' })
 
