@@ -555,6 +555,7 @@ class Store {
     const assets = [
       {
         address: KP3RETH_ADDRESS,
+        logoAddress: KP3RETH_ADDRESS,
         symbol: "ETH+KP3R",
         shouldUseNewABI: true,
         decimals: 18,
@@ -582,6 +583,7 @@ class Store {
         },
       {
         address: IBAUDUSDC_ADDRESS,
+        logoAddress: IBAUDUSDC_ADDRESS,
         symbol: "ibAUD+USDC",
         shouldUseNewABI: true,
         decimals: 18,
@@ -609,6 +611,7 @@ class Store {
       },
       {
         address: IBCHFUSDC_ADDRESS,
+        logoAddress: IBCHFUSDC_ADDRESS,
         symbol: "ibCHF+USDC",
         shouldUseNewABI: true,
         decimals: 18,
@@ -636,6 +639,7 @@ class Store {
       },
       {
         address: IBEURUSDC_ADDRESS,
+        logoAddress: IBEURUSDC_ADDRESS,
         symbol: "ibEUR+USDC",
         shouldUseNewABI: true,
         decimals: 18,
@@ -663,6 +667,7 @@ class Store {
       },
       {
         address: IBGBPUSDC_ADDRESS,
+        logoAddress: IBGBPUSDC_ADDRESS,
         symbol: "ibGBP+USDC",
         shouldUseNewABI: true,
         decimals: 18,
@@ -690,6 +695,7 @@ class Store {
       },      
       {
         address: IBJPYUSDC_ADDRESS,
+        logoAddress: IBJPYUSDC_ADDRESS,
         symbol: "ibJPY+USDC",
         shouldUseNewABI: true,
         decimals: 18,
@@ -717,6 +723,7 @@ class Store {
       },
       {
         address: IBKRWUSDC_ADDRESS,
+        logoAddress: IBKRWUSDC_ADDRESS,
         symbol: "ibKRW+USDC",
         shouldUseNewABI: true,
         decimals: 18,
@@ -744,6 +751,7 @@ class Store {
       },
       {
         address: IBEUR_ADDRESS,
+        logoAddress: IBEUR_GAUGE_ADDRESS,
         symbol: "ibEUR",
         decimals: 18,
         name: "Iron Bank EUR",
@@ -771,6 +779,7 @@ class Store {
       },
       {
         address: IBKRW_ADDRESS,
+        logoAddress: IBKRW_GAUGE_ADDRESS,
         symbol: "ibKRW",
         decimals: 18,
         name: "Iron Bank KRW",
@@ -798,6 +807,7 @@ class Store {
       },
       {
         address: IBGBP_ADDRESS,
+        logoAddress: IBGBP_GAUGE_ADDRESS,
         symbol: "ibGBP",
         decimals: 18,
         name: "Iron Bank GBP",
@@ -825,6 +835,7 @@ class Store {
       },
       {
         address: IBCHF_ADDRESS,
+        logoAddress: IBCHF_GAUGE_ADDRESS,
         symbol: "ibCHF",
         decimals: 18,
         name: "Iron Bank CHF",
@@ -852,6 +863,7 @@ class Store {
       },
       {
         address: IBAUD_ADDRESS,
+        logoAddress: IBAUD_GAUGE_ADDRESS,
         symbol: "ibAUD",
         decimals: 18,
         name: "Iron Bank AUD",
@@ -879,6 +891,7 @@ class Store {
       },
       {
         address: IBJPY_ADDRESS,
+        logoAddress: IBJPY_GAUGE_ADDRESS,
         symbol: "ibJPY",
         decimals: 18,
         name: "Iron Bank JPY",
@@ -906,6 +919,7 @@ class Store {
       },
       {
         address: IBEUR_AG_ADDRESS,
+        logoAddress: IBEUR_AG_GAUGE_ADDRESS,
         symbol: "ibEUR",
         decimals: 18,
         name: "Iron Bank EUR",

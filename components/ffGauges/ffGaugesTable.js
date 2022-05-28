@@ -294,7 +294,7 @@ export default function EnhancedTable({ gauges, setParentSliderValues, defaultVo
                 <TableRow key={row.gauge.address}>
                   <TableCell className={classes.cell}>
                     <div className={ classes.inline }>
-                      <img className={ classes.imgLogo } src={`https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/${row.address}/logo-128.png`} width='35' height='35' alt='' />
+                      <img className={ classes.imgLogo } src={`https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/${row.logoAddress || row.address}/logo-128.png`} width='35' height='35' alt='' />
                       <div>
                         <Typography variant="h2" className={classes.textSpaced}>
                           { row?.gauge?.coin0?.symbol } - { row?.gauge?.coin1?.symbol }
