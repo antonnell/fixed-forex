@@ -290,7 +290,7 @@ export default function EnhancedTable({ assets }) {
                     <div className={classes.inline}>
                       <img
                         className={classes.imgLogo}
-                        src={`https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/${row.address}/logo-128.png`}
+                        src={`https://raw.githubusercontent.com/yearn/yearn-assets/master/icons/multichain-tokens/1/${row.logoAddress || row.address}/logo-128.png`}
                         width='35'
                         height='35'
                         alt=''

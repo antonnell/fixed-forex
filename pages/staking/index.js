@@ -16,7 +16,7 @@ import classes from './staking.module.css';
 function UniswapIcon(props) {
   const { color, className } = props;
   return (
-    <SvgIcon viewBox="0 0 168.3 193.8" stroke-width="1" className={className}>
+    <SvgIcon viewBox="0 0 168.3 193.8" strokeWidth="1" className={className}>
     <g>
 <path fill="#FF007A" d="M66,44.1c-2.1-0.3-2.2-0.4-1.2-0.5c1.9-0.3,6.3,0.1,9.4,0.8c7.2,1.7,13.7,6.1,20.6,13.8l1.8,2.1l2.6-0.4
   c11.1-1.8,22.5-0.4,32,4c2.6,1.2,6.7,3.6,7.2,4.2c0.2,0.2,0.5,1.5,0.7,2.8c0.7,4.7,0.4,8.2-1.1,10.9c-0.8,1.5-0.8,1.9-0.3,3.2

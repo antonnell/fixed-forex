@@ -17,8 +17,8 @@ import { formatCurrency } from '../../utils';
 function BalanceIcon(props) {
   const { color, className } = props;
   return (
-    <SvgIcon viewBox="0 0 64 64" stroke-width="1" className={className}>
-      <g stroke-width="1" transform="translate(0, 0)"><path data-cap="butt" d="M21,60H50.664a6,6,0,0,0,5.857-4.7l5.334-24A6,6,0,0,0,56,24H36V12c0-9-8-9-8-9a60.277,60.277,0,0,1-3,15c-2.021,5.417-8.636,9.546-10,15" fill="none" stroke="#9400D3" stroke-miterlimit="10" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter"></path><rect data-color="color-2" x="2" y="27" width="13" height="33" fill="none" stroke="#9400D3" stroke-linecap="square" stroke-miterlimit="10" stroke-width="1" stroke-linejoin="miter"></rect></g>
+    <SvgIcon viewBox="0 0 64 64" strokeWidth="1" className={className}>
+      <g strokeWidth="1" transform="translate(0, 0)"><path data-cap="butt" d="M21,60H50.664a6,6,0,0,0,5.857-4.7l5.334-24A6,6,0,0,0,56,24H36V12c0-9-8-9-8-9a60.277,60.277,0,0,1-3,15c-2.021,5.417-8.636,9.546-10,15" fill="none" stroke="#9400D3" strokeMiterlimit="10" strokeWidth="1" strokeLinecap="butt" strokeLinejoin="miter"></path><rect data-color="color-2" x="2" y="27" width="13" height="33" fill="none" stroke="#9400D3" strokeLinecap="square" strokeMiterlimit="10" strokeWidth="1" strokeLinejoin="miter"></rect></g>
     </SvgIcon>
   );
 }

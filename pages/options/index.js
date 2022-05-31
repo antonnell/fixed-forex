@@ -16,8 +16,8 @@ import classes from './options.module.css';
 function BalanceIcon(props) {
   const { color, className } = props;
   return (
-    <SvgIcon viewBox="0 0 64 64" stroke-width="1" className={className}>
-      <g stroke-width="1" transform="translate(0, 0)"><path d="M57,37A24,24,0,0,1,9,37V9L33,3,57,9Z" fill="none" stroke="#4585d6" stroke-linecap="square" stroke-miterlimit="10" stroke-width="1" stroke-linejoin="miter"></path><circle cx="33" cy="38" r="1" fill="none" stroke="#4585d6" stroke-linecap="square" stroke-miterlimit="10" stroke-width="1" data-color="color-2" stroke-linejoin="miter"></circle><rect x="23" y="31" width="20" height="14" fill="none" stroke="#4585d6" stroke-linecap="square" stroke-miterlimit="10" stroke-width="1" data-color="color-2" stroke-linejoin="miter"></rect><path d="M27,31V23a6,6,0,0,1,6-6h0a6,6,0,0,1,6,6v8" fill="none" stroke="#4585d6" stroke-linecap="square" stroke-miterlimit="10" stroke-width="1" data-color="color-2" stroke-linejoin="miter"></path></g>
+    <SvgIcon viewBox="0 0 64 64" strokeWidth="1" className={className}>
+      <g strokeWidth="1" transform="translate(0, 0)"><path d="M57,37A24,24,0,0,1,9,37V9L33,3,57,9Z" fill="none" stroke="#4585d6" strokeLinecap="square" strokeMiterlimit="10" strokeWidth="1" strokeLinejoin="miter"></path><circle cx="33" cy="38" r="1" fill="none" stroke="#4585d6" strokeLinecap="square" strokeMiterlimit="10" strokeWidth="1" data-color="color-2" strokeLinejoin="miter"></circle><rect x="23" y="31" width="20" height="14" fill="none" stroke="#4585d6" strokeLinecap="square" strokeMiterlimit="10" strokeWidth="1" data-color="color-2" strokeLinejoin="miter"></rect><path d="M27,31V23a6,6,0,0,1,6-6h0a6,6,0,0,1,6,6v8" fill="none" stroke="#4585d6" strokeLinecap="square" strokeMiterlimit="10" strokeWidth="1" data-color="color-2" strokeLinejoin="miter"></path></g>
     </SvgIcon>
   );
 }
